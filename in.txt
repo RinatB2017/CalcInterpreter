@@ -1,0 +1,42 @@
+a=1;
+b=a+2;
+c=sin(b*b);
+if(a)
+ {print c;}
+else
+ {print pi; }
+print;
+
+print sin (pi/2 + pi/2)/2 ;
+print sin ((pi/2 + pi/2)/2);
+
+b=b+111;
+print b;
+
+print a=a-200*3;
+print a;
+
+if(sin(megavar))
+{
+	print e;
+	print pi;
+}else{
+	print -1*e;
+	print -pi;
+}
+print;
+del a;
+print;
+suck
+set stricted;
+add ddddd=999;
+add zx;
+
+if(1){
+add kkk = 2+2+2+2+2*6;
+}
+
+else{eeee;}
+
+print;
+if(0){}else{}
