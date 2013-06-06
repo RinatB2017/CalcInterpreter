@@ -1,0 +1,10 @@
+functions "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
+^func_argument(s) nonterminal "(" name (, name)* ")"
+while
+for
+do-while
+sum(i=1; i=n) { }
+mul(i=1; i=n) { }
+compares: < > == != for usage in if
+complex
+matrix/vectors
