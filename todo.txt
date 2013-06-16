@@ -1,3 +1,8 @@
+лексер:
+*переработать пропуск пробелов \
+*сделать комменты и их пропуск  \ ->попробовать одним регекспом
+
+help state, help if, ...
 test bigInt
 functions "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
 ^func_argument(s) nonterminal "(" name (, name)* ")"
