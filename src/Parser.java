@@ -106,7 +106,10 @@ public class Parser {
 			
 			if(!table.containsKey(name))
 				if(stricted) error("Запрещено автоматическое создание переменных в stricted-режиме");
-				else table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
+				else{
+					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
+					System.out.println("Создана переменная "+name);
+				}
 			double v=table.get(name);
 	        if (getToken()==Names.ASSIGN){
 	        	v = expr(true);
@@ -327,6 +330,7 @@ public class Parser {
 				}else if(currTok.name==Names.END){
 					table.put(varName, 0.0);
 				} else error("Неверное использование ADD: правильно так: add VARIABLE_NAME; add VARIABLE_NAME = expr;");
+				System.out.println("Создана переменная "+varName);
 				// expr() оставляет токен в currTok.name, мы здесь его анализируем...
 				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
 

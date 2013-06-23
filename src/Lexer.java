@@ -84,8 +84,13 @@ public class Lexer {
 		this.addItem("else", Names.ELSE);
 		this.addItem("tokens", Names.TOKENS);
 		
+		this.addItem("\\s+", Names.SKIPABLE); // пробелы
+		this.addItem("//.*$", Names.SKIPABLE); // комментарии "//"
+		//this.addItem("(/\\*.*?)(^@)", Names.UNCLOSED_COMMENT); // не пашет
+		//this.addItem("/\\*.*?\\*/", Names.SKIPABLE); // TODO Устранить конфликт с MUL и DIV // комментарии "/* */"
+				
 		this.addItem("[A-Za-z]{1,}", Names.NAME);
-		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER);
+		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
 		this.addItem("[!]{1}", Names.EXIT);
 		this.addItem("[+]{1}", Names.PLUS);
 		this.addItem("[-]{1}", Names.MINUS);
@@ -99,7 +104,9 @@ public class Lexer {
 		this.addItem("[{]{1}", Names.LF);
 		this.addItem("[}]{1}", Names.RF);
 		
-		this.addItem("\\s+", Names.SKIPABLE); // пробелы и комментарии
+
+		//this.addItem("//.+$", Names.SKIPABLE); // пробелы и комментарии
+		//this.addItem("\\s+|//$", Names.SKIPABLE); // пробелы и комментарии
 		
 		this.addItem(".+", Names.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 		
@@ -141,7 +148,6 @@ public class Lexer {
 				Prev = Cur; // настраиваем ссылку Prev на объект по ссылке Cur; это гаранирует что Prev!=null
 				prevMatched = true;
 				
-				// TODO СДВИГАЕМ ТОЛЬКО КОНЕЦ ПОДСТРОКИ на 1
 				// ...то пробуем добавить ещё символ к подстроке:
 				if(end<string.length()){
 					end++;// инкремент end,
@@ -168,12 +174,7 @@ public class Lexer {
 				
 				// ни с одним регекспом подстрока не совпала
 				if((matched==false && prevMatched==false)){
-					// TODO СДЕЛАТЬ ТАК, ЧТОБЫ ЭТОТ КОД НЕ ВЫПОЛНЯЛСЯ БЛАГОДАРЯ РЕГУЛЯРКЕ на ILLEGAL_TOKEN
-					// TODO СДВИГАЕМ НАЧАЛО НА 1 И КОНЕЦ ПОДСТРОКИ на 1
-					// добавление символа какILLEGAL_TOKEN было здесь 
-					start++; // Вызывает string out of range exception
-					end++; // TODO: не работает
-					throw new Exception();
+					throw new Exception(); // Если зашли сюда, то ошибка. Проверь регулярку на ILLEGAL_TOKEN.
 				}
 			}
 			
@@ -184,12 +185,11 @@ public class Lexer {
 				isNeedAddToken = false;
 				prevMatched=false;
 				
-				// TODO СДВИГАЕМ НАЧАЛО ПОДСТРОКИ на длину распознанного участка, и конец на 1
 				start = start + Prev.value.length();
 				Prev=null;
 				
 				if (start >= string.length()) isContinue=false; // выходим, когда просмотрели всю входную строку
-				else end = start + 1;//не обязательно, ибо end уже сдвинут при попытке захватить очередной символ
+				else end = start + 1; // не обязательно, ибо end уже сдвинут при попытке захватить очередной символ
 			}
 		}
 		

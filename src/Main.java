@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) {
     	// Применяем параметры командной строки
     	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-    	boolean lexerPrint = true; // TODO - вернуть.   Вывод найденных лексем 
+    	boolean lexerPrint = false; // Вывод найденных лексем 
     	boolean interactiveMode = true;
     	
     	if(args.length > 0){
