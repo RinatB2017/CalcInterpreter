@@ -99,6 +99,9 @@ public class Lexer {
 		this.addItem("[{]{1}", Names.LF);
 		this.addItem("[}]{1}", Names.RF);
 		
+		this.addItem("\\s+", Names.SKIPABLE); // пробелы и комментарии
+		
+		this.addItem(".+", Names.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 		
 		this.lexerAutoEnd = lexerAutoEnd;
 		this.interactiveMode = interactiveMove;
@@ -108,7 +111,7 @@ public class Lexer {
 	String sstring; // Ещё ссылка для информации в printTokens()
 	
 	// Сканирует строку, перезаписывает массив токенов найдеными токенами
-	public void scan(String string) {
+	public void scan(String string) throws Exception {
 		if(interactiveMode){
 			tokens.clear();
 		}
@@ -133,11 +136,12 @@ public class Lexer {
 			boolean matched = isMatchWithMasks(substr); // matched==true гаранирует что Cur!=null
 			if(Prev==null && matched) Prev=Cur; // Для нормальной работы с первой полученной подстрокой
 			
-			if (matched && Cur.name.equals(Prev.name)) { // если подстрока совпала с маской токена...
-				//для следующей итерации цикла
+			if (matched && Cur.name==Prev.name) { // если подстрока совпала с маской токена...			
+				// Для следующей итерации цикла
 				Prev = Cur; // настраиваем ссылку Prev на объект по ссылке Cur; это гаранирует что Prev!=null
 				prevMatched = true;
 				
+				// TODO СДВИГАЕМ ТОЛЬКО КОНЕЦ ПОДСТРОКИ на 1
 				// ...то пробуем добавить ещё символ к подстроке:
 				if(end<string.length()){
 					end++;// инкремент end,
@@ -148,34 +152,44 @@ public class Lexer {
 
 			} else { // ни с одним регекспом подстрока не совпала либо резко поменялось имя токена NAME -> EXIT, NAME -> IF, ...
 				if(matched){ // если для новой подстроки резко поменялось имя токена NAME -> EXIT
-					Prev=Cur; // Настраиваем ссылку Prev для корректной работы блока if (matched && Cur.name.equals(Prev.name))
-					continue; // делаем пропуск, для того чтобы нормально сработал механизм анализа&добавления при первом несовпадении
-					// поскольку из-за пропуска мы не обновили start и end,
-					// происходит ещё однин проход для той же подстроки(но с новым Prev.name==IF,EXIT, ...),
-					// в котором устанавливается prevMatched
+					if(Cur.name==Names.ILLEGAL_TOKEN){ // случай PRINT"print" -> ILLEGAL_TOKEN"print " 
+						isNeedAddToken = true; // добавляем PRINT
+					}else{ // нормальный случай NAME"i" -> IF"if"
+						Prev=Cur; // Настраиваем ссылку Prev для корректной работы блока if (matched && Cur.name.equals(Prev.name))
+						continue; // делаем пропуск, для того чтобы нормально сработал механизм анализа&добавления при первом несовпадении
+						// поскольку из-за пропуска мы не обновили start и end,
+						// происходит ещё однин проход для той же подстроки(но с новым Prev.name==IF,EXIT, ...),
+						// в котором устанавливается prevMatched
+					}
 				}
 				else if(prevMatched){ // если были совпадения(с одной маской) в предыдущих подстроках(на предыд итерациях)
 					isNeedAddToken = true;
 				}
 				
-				if(Prev!=null){ // если мы можем получить длину предыдущей строки
-					start = start + Prev.value.length(); // сдвигаем start
-				}else{ // Matched==null && prevMatched==null -- illegal
-					if(!substr.matches("\\s+"))
-						tokens.add(new Token(Names.ILLEGAL_TOKEN, substr));
-					start++;
+				// ни с одним регекспом подстрока не совпала
+				if((matched==false && prevMatched==false)){
+					// TODO СДЕЛАТЬ ТАК, ЧТОБЫ ЭТОТ КОД НЕ ВЫПОЛНЯЛСЯ БЛАГОДАРЯ РЕГУЛЯРКЕ на ILLEGAL_TOKEN
+					// TODO СДВИГАЕМ НАЧАЛО НА 1 И КОНЕЦ ПОДСТРОКИ на 1
+					// добавление символа какILLEGAL_TOKEN было здесь 
+					start++; // Вызывает string out of range exception
+					end++; // TODO: не работает
+					throw new Exception();
 				}
-				
-				if (start >= string.length()) isContinue=false; // выходим, когда просмотрели всю входную строку
-				else end = start + 1;
 			}
 			
 			if(isNeedAddToken){
 				//System.out.println("Adding token name=\""+Prev.name+ "\", value=\"" + Prev.value+"\"\n");
-				tokens.add(new Token(Prev.name, Prev.value));
+				if(Prev.name!=Names.SKIPABLE)
+					tokens.add(new Token(Prev.name, Prev.value));
 				isNeedAddToken = false;
 				prevMatched=false;
+				
+				// TODO СДВИГАЕМ НАЧАЛО ПОДСТРОКИ на длину распознанного участка, и конец на 1
+				start = start + Prev.value.length();
 				Prev=null;
+				
+				if (start >= string.length()) isContinue=false; // выходим, когда просмотрели всю входную строку
+				else end = start + 1;//не обязательно, ибо end уже сдвинут при попытке захватить очередной символ
 			}
 		}
 		
@@ -184,7 +198,8 @@ public class Lexer {
 			tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
 	}
 
-	// Сопоставляет подстроку с масками-регэкспами, при первом же совпадении возвращает true и (ре)инициализирует ссылку Cur
+	// Сопоставляет подстроку с масками-регэкспами, при первом же совпадении
+	// возвращает true и (ре)инициализирует ссылку Cur
 	public boolean isMatchWithMasks(String substr) {
 		// Этот метод генерит новые объекты и настраивает на них ссылку Cur
 		//System.out.println("Trying \""+substr+"\"...");
