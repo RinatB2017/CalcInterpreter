@@ -35,10 +35,12 @@ public class Main {
 	    //Парсер
 	    Parser p = new Parser();
 	    p.reset(Parser.what.ALL);
-	    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-		String str = new String();
+	    BufferedReader stdin = null;
+	    try{
+	    	stdin = new BufferedReader(new InputStreamReader(System.in/*, "UTF-8"*/));
+	    	String str = new String();
 			
-    	try{			
+    				
 			// Считываем строки из файла...
 		    do{
 		    	try{

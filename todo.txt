@@ -1,18 +1,15 @@
-лексер:
-*переработать пропуск пробелов \
-*сделать комменты и их пропуск  \ ->попробовать одним регекспом
-
-сделать папку doc
+лексер: сделать комменты /* */
 
 help state, help if, ...
 test bigInt
-functions "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
+пользовательские функции "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
 ^func_argument(s) nonterminal "(" name (, name)* ")"
 while
 for
 do-while
 sum(i=1; i=n) { }
 mul(i=1; i=n) { }
-compares: < > == != for usage in if
+типы
+сравнения: < > == != для использования в if
 complex
 matrix/vectors
