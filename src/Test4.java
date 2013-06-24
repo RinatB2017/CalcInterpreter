@@ -26,6 +26,21 @@ public class Test4 extends Assert{
 		assertTrue(Parser.getErrors()==0);
 	}
 	
+	@Test
+	public void testPrint2As3() throws Exception {
+		l.scan("print print2=as3=321.694");
+		p.addTokens(l.getTokens());
+		p.exprList();
+		assertEquals(321.694, p.lastResult); // работает
+	}
+	
+	@Test
+	public void testPrint_() throws Exception {
+		l.scan("print print_ = as3=321.694");
+		p.addTokens(l.getTokens());
+		p.exprList();
+		assertEquals(321.694, p.lastResult); // работает
+	}
 	
 	@Test
 	public void testPrintCosPiDiv2() throws Exception {

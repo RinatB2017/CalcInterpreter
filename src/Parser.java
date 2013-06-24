@@ -108,7 +108,7 @@ public class Parser {
 				if(stricted) error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else{
 					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
-					System.out.println("Создана переменная "+name);
+					if(!echoPrint) System.out.println("Создана переменная "+name);
 				}
 			double v=table.get(name);
 	        if (getToken()==Names.ASSIGN){
@@ -522,7 +522,7 @@ public class Parser {
 	}
 	
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
-	public double lastResult=666;
+	public double lastResult=Double.NaN;
 	public static int getErrors() {
 		return errors;
 	}

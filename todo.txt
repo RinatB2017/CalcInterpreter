@@ -1,5 +1,5 @@
 лексер: сделать комменты /* */
-
+поменять ф-ю zeroApproximation(), приближающую к 0, на compareDouble(), сравнивающую double с заданной точностью
 help state, help if, ...
 test bigInt
 пользовательские функции "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"

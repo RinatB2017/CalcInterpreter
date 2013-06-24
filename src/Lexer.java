@@ -89,7 +89,7 @@ public class Lexer {
 		//this.addItem("(/\\*.*?)(^@)", Names.UNCLOSED_COMMENT); // не пашет
 		//this.addItem("/\\*.*?\\*/", Names.SKIPABLE); // TODO Устранить конфликт с MUL и DIV // комментарии "/* */"
 				
-		this.addItem("[A-Za-z]{1,}", Names.NAME);
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Names.NAME);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
 		this.addItem("[!]{1}", Names.EXIT);
 		this.addItem("[+]{1}", Names.PLUS);
