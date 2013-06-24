@@ -35,7 +35,7 @@ public class Parser {
 	}
 	
 	public HashMap<String, Double> table; //Таблица переменных
-	int precision = 5; // Точность, используемая при ркруглении малых значений методом zero_approximation() до 0
+	static int precision = 5; // Точность, используемая при ркруглении малых значений методом zero_approximation() до 0
 	static int errors=0; // Счётчик возникших ошибок
 
 		
@@ -136,21 +136,21 @@ public class Parser {
 	boolean func() throws Exception{
 		if(stringValue.equals("sin")){
 			double t=Math.sin(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
-			y=zeroApproximation(t);
+			y = (doubleCompare(t, 0)) ? 0 : t;
 			return true;
 		}else if(stringValue.equals("cos")){
 			double t=Math.cos(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
-			y=zeroApproximation(t);
+			y = (doubleCompare(t, 0)) ? 0 : t;
 			return true;
 		}else{
 			return false;
 		}
 	}
 	
-	// Округлаяет малые значения до 0.0
-	private double zeroApproximation(double x) {
-		if (Math.abs(x) < 1.0/Math.pow(10, precision)) x=0;
-		return x;
+	
+	static boolean doubleCompare(double a, double b){
+		if (Math.abs(a-b) < 1.0/Math.pow(10, precision)) return true;
+		return false;
 	}
 
 	// умножает и делит
@@ -226,7 +226,7 @@ public class Parser {
 		if(currTok.name!=Names.RP) { // ')'
 			error("Ожидается RP )");
 		}
-		if(zeroApproximation(condition) != 0){	// если condition==true
+		if(!doubleCompare(condition, 0)){	// если condition==true
 			block();
 			if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
 		}else{				// если condition==false
@@ -239,7 +239,7 @@ public class Parser {
 			return false; // иначе выходим
 
 		if(currTok.name==Names.ELSE){
-			if(zeroApproximation(condition) == 0){
+			if(doubleCompare(condition, 0)){
 				block();
 				if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
 			}else{
