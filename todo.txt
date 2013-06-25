@@ -1,4 +1,4 @@
-лексер: сделать комменты  /*  */
+лексер: сделать комменты /* */
 help state, help if, ...
 test bigInt
 пользовательские функции "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
