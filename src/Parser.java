@@ -20,12 +20,13 @@ public class Parser {
 	List<Token> tokens=null; // Ссылка на Список токенов
 	Token currTok; // текущий обрабатываемый токен, изменяется методом get_token()
 	int tokNum=0;
-	
+	boolean autoPrint;
 	
 	//Конструктор
-	public Parser(){
+	public Parser(boolean autoPrint){
 		table = new HashMap<String, Double>();
 		tokens=new ArrayList<Token>();
+		this.autoPrint=autoPrint;
 	}
 	
 	// Устанавливает ссылку tokens на список токенов tokens2, который обычно генерирует лексер
@@ -79,7 +80,14 @@ public class Parser {
 			}else if (currTok.name==Names.IF){
 				get=if_();
 			}else{
-				expr(false);
+				if(autoPrint) {
+					echoPrint=true;
+					double v = expr(false);
+					System.out.println("= " + v + '\n');
+					echoPrint=false;
+				}else{
+					expr(false);
+				}
 				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
 			}
 	    }

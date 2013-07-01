@@ -12,7 +12,7 @@ public class Test4 extends Assert{
 	public void setUp() {
 		l = new Lexer(true, true);
 		
-		p = new Parser();
+		p = new Parser(true);
 		p.reset(Parser.what.ALL);
 	}
 

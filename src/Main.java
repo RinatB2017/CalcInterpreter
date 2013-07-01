@@ -10,19 +10,22 @@ public class Main {
     	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
     	boolean lexerPrint = false; // Вывод найденных лексем 
     	boolean interactiveMode = true;
+    	boolean autoPrint = true;
     	
-    	if(args.length > 0){
-	    	for(String s: args){
-	    		if(s.equals("lexer_auto_end")) lexerAutoEnd = true;
-	    		if(s.equals("no_lexer_auto_end")) lexerAutoEnd = false;
+    	if(args.length > 0) for(String s: args){
+	    	if(s.equals("lexer_auto_end")) lexerAutoEnd = true;
+	    	if(s.equals("no_lexer_auto_end")) lexerAutoEnd = false;
 	    		
-	    		if(s.equals("lexer_print")) lexerPrint = true;
-	    		if(s.equals("no_lexer_print")) lexerPrint = false;
+	    	if(s.equals("lexer_print")) lexerPrint = true;
+	    	if(s.equals("no_lexer_print")) lexerPrint = false;
 	    		
-	    		if(s.equals("interactive_mode")) interactiveMode = true;
-	    		if(s.equals("no_interactive_mode")) interactiveMode = false;
-	    	}
-    	}// Применяем параметры командной строки
+	    	if(s.equals("interactive_mode")) interactiveMode = true;
+	    	if(s.equals("no_interactive_mode")) interactiveMode = false;
+	    		
+	    	if(s.equals("autoprint")) autoPrint = true;
+	    	if(s.equals("no_autoprint")) autoPrint = false;
+	    }
+    	// Применяем параметры командной строки
 
     	
     	System.out.println("Добро пожаловать в интерпретатор.");
@@ -33,7 +36,7 @@ public class Main {
 	    // второй аргумент - интерактивный режим
 	    Lexer l = new Lexer(lexerAutoEnd, interactiveMode);
 	    //Парсер
-	    Parser p = new Parser();
+	    Parser p = new Parser(autoPrint);
 	    p.reset(Parser.what.ALL);
 	    BufferedReader stdin = null;
 	    try{
