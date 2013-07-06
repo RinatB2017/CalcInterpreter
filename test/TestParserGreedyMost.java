@@ -1,10 +1,8 @@
 import org.junit.*;
-import org.junit.Test;
-
 import junit.framework.Assert;
 
 
-public class Test4 extends Assert{
+public class TestParserGreedyMost extends Assert{
 	static Lexer l;
 	static 	Parser p;
 	
@@ -26,8 +24,11 @@ public class Test4 extends Assert{
 		assertTrue(Parser.getErrors()==0);
 	}
 	
+	
 	@Test
 	public void testPrint2As3() throws Exception {
+		// http://automated-testing.info/forum/kak-poluchit-imya-metoda-vo-vremya-vypolneniya-testa#comment-961
+		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
 		l.scan("print print2=as3=321.694");
 		p.addTokens(l.getTokens());
 		p.exprList();
@@ -168,5 +169,13 @@ public class Test4 extends Assert{
 		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(10.0, p.lastResult); // работает
+	}
+	
+	@Test
+	public void testTemplateForFutureVector() throws Exception {
+		l.scan("p=4; (3*p^2 + 6*p - 4)/2"); // TODO Убрать p=8 и использовать для проверки деления вектора на ЧИСЛО
+		p.addTokens(l.getTokens());
+		p.exprList();
+		assertEquals(34.0, p.lastResult); // работает
 	}
 }
