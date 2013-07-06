@@ -71,7 +71,13 @@ public class Lexer {
 		tokens = new ArrayList<Token>();
 		
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
+		this.addItem("sin", Names.SIN);
+		this.addItem("cos", Names.COS);
+		this.addItem("[!]{1}", Names.FACTORIAL);
+		
 		this.addItem("exit", Names.EXIT);
+		this.addItem("quit", Names.EXIT);
+		this.addItem("shutdown", Names.EXIT);
 		this.addItem("print", Names.PRINT);
 		this.addItem("add", Names.ADD);
 		this.addItem("del", Names.DEL);
@@ -91,7 +97,6 @@ public class Lexer {
 				
 		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Names.NAME);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
-		this.addItem("[!]{1}", Names.EXIT);
 		this.addItem("[+]{1}", Names.PLUS);
 		this.addItem("[-]{1}", Names.MINUS);
 		this.addItem("[*]{1}", Names.MUL);

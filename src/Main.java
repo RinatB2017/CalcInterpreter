@@ -11,6 +11,7 @@ public class Main {
     	boolean lexerPrint = false; // Вывод найденных лексем 
     	boolean interactiveMode = true;
     	boolean autoPrint = true;
+    	boolean greedyFunc = false;
     	
     	if(args.length > 0) for(String s: args){
 	    	if(s.equals("lexer_auto_end")) lexerAutoEnd = true;
@@ -24,6 +25,9 @@ public class Main {
 	    		
 	    	if(s.equals("autoprint")) autoPrint = true;
 	    	if(s.equals("no_autoprint")) autoPrint = false;
+	    	
+	    	if(s.equals("greedy_func")) greedyFunc = true;
+	    	if(s.equals("no_greedy_func")) greedyFunc = false;
 	    }
     	// Применяем параметры командной строки
 
@@ -36,7 +40,7 @@ public class Main {
 	    // второй аргумент - интерактивный режим
 	    Lexer l = new Lexer(lexerAutoEnd, interactiveMode);
 	    //Парсер
-	    Parser p = new Parser(autoPrint);
+	    Parser p = new Parser(autoPrint, greedyFunc);
 	    p.reset(Parser.what.ALL);
 	    BufferedReader stdin = null;
 	    try{
@@ -66,6 +70,7 @@ public class Main {
 				}catch(MyException m){
 					System.out.println("на токене №" + p.getTokNum() + " "+p.getCurrTok()+":`"+p.getCurrTokValue()+"`");
 					System.out.println("Введите reset errors для сброса счётчика ошибок.\n");
+					m.printStackTrace(); // TODO Debug-Mode
 					continue;
 				}catch(NoSuchElementException nsee){
 		    		System.out.println("Нет строки, возможно вы ввели CTRL+Z !");

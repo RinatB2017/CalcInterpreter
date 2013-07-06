@@ -23,10 +23,11 @@ public class Parser {
 	boolean autoPrint;
 	
 	//Конструктор
-	public Parser(boolean autoPrint){
+	public Parser(boolean autoPrint, boolean greedyFunc){
 		table = new HashMap<String, Double>();
 		tokens=new ArrayList<Token>();
 		this.autoPrint=autoPrint;
+		this.greedyFunc=greedyFunc;
 	}
 	
 	// Устанавливает ссылку tokens на список токенов tokens2, который обычно генерирует лексер
@@ -79,7 +80,7 @@ public class Parser {
 				;
 			}else if (currTok.name==Names.IF){
 				get=if_();
-			}else{
+			}else{ // expr
 				if(autoPrint) {
 					echoPrint=true;
 					double v = expr(false);
@@ -90,11 +91,13 @@ public class Parser {
 				}
 				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
 			}
+			table.put("ans", lastResult);
 	    }
 	}
 	
 	double y; // для временного хранения результата func()
 	boolean stricted; // Для запрета автосоздания переменных
+	private boolean greedyFunc; // Жадные функции: скобки не обязательны, всё, что написано после имени функции до ; считается аргументом.
 	
 	// обрабатывает первичное
 	double prim(boolean get) throws Exception
@@ -108,7 +111,10 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case NAME:{
+	    case NAME:
+	    case SIN:
+	    case COS:
+	    {
 			if(func(/*y*/)) return y;
 			String name = new String(stringValue);
 			
@@ -142,15 +148,44 @@ public class Parser {
 	
 	// функции, возвращающие значение (non-void): sin, cos
 	boolean func() throws Exception{
-		if(stringValue.equals("sin")){
-			double t=Math.sin(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
-			y = (doubleCompare(t, 0)) ? 0 : t;
+		switch(currTok.name){
+		case SIN: // для режима greedyFunc
+		case COS:
+		{
+			Names funcName = currTok.name; // Запоминаем для дальнейшего использования
+			if(!greedyFunc){
+				getToken(); // Проверка наличия (
+				if(currTok.name!=Names.LP) error("Ожидается (");
+			}
+					
+			// "Настоящая" обработка sin и cos
+			switch(funcName){
+				case SIN:
+					y = Math.sin(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
+					break;
+				case COS:
+					y = Math.cos(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
+					break;
+				default:
+					error("Не хватает обработчика для функции " + funcName.toString());
+			}// "Настоящая" обработка sin и cos
+			
+			if(!greedyFunc){
+				 // Проверка наличия )
+				if(currTok.name!=Names.RP) error("Ожидается )");
+				getToken();
+			}
+			
+			// Округление до привычных значений
+			y = (doubleCompare(y, 0)) ? 0 : y;
+			y = (doubleCompare(y, 0.5)) ? 0.5 : y;
+			y = (doubleCompare(y, -0.5)) ? -0.5 : y;
+			y = (doubleCompare(y, 1)) ? 1 : y;
+			y = (doubleCompare(y, -1)) ? -1 : y;
 			return true;
-		}else if(stringValue.equals("cos")){
-			double t=Math.cos(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
-			y = (doubleCompare(t, 0)) ? 0 : t;
-			return true;
-		}else{
+		}
+		
+		default:
 			return false;
 		}
 	}
@@ -202,13 +237,14 @@ public class Parser {
 	            left -= term(true);
 	            break; // этот break относится к switch
 	        default:
+	        	lastResult=left;
 	            return left;
 	        }
 	}
 	
 	// Степень a^b
 	double power(boolean get) throws Exception{
-	    double left = prim(get);
+	    double left = factorial(get);
 	    for(;;)
 	        // ``вечно''
 	        switch(currTok.name)
@@ -216,8 +252,28 @@ public class Parser {
 	        case POW:
 	            // случай '+'
 	            //left += prim(true);
-	            left = Math.pow(left, prim(true));
+	            left = Math.pow(left, factorial(true));
 	            break; // этот break относится к switch
+	        default:
+	            return left;
+	        }
+	}
+	
+	double factorial(boolean get) throws Exception
+	{
+	    double left = prim(get);
+	    for(;;)
+	        // ``вечно''
+	        switch(currTok.name)
+	        {
+	        case FACTORIAL:
+	        	double t = left;
+	        	left=1;
+	        	while(t!=0){
+	        		left *= t--;
+	        	}
+	        	getToken(); // для следующих
+	        	break;
 	        default:
 	            return left;
 	        }
@@ -318,7 +374,7 @@ public class Parser {
 				
 				double v = expr(false);
 				System.out.println("= "+v);
-				lastResult = v;
+				//lastResult = v;
 				// expr() оставляет токен в currTok.name, мы здесь его анализируем...
 				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
 				
@@ -529,8 +585,9 @@ public class Parser {
 		return tokNum-1; // т. к . в getToken() используется ++
 	}
 	
-	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public double lastResult=Double.NaN;
+	
+	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public static int getErrors() {
 		return errors;
 	}

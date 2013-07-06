@@ -12,10 +12,10 @@ public class Test4 extends Assert{
 	public void setUp() {
 		l = new Lexer(true, true);
 		
-		p = new Parser(true);
+		p = new Parser(true, true);
 		p.reset(Parser.what.ALL);
 	}
-
+	
 	@After
 	public void tearDown() throws Exception {
 		//l.scan("state");
@@ -160,5 +160,13 @@ public class Test4 extends Assert{
 		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(14.0, p.lastResult); // работает
+	}
+	
+	@Test
+	public void testAns() throws Exception {
+		l.scan("2; (5+3)+ans");
+		p.addTokens(l.getTokens());
+		p.exprList();
+		assertEquals(10.0, p.lastResult); // работает
 	}
 }
