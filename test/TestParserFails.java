@@ -20,6 +20,20 @@ public class TestParserFails extends Assert{
 	}
 
 	@Test (expected=MyException.class)
+	public void checkFactorial() throws Exception {
+		l.scan("-3!");
+		p.addTokens(l.getTokens());
+		p.exprList();
+	}
+	
+	@Test (expected=MyException.class, timeout=2000)
+	public void checkFactorialCos() throws Exception {
+		l.scan("(cos pi)!"); // Greedy!
+		p.addTokens(l.getTokens());
+		p.exprList();
+	}
+	
+	@Test (expected=MyException.class)
 	public void checkExtraRP() throws Exception {
 		l.scan("sin(-pi/2))");
 		p.addTokens(l.getTokens());

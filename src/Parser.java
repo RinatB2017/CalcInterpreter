@@ -196,6 +196,7 @@ public class Parser {
 		return false;
 	}
 
+
 	// умножает и делит
 	double term(boolean get) throws Exception
 	{
@@ -267,8 +268,9 @@ public class Parser {
 	        switch(currTok.name)
 	        {
 	        case FACTORIAL:
-	        	double t = left;
-	        	left=1;
+	        	if(left<0) error("Факториал отрицательного числа не определён!");
+	        	int t = (int) Math.rint(left); // TODO СЮДА БЛЯТЬ !!!!!!!
+	        	left=1.0;
 	        	while(t!=0){
 	        		left *= t--;
 	        	}
