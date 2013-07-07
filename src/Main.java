@@ -59,14 +59,14 @@ public class Main {
 		    			l.printTokens();
 			    	
 		    		// Если мы в интерактивном режиме, то сразу выполняем полученную строку
-		    		if(interactiveMode){
+		    		//if(interactiveMode){
 			    		p.addTokens(l.getTokens());
 						p.exprList();
 		    							
 						//System.out.println("CurrTok is "+p.getCurr_tok());
 						if (p.getCurrTok()==Names.EXIT) return;
 						if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
-					}
+					//}
 				}catch(MyException m){
 					System.out.println("на токене №" + p.getTokNum() + " "+p.getCurrTok()+":`"+p.getCurrTokValue()+"`");
 					System.out.println("Введите reset errors для сброса счётчика ошибок.\n");
@@ -80,7 +80,7 @@ public class Main {
 	    	}while(str!=null);
 		    
 		    // ...если мы в пакетном режиме, то выполнение полученных токенов происходит только один раз здесь
-		    if(interactiveMode==false){
+		    /*if(interactiveMode==false){
 		    	try{
 			    	p.addTokens(l.getTokens());
 					p.exprList();
@@ -91,7 +91,7 @@ public class Main {
 		    		System.out.println("на токене №" + p.getTokNum() + " "+p.getCurrTok()+":`"+p.getCurrTokValue()+"`");
 		    		System.out.println();
 				}
-		    }
+		    }*/
 		    
 		    
     	}catch(Exception ex){

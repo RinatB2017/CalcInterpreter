@@ -227,8 +227,8 @@ public class Lexer {
 	}
 
 	public List<Token> getTokens() {
-		if(!interactiveMode)
-			tokens.add(new Token(Names.EXIT, "!"));
+		/*if(!interactiveMode)
+			tokens.add(new Token(Names.EXIT, "!"));*/
 		return tokens;
 	}
 }

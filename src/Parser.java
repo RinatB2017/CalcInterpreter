@@ -59,7 +59,7 @@ public class Parser {
 				stringValue=currTok.value;
 			return currTok.name;
 		}else{
-			error("Ожидается токен");
+			error("getToken(): Ожидается токен");
 			return null;
 		}
 	}
