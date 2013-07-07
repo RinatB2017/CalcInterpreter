@@ -19,6 +19,14 @@ public class TestParserFails extends Assert{
 		assertTrue(Parser.getErrors()!=0);
 	}
 
+	
+	@Test (expected=MyException.class)
+	public void checkDivZero() throws Exception {
+		l.scan("1/sin(-pi)}"); // Работает округление до 0 в Parser.func()
+		p.addTokens(l.getTokens());
+		p.exprList();
+	}
+		
 	@Test (expected=MyException.class)
 	public void checkFactorial() throws Exception {
 		l.scan("-3!");
