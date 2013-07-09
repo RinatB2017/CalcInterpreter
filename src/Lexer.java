@@ -21,20 +21,26 @@ public class Lexer {
 	}
 
 	ArrayList<TokenMask> masks; // массив масок токенов <рег_выраж, название>
-
 	ArrayList<Token> tokens; // Массив токенов <название, значение>
 
-	
 	BufferedReader stdin=null;
-	
 	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-	boolean interactiveMode; //Очистка списка токенов при вызове scan() - для интерактивного режима , для пакетного - автодобавление exit в getTokens()
-	boolean withinComment=false;
+	boolean lexerPrintTokens;
+	
+	boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
+	
+	
 	// Конструктор, добавляет маски, инициализирует ссылки
-	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean interactiveMove) {
+	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean lexerPrintTokens) {
+		// Инициализируем
+		this.lexerAutoEnd = lexerAutoEnd;
+		this.lexerPrintTokens = lexerPrintTokens;
+		this.stdin = stdin;
+		
 		masks = new ArrayList<TokenMask>();
 		tokens = new ArrayList<Token>();
 		
+		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
 		this.addItem("sin", Names.SIN);
 		this.addItem("cos", Names.COS);
@@ -78,11 +84,6 @@ public class Lexer {
 		//this.addItem("\\s+|//$", Names.SKIPABLE); // пробелы и комментарии
 		
 		this.addItem(".+", Names.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
-		
-		// Инициализируем
-		this.lexerAutoEnd = lexerAutoEnd;
-		this.interactiveMode = interactiveMove;
-		this.stdin=stdin;
 	}
 	
 	Token Cur=null; // Текущий полученный токен
@@ -109,7 +110,10 @@ public class Lexer {
 					return new Token(Names.EXIT, "") ;
 					//throw new Exception("Лексер: закончились строки");
 				}
-				if(!str.isEmpty()) scan(str);
+				if(!str.isEmpty()) {
+					scan(str);
+					if(lexerPrintTokens) printTokens();
+				}
 			}while(str.isEmpty() || withinComment);
 		}
 		
@@ -242,13 +246,14 @@ public class Lexer {
 	}
 	
 	public void printTokens() {
-		System.out.print("[lexer] at line "+ lineNum+": ");
+		System.out.print("lexer at line "+ lineNum+" ");
 		if(!tokens.isEmpty()){
-			System.out.println("founded tokens for \""+sstring+"\":");
+			System.out.println("\""+sstring+"\" found next tokens:");
 			//System.out.println("<name> <value>\n");
 			for (int i =0; i < tokens.size(); i++) {
 				Token t = tokens.get(i);
-				System.out.println(""+i+ " " + t.name + " " + t.value);
+				//System.out.println(""+i+ " " + t.name + " " + t.value);
+				System.out.println(t);
 			}
 		}else
 			System.out.println("Nothing found for \""+ sstring+"\".");

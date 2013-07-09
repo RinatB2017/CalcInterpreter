@@ -8,7 +8,7 @@ public class TestParserGreedyMost extends Assert{
 	
 	@Before
 	public void setUp() {
-		l = new Lexer(true, true);
+		l = new Lexer(true, false);
 		
 		p = new Parser(true, true);
 		p.reset(Parser.what.ALL);

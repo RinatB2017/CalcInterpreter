@@ -10,15 +10,12 @@
  * то она автоматически создаётся со значением 0.0, см. prim().
  * */
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 public class Parser {
-	List<Token> tokens=null; // Ссылка на Список токенов
-	Token currTok; // текущий обрабатываемый токен, изменяется методом get_token()
+	Token currTok=null; // текущий обрабатываемый токен, изменяется методом get_token()
 	int tokNum=0;
 	boolean autoPrint;
 	Lexer lexer=null;
@@ -26,16 +23,9 @@ public class Parser {
 	//Конструктор
 	public Parser(Lexer lexer, boolean autoPrint, boolean greedyFunc){
 		table = new HashMap<String, Double>();
-		tokens=new ArrayList<Token>();
 		this.autoPrint=autoPrint;
 		this.greedyFunc=greedyFunc;
 		this.lexer = lexer;
-	}
-	
-	// Устанавливает ссылку tokens на список токенов tokens2, который обычно генерирует лексер
-	public void addTokens(List<Token> tokens2) {
-		tokNum=0;
-		tokens=tokens2;
 	}
 	
 	public HashMap<String, Double> table; //Таблица переменных
@@ -50,10 +40,9 @@ public class Parser {
 	// Получает очередной токен, изменяет number_value и string_value
 	private Names getToken() throws Exception{
 		if(echoPrint  &&  currTok.name != Names.END)
-			System.out.print(currTok.value+' ');
+			System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
 		
 		currTok=lexer.getToken();
-		
 		
 		if(currTok.name==Names.NUMBER)
 			numberValue= Double.parseDouble(currTok.value);
@@ -362,10 +351,6 @@ public class Parser {
 					    System.out.println(""+li.getKey() + " " + li.getValue());
 					}
 				}
-			}else if(currTok.name==Names.TOKENS){ // b. выводим список токенов
-				printTokens();
-				getToken();
-				if(currTok.name!=Names.END) error("После `print tokens` ожидается токен END!");
 			}else{ // c. выводим значение expression
 				echoPrint = true;
 				
@@ -472,8 +457,7 @@ public class Parser {
 	// Выводит ошибку и бросает исключение MyException
 	public static void error(String string) throws Exception{
 		errors++;
-		System.out.println("error: "+string);
-		//throw new Exception("my");
+		System.err.println("error: "+string);
 		throw new MyException();
 	}
 	
@@ -587,17 +571,6 @@ public class Parser {
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public static int getErrors() {
 		return errors;
-	}
-	
-	public void printTokens() {
-		if(!tokens.isEmpty()){
-			System.out.println("№ Token.name Token.value:");
-			for (int i =0; i < tokens.size(); i++) {
-				Token t = tokens.get(i);
-				System.out.println(""+i+ " " + t.name + " " + t.value);
-			}
-		}else
-			System.out.println("Nothing found for.");
 	}
 
 }

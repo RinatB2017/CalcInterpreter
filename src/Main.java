@@ -1,16 +1,17 @@
+/* 
+ * Начало: Лексер-Java:			lab-2-tokens-2013-03-30--03-08.zip
+ * Начало: Парсер&Лексер-C++: 	calculatorsStroustroup-2013-04-29--16-54.zip
+ * Начало: Парсер-Java: 		CalcInterpreter-java-2013-05-10--00-18-relese.zip
+ * */
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-
 
 public class Main {
-	
 	public static void main(String[] args) throws Exception {
     	// Применяем параметры командной строки
     	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-    	boolean lexerPrint = false; // Вывод найденных лексем 
-    	boolean interactiveMode = true;
+    	boolean lexerPrintTokens = false; // Вывод найденных лексем 
     	boolean autoPrint = true;
     	boolean greedyFunc = false;
     	
@@ -18,11 +19,8 @@ public class Main {
 	    	if(s.equals("lexer_auto_end")) lexerAutoEnd = true;
 	    	if(s.equals("no_lexer_auto_end")) lexerAutoEnd = false;
 	    		
-	    	if(s.equals("lexer_print")) lexerPrint = true;
-	    	if(s.equals("no_lexer_print")) lexerPrint = false;
-	    		
-	    	if(s.equals("interactive_mode")) interactiveMode = true;
-	    	if(s.equals("no_interactive_mode")) interactiveMode = false;
+	    	if(s.equals("lexer_print")) lexerPrintTokens = true;
+	    	if(s.equals("no_lexer_print")) lexerPrintTokens = false;
 	    		
 	    	if(s.equals("autoprint")) autoPrint = true;
 	    	if(s.equals("no_autoprint")) autoPrint = false;
@@ -38,24 +36,24 @@ public class Main {
     	System.out.println("Добро пожаловать в интерпретатор.");
     	BufferedReader stdin = null;
 		stdin = new BufferedReader(new InputStreamReader(System.in));
-	    Lexer l = new Lexer(stdin, lexerAutoEnd, interactiveMode);
-	    Parser p = new Parser(l, true, false);
+	    Lexer l = new Lexer(stdin, lexerAutoEnd, lexerPrintTokens);
+	    Parser p = new Parser(l, autoPrint, greedyFunc);
+	    p.reset(Parser.what.ALL);
 	    
-	    try{
-		    while(true){
-		    	//ArrayList<Token> al = null;
-		    	//al=l.getTokens();
-		    	//l.printTokens();
-		    	//for(Token t: al){System.out.println(t);}
-		    	p.exprList();
-		    	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
-		    	if (p.getCurrTok()==Names.EXIT) break;
+	    while(true){
+		    try{
+			    p.exprList();
+			   	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
+			   	if (p.getCurrTok()==Names.EXIT) break;
+		    }catch(MyException m){
+		    	System.err.println("Ошибка на строке "+l.getLineNum());
+		    	//m.printStackTrace();
+		    	continue;
+		    }catch(Exception e){
+		    	System.err.println("Критическая ошибка на строке "+l.getLineNum()+", продолжение работы невозможно.");
+		    	e.printStackTrace(); // TODO Debug-Mode
 		    }
-	    }catch(Exception e){
-	    	System.out.println("Прервано на строке "+l.getLineNum());
-	    	e.printStackTrace(); // TODO Debug-Mode
 	    }
-    	//System.out.println("Выход...");
-
+	    System.out.println("Выход...");
     }
 }

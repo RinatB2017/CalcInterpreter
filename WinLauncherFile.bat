@@ -9,6 +9,6 @@
 :: interactive_mode - Интерактивный режим, if вместе с () и {} должен быть на одной строке
 :: no_interactive_mode - Пакетный режим, разрешается писать if вместе с () и {} на разных строках
 
-java -classpath ./bin Main no_lexer_auto_end no_interactive_mode < "in.txt" > "out.txt"
+java -classpath ./bin Main no_lexer_auto_end < "in.txt" > "out.txt" 2> "err.txt"
 ::java -classpath ./bin Main lexer_print < "in.txt" > "out.txt"
 ::pause
