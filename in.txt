@@ -1,6 +1,20 @@
+giga/*gggig=666*/=59;
+/*tera
+
+#$@$#@
+*/penta=5;
+/* */
+uiuiui;
+/**//**/
+/*
+*/
+/*
+
+*/
+//*del *;
 a
 =1;
-b=a+2;
+b=a+2; 
 c=sin(b*b);
 if(a)
  {print c;}

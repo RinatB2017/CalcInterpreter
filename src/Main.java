@@ -52,8 +52,9 @@ public class Main {
 		    }catch(Exception e){
 		    	System.err.println("Критическая ошибка на строке "+l.getLineNum()+", продолжение работы невозможно.");
 		    	e.printStackTrace(); // TODO Debug-Mode
+		    	break;//while
 		    }
-	    }
+	    }//while
 	    System.out.println("Выход...");
     }
 }

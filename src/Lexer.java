@@ -34,7 +34,6 @@ public class Lexer {
 	
 	boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
 	
-	
 	// Конструктор, добавляет маски, инициализирует ссылки
 	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean lexerPrintTokens) {
 		// Инициализируем
@@ -64,13 +63,12 @@ public class Lexer {
 		this.addItem("state", Names.STATE);
 		this.addItem("if", Names.IF);
 		this.addItem("else", Names.ELSE);
-		this.addItem("tokens", Names.TOKENS);
 		
 		this.addItem("\\s+", Names.SKIPABLE); // пробелы
-		this.addItem("//.*$", Names.SKIPABLE); // комментарии "//"
-		//this.addItem("(/\\*.*?)(^@)", Names.UNCLOSED_COMMENT); // не пашет
-		//this.addItem("/\\*.*?\\*/", Names.SKIPABLE); // TODO Устранить конфликт с MUL и DIV // комментарии "/* */"
-				
+		this.addItem("//.*$", Names.SKIPABLE); // комментарии "//" и символы в строке после
+		this.addItem("/\\*", Names.L_COMMENT); // начало многострокового комментария "/*"
+		this.addItem("\\*/", Names.R_COMMENT); // конец многострокового комментария "*/"
+		
 		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Names.NAME);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
 		this.addItem("[+]{1}", Names.PLUS);
@@ -106,6 +104,7 @@ public class Lexer {
 	public Token getToken() throws Exception {
 				
 		if(tokNum==tokens.size()){
+			tokens.clear();
 			if(stdin==null) // Для тестов
 				return new Token(Names.EXIT, "") ; // когда исчерпали все токены, то возвращаем EXIT
 			
@@ -124,7 +123,7 @@ public class Lexer {
 					scan(str);
 					if(lexerPrintTokens) printTokens();
 				}
-			}while(str.isEmpty() || withinComment);
+			}while(tokens.isEmpty());
 		}
 		
 		return tokens.get(tokNum++);
@@ -193,11 +192,20 @@ public class Lexer {
 			
 			if(isNeedAddToken){
 				//System.out.println("Adding token name=\""+Prev.name+ "\", value=\"" + Prev.value+"\"\n");
-				if(Prev.name==Names.SKIPABLE){
-					withinComment=true;
-				}else{
-					withinComment=false;
-					tokens.add(new Token(Prev.name, Prev.value));
+				switch(Prev.name){
+					case SKIPABLE:
+						break;
+					case L_COMMENT:
+						withinComment=true;
+						break;
+					case R_COMMENT:
+						withinComment=false;
+						break;
+					default:
+						if(!withinComment){
+							tokens.add(new Token(Prev.name, Prev.value));
+						}
+						break;
 				}
 				isNeedAddToken = false;
 				prevMatched=false;
@@ -208,7 +216,7 @@ public class Lexer {
 				if (start >= string.length()) isContinue=false; // выходим, когда просмотрели всю входную строку
 				else end = start + 1; // не обязательно, ибо end уже сдвинут при попытке захватить очередной символ
 			}
-		}
+		}//for
 		
 		
 		if(lexerAutoEnd)
