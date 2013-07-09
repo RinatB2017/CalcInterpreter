@@ -49,30 +49,17 @@ public class Parser {
 	
 	// Получает очередной токен, изменяет number_value и string_value
 	private Names getToken() throws Exception{
-		if(tokNum==tokens.size()){
-			tokNum=0;
-			try{
-				tokens=lexer.getTokens();
-			}catch(MyException m){
-				throw new Exception("закончились строки в файле");
-			}
-		}
+		if(echoPrint  &&  currTok.name != Names.END)
+			System.out.print(currTok.value+' ');
 		
-		//if(tokNum<tokens.size()){
-			if(echoPrint  &&  currTok.name != Names.END)
-				System.out.print(currTok.value+' ');
-			
-			currTok=tokens.get(tokNum++);
-			
-			if(currTok.name==Names.NUMBER)
-				numberValue= Double.parseDouble(currTok.value);
-			if(currTok.name==Names.NAME)
-				stringValue=currTok.value;
-			return currTok.name;
-		//}else{
-		//	error("getToken(): Ожидается токен");
-		//	return null;
-		//}
+		currTok=lexer.getToken();
+		
+		
+		if(currTok.name==Names.NUMBER)
+			numberValue= Double.parseDouble(currTok.value);
+		if(currTok.name==Names.NAME)
+			stringValue=currTok.value;
+		return currTok.name;
 	}
 	
 	// Главный метод - список выражений - с него начинается парсинг
@@ -307,7 +294,7 @@ public class Parser {
 		}
 		if(!doubleCompare(condition, 0)){	// если condition==true
 			block();
-			if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
+			if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функиии, вызвавшие if_() увидели EXIT
 		}else{				// если condition==false
 			skipBlock();	// пропусить true brach {}
 		}
@@ -345,19 +332,17 @@ public class Parser {
 	
 	// Пропуск блока {}
 	boolean skipBlock() throws Exception{
-		int controlnum=0;
 		int num = 0;
 		Names ch;
 		
-		while(controlnum < tokens.size()){
-			controlnum++;
+		do{
 			ch=getToken();
 			if(num==0 && ch!=Names.LF) error("Ожидается {");
 			if(ch==Names.LF) num++;
 			if(ch==Names.RF) num--;
 			if(num==0) return true;
-		}
-		error("Число токенов LF { не равно числу токенов RF }");
+		}while(num>0);
+		error("Забыли токен токен LF {");
 		return false;//Ошибка
 	}
 	

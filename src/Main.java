@@ -41,17 +41,20 @@ public class Main {
 	    Lexer l = new Lexer(stdin, lexerAutoEnd, interactiveMode);
 	    Parser p = new Parser(l, true, false);
 	    
-	    while(true){
-	    	//ArrayList<Token> al = null;
-	    	//al=l.getTokens();
-	    	//l.printTokens();
-	    	//for(Token t: al){System.out.println(t);}
-	    	p.exprList();
-	    	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
-	    	if (p.getCurrTok()==Names.EXIT) break;
-	    	// TODO сделать возможность работы после ошибки
+	    try{
+		    while(true){
+		    	//ArrayList<Token> al = null;
+		    	//al=l.getTokens();
+		    	//l.printTokens();
+		    	//for(Token t: al){System.out.println(t);}
+		    	p.exprList();
+		    	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
+		    	if (p.getCurrTok()==Names.EXIT) break;
+		    }
+	    }catch(Exception e){
+	    	System.out.println("Прервано на строке "+l.getLineNum());
+	    	e.printStackTrace(); // TODO Debug-Mode
 	    }
-	    
     	//System.out.println("Выход...");
 
     }

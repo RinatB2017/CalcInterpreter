@@ -27,7 +27,7 @@ if(sin(megavar))
 print;
 del a;
 print;
-suck
+//suck
 set stricted;
 add ddddd=999;
 add zx;
@@ -40,3 +40,11 @@ else{eeee;}
 
 print;
 if(0){}else{}
+
+//
+//copy
+
+if(0-1) { if(1){del ddddd; exit;}}
+
+del *;
+add weweCrewed;

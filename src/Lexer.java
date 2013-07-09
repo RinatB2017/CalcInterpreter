@@ -29,7 +29,7 @@ public class Lexer {
 	
 	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
 	boolean interactiveMode; //Очистка списка токенов при вызове scan() - для интерактивного режима , для пакетного - автодобавление exit в getTokens()
-	
+	boolean withinComment=false;
 	// Конструктор, добавляет маски, инициализирует ссылки
 	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean interactiveMove) {
 		masks = new ArrayList<TokenMask>();
@@ -90,27 +90,42 @@ public class Lexer {
 	
 	long lineNum = 0;
 	
-	// Главметод, считывает строку и возвращает массив токенов
-	public ArrayList<Token> getTokens() throws Exception {
-		/*if(!interactiveMode)
-			tokens.add(new Token(Names.EXIT, "!"));*/
-		lineNum++;
-		String str = stdin.readLine(); // Считываем строку...
-		if(str==null) throw new MyException();
-		scan(str);
-		return tokens;
+	public long getLineNum() {
+		return lineNum;
+	}
+
+	
+	int tokNum=0;
+	// Главметод, считывает строку и возвращает токен
+	public Token getToken() throws Exception {
+		if(tokNum==tokens.size()){
+			tokNum=0;
+			
+			String str;
+			do{
+				lineNum++;
+				str = stdin.readLine(); // Считываем строку...
+				if(str==null){
+					return new Token(Names.EXIT, "") ;
+					//throw new Exception("Лексер: закончились строки");
+				}
+				if(!str.isEmpty()) scan(str);
+			}while(str.isEmpty() || withinComment);
+		}
+		
+		return tokens.get(tokNum++);
 	}
 	
+	
+	
 	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
-	public void scan(String string) throws Exception {
-		if(interactiveMode){
-			tokens.clear();
-		}
+	public void scan(final String string) throws Exception {
+		tokens.clear();
+		
 		this.sstring = string;
 		
 		if(string==null || string.isEmpty()){
-			tokens.add(new Token(Names.END, ";"));
-			return;
+			throw new Exception("scan(): argument string is null or empty.");
 		}
 		
 		
@@ -164,8 +179,12 @@ public class Lexer {
 			
 			if(isNeedAddToken){
 				//System.out.println("Adding token name=\""+Prev.name+ "\", value=\"" + Prev.value+"\"\n");
-				if(Prev.name!=Names.SKIPABLE)
+				if(Prev.name==Names.SKIPABLE){
+					withinComment=true;
+				}else{
+					withinComment=false;
 					tokens.add(new Token(Prev.name, Prev.value));
+				}
 				isNeedAddToken = false;
 				prevMatched=false;
 				
