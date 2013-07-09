@@ -1,11 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 
 public class Main {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
     	// Применяем параметры командной строки
     	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
     	boolean lexerPrint = false; // Вывод найденных лексем 
@@ -28,81 +29,30 @@ public class Main {
 	    	
 	    	if(s.equals("greedy_func")) greedyFunc = true;
 	    	if(s.equals("no_greedy_func")) greedyFunc = false;
-	    }
-    	// Применяем параметры командной строки
-
+	    }// Применяем параметры командной строки
+    	
+    	
+    	
+    	
     	
     	System.out.println("Добро пожаловать в интерпретатор.");
-    	System.out.println("Введите help для получения помощи по грамматике.");
-    	
-
-	    // Лексер. Первый аргумент - Автодобавление токена END в конце считанной последовательности
-	    // второй аргумент - интерактивный режим
-	    Lexer l = new Lexer(lexerAutoEnd, interactiveMode);
-	    //Парсер
-	    Parser p = new Parser(autoPrint, greedyFunc);
-	    p.reset(Parser.what.ALL);
-	    BufferedReader stdin = null;
-	    try{
-	    	stdin = new BufferedReader(new InputStreamReader(System.in/*, "UTF-8"*/));
-	    	String str = new String();
-			
-    				
-			// Считываем строки из файла...
-		    do{
-		    	try{
-		    		str = stdin.readLine(); // Считываем строку...
-		    		if(str==null || str.isEmpty()) continue;
-		    		l.scan(str); // Получаем из неё токены
-		    		
-		    		if(lexerPrint)
-		    			l.printTokens();
-			    	
-		    		// Если мы в интерактивном режиме, то сразу выполняем полученную строку
-		    		//if(interactiveMode){
-			    		p.addTokens(l.getTokens());
-						p.exprList();
-		    							
-						//System.out.println("CurrTok is "+p.getCurr_tok());
-						if (p.getCurrTok()==Names.EXIT) return;
-						if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
-					//}
-				}catch(MyException m){
-					System.out.println("на токене №" + p.getTokNum() + " "+p.getCurrTok()+":`"+p.getCurrTokValue()+"`");
-					System.out.println("Введите reset errors для сброса счётчика ошибок.\n");
-					m.printStackTrace(); // TODO Debug-Mode
-					continue;
-				}catch(NoSuchElementException nsee){
-		    		System.out.println("Нет строки, возможно вы ввели CTRL+Z !");
-		    		stdin.close();
-		    		break;
-		    	}
-	    	}while(str!=null);
-		    
-		    // ...если мы в пакетном режиме, то выполнение полученных токенов происходит только один раз здесь
-		    /*if(interactiveMode==false){
-		    	try{
-			    	p.addTokens(l.getTokens());
-					p.exprList();
-									
-					if (p.getCurrTok()==Names.EXIT) return;
-					if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
-		    	}catch(MyException m){
-		    		System.out.println("на токене №" + p.getTokNum() + " "+p.getCurrTok()+":`"+p.getCurrTokValue()+"`");
-		    		System.out.println();
-				}
-		    }*/
-		    
-		    
-    	}catch(Exception ex){
-    		System.out.println("Перехваченно непредвиденное исключение; дальнейшая работа не возможна.");
-    		System.out.println("exception: "+ex.toString());
-    		ex.printStackTrace();
-    	}finally{
-    		try{ stdin.close();} catch(Exception ex){ System.out.println("Ошибка при закрытии файла");}
-    	}
+    	BufferedReader stdin = null;
+		stdin = new BufferedReader(new InputStreamReader(System.in));
+	    Lexer l = new Lexer(stdin, lexerAutoEnd, interactiveMode);
+	    Parser p = new Parser(l, true, false);
 	    
-    	System.out.println("Выход...");
+	    while(true){
+	    	//ArrayList<Token> al = null;
+	    	//al=l.getTokens();
+	    	//l.printTokens();
+	    	//for(Token t: al){System.out.println(t);}
+	    	p.exprList();
+	    	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
+	    	if (p.getCurrTok()==Names.EXIT) break;
+	    	// TODO сделать возможность работы после ошибки
+	    }
+	    
+    	//System.out.println("Выход...");
 
     }
 }

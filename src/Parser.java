@@ -21,13 +21,15 @@ public class Parser {
 	Token currTok; // текущий обрабатываемый токен, изменяется методом get_token()
 	int tokNum=0;
 	boolean autoPrint;
+	Lexer lexer=null;
 	
 	//Конструктор
-	public Parser(boolean autoPrint, boolean greedyFunc){
+	public Parser(Lexer lexer, boolean autoPrint, boolean greedyFunc){
 		table = new HashMap<String, Double>();
 		tokens=new ArrayList<Token>();
 		this.autoPrint=autoPrint;
 		this.greedyFunc=greedyFunc;
+		this.lexer = lexer;
 	}
 	
 	// Устанавливает ссылку tokens на список токенов tokens2, который обычно генерирует лексер
@@ -47,7 +49,16 @@ public class Parser {
 	
 	// Получает очередной токен, изменяет number_value и string_value
 	private Names getToken() throws Exception{
-		if(tokNum<tokens.size()){
+		if(tokNum==tokens.size()){
+			tokNum=0;
+			try{
+				tokens=lexer.getTokens();
+			}catch(MyException m){
+				throw new Exception("закончились строки в файле");
+			}
+		}
+		
+		//if(tokNum<tokens.size()){
 			if(echoPrint  &&  currTok.name != Names.END)
 				System.out.print(currTok.value+' ');
 			
@@ -58,17 +69,19 @@ public class Parser {
 			if(currTok.name==Names.NAME)
 				stringValue=currTok.value;
 			return currTok.name;
-		}else{
-			error("getToken(): Ожидается токен");
-			return null;
-		}
+		//}else{
+		//	error("getToken(): Ожидается токен");
+		//	return null;
+		//}
 	}
 	
 	// Главный метод - список выражений - с него начинается парсинг
 	public void exprList() throws Exception{
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была отменена из-за вызова error() -> MyException
 		boolean get=true;//нужно ли считывать токен в самом начале
-	    while (tokNum<tokens.size())
+	    
+		//while (tokNum<tokens.size())
+		while (true)
 	    {
 	        if(get) getToken();
 	        get=true;
@@ -269,7 +282,7 @@ public class Parser {
 	        {
 	        case FACTORIAL:
 	        	if(left<0) error("Факториал отрицательного числа не определён!");
-	        	int t = (int) Math.rint(left); // TODO СЮДА БЛЯТЬ !!!!!!!
+	        	int t = (int) Math.rint(left); // TODO сделать невозможным взятие факториала от 4.5, 4.8, 4.1, ...
 	        	left=1.0;
 	        	while(t!=0){
 	        		left *= t--;
@@ -299,10 +312,7 @@ public class Parser {
 			skipBlock();	// пропусить true brach {}
 		}
 		
-		if(tokNum<tokens.size())//Если после if(expr){expr_list} ещё есть токены
-			getToken(); // То считываем очередной токен
-		else
-			return false; // иначе выходим
+		getToken(); //считываем очередной токен
 
 		if(currTok.name==Names.ELSE){
 			if(doubleCompare(condition, 0)){

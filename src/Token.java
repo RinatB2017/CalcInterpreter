@@ -7,4 +7,9 @@ public class Token {
 		name = n;
 		value = v;
 	}
+	
+	@Override
+	public String toString() {
+		return "Token [name=" + name.toString() + ", value=" + value + "]";
+	}
 }

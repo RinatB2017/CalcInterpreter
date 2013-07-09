@@ -3,6 +3,7 @@
  * символы, не совпавшие ни с одной маской – добавляются как ILLEGAL_TOKEN.
  */
 
+import java.io.BufferedReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,50 +24,14 @@ public class Lexer {
 
 	ArrayList<Token> tokens; // Массив токенов <название, значение>
 
-	private void addItem(String regexp, Names name) {
-		masks.add(new TokenMask(regexp, name));
-	}
-
-	public void printMasks() {
-		System.out.print("[lexer]: ");
-		System.out.println("ALL masks:");
-		//System.out.println("ALL masks:\n<name> <regexp>\n");
-		for (TokenMask t : masks) {
-			System.out.println("" + t.name + " " + t.regexp);
-		}
-		System.out.println();
-	}
 	
-	public void printTokens() {
-		System.out.print("[lexer]: ");
-		if(!tokens.isEmpty()){
-			System.out.println("founded tokens for \""+sstring+"\":");
-			//System.out.println("<name> <value>\n");
-			for (int i =0; i < tokens.size(); i++) {
-				Token t = tokens.get(i);
-				System.out.println(""+i+ " " + t.name + " " + t.value);
-			}
-		}else
-			System.out.println("Nothing found for \""+ sstring+"\".");
-		//System.out.println();
-	}
-
-	/*
-	 * "{n}" - n раз встретится символ
-	 * "{n, m}" - символ встретится от n до m раз 
-	 * "[a-zA-Z]{1}[a-zA-Z\\d\\u002E\\u005F]+@([a-zA-Z]+\\u002E){1,2}((net)|(com)|(org))" - for email
-	 * "." - любой символ
-	 * "?" is {0,1}
-	 * "*" is {0,} 
-	 * "+" is {1,}
-	 */
-	
+	BufferedReader stdin=null;
 	
 	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
 	boolean interactiveMode; //Очистка списка токенов при вызове scan() - для интерактивного режима , для пакетного - автодобавление exit в getTokens()
 	
-	// Конструктор, добавляет маски
-	Lexer(boolean lexerAutoEnd, boolean interactiveMove) {
+	// Конструктор, добавляет маски, инициализирует ссылки
+	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean interactiveMove) {
 		masks = new ArrayList<TokenMask>();
 		tokens = new ArrayList<Token>();
 		
@@ -109,20 +74,34 @@ public class Lexer {
 		this.addItem("[{]{1}", Names.LF);
 		this.addItem("[}]{1}", Names.RF);
 		
-
 		//this.addItem("//.+$", Names.SKIPABLE); // пробелы и комментарии
 		//this.addItem("\\s+|//$", Names.SKIPABLE); // пробелы и комментарии
 		
 		this.addItem(".+", Names.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 		
+		// Инициализируем
 		this.lexerAutoEnd = lexerAutoEnd;
 		this.interactiveMode = interactiveMove;
+		this.stdin=stdin;
 	}
 	
-	Token	Cur=null; // Текущий полученный токен
+	Token Cur=null; // Текущий полученный токен
 	String sstring; // Ещё ссылка для информации в printTokens()
 	
-	// Сканирует строку, перезаписывает массив токенов найдеными токенами
+	long lineNum = 0;
+	
+	// Главметод, считывает строку и возвращает массив токенов
+	public ArrayList<Token> getTokens() throws Exception {
+		/*if(!interactiveMode)
+			tokens.add(new Token(Names.EXIT, "!"));*/
+		lineNum++;
+		String str = stdin.readLine(); // Считываем строку...
+		if(str==null) throw new MyException();
+		scan(str);
+		return tokens;
+	}
+	
+	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
 	public void scan(String string) throws Exception {
 		if(interactiveMode){
 			tokens.clear();
@@ -226,9 +205,44 @@ public class Lexer {
 		return false;
 	}
 
-	public List<Token> getTokens() {
-		/*if(!interactiveMode)
-			tokens.add(new Token(Names.EXIT, "!"));*/
-		return tokens;
+	
+	
+	
+	private void addItem(String regexp, Names name) {
+		masks.add(new TokenMask(regexp, name));
 	}
+
+	public void printMasks() {
+		System.out.print("[lexer]: ");
+		System.out.println("ALL masks:");
+		//System.out.println("ALL masks:\n<name> <regexp>\n");
+		for (TokenMask t : masks) {
+			System.out.println("" + t.name + " " + t.regexp);
+		}
+		System.out.println();
+	}
+	
+	public void printTokens() {
+		System.out.print("[lexer] at line "+ lineNum+": ");
+		if(!tokens.isEmpty()){
+			System.out.println("founded tokens for \""+sstring+"\":");
+			//System.out.println("<name> <value>\n");
+			for (int i =0; i < tokens.size(); i++) {
+				Token t = tokens.get(i);
+				System.out.println(""+i+ " " + t.name + " " + t.value);
+			}
+		}else
+			System.out.println("Nothing found for \""+ sstring+"\".");
+		//System.out.println();
+	}
+
+	/*
+	 * "{n}" - n раз встретится символ
+	 * "{n, m}" - символ встретится от n до m раз 
+	 * "[a-zA-Z]{1}[a-zA-Z\\d\\u002E\\u005F]+@([a-zA-Z]+\\u002E){1,2}((net)|(com)|(org))" - for email
+	 * "." - любой символ
+	 * "?" is {0,1}
+	 * "*" is {0,} 
+	 * "+" is {1,}
+	 */
 }
