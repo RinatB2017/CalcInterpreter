@@ -8,9 +8,9 @@ public class TestParserFails extends Assert{
 		
 	@Before
 	public void setUp() {
-		l = new Lexer(true, true);
+		l = new Lexer(null, true, false);
 		
-		p = new Parser(true, true);
+		p = new Parser(l, true, true); // greedy
 		p.reset(Parser.what.ALL);
 	}
 	
@@ -23,42 +23,36 @@ public class TestParserFails extends Assert{
 	@Test (expected=MyException.class)
 	public void checkDivZero() throws Exception {
 		l.scan("1/sin(-pi)}"); // Работает округление до 0 в Parser.func()
-		p.addTokens(l.getTokens());
 		p.exprList();
 	}
 		
 	@Test (expected=MyException.class)
 	public void checkFactorial() throws Exception {
 		l.scan("-3!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 	}
 	
 	@Test (expected=MyException.class, timeout=2000)
 	public void checkFactorialCos() throws Exception {
 		l.scan("(cos pi)!"); // Greedy!
-		p.addTokens(l.getTokens());
 		p.exprList();
 	}
 	
 	@Test (expected=MyException.class)
 	public void checkExtraRP() throws Exception {
 		l.scan("sin(-pi/2))");
-		p.addTokens(l.getTokens());
 		p.exprList();
 	}
 	
 	@Test (expected=MyException.class)
 	public void checkExtraRF() throws Exception {
 		l.scan("sin(-pi/2)}");
-		p.addTokens(l.getTokens());
 		p.exprList();
 	}
 	
 	@Test (expected=MyException.class)
 	public void checkExtraRFIf() throws Exception {
 		l.scan("if(1+-9){sin(-pi/4);}}");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		
 		if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");

@@ -8,15 +8,15 @@ public class TestParserNonGreedy extends Assert{
 	
 	@Before
 	public void setUp() {
-		l = new Lexer(true, true);
-		
-		p = new Parser(true, false);
+		l = new Lexer(null, true, false);
+		p = new Parser(l, true, false);
 		p.reset(Parser.what.ALL);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
+		if(Parser.getErrors()>0) System.err.println("Ошибка на строке "+l.getLineNum());
 		assertTrue(Parser.getErrors()==0);
 	}
 	
@@ -26,7 +26,6 @@ public class TestParserNonGreedy extends Assert{
 		// http://automated-testing.info/forum/kak-poluchit-imya-metoda-vo-vremya-vypolneniya-testa#comment-961
 		System.out.println(new Object(){}.getClass().getEnclosingMethod().getName());
 		l.scan("sin(-pi/2)");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(-1.0, p.lastResult);
 	}
@@ -34,7 +33,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test3FactorialFactorial() throws Exception {
 		l.scan("3!!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(720.0, p.lastResult);
 	}
@@ -42,7 +40,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test3FactorialAdd4Factorial() throws Exception {
 		l.scan("3!+4!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(30.0, p.lastResult);
 	}
@@ -50,7 +47,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test1minus3FactoriAladd4Factorial() throws Exception {
 		l.scan("1-3!+4!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(19.0, p.lastResult);
 	}
@@ -58,7 +54,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test1plus3FactoriAladd4Factorial() throws Exception {
 		l.scan("1+3!+4!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(31.0, p.lastResult);
 	}
@@ -66,7 +61,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test3FactorialMul4Factorial() throws Exception {
 		l.scan("3!*4!");
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(144.0, p.lastResult);
 	}
@@ -74,7 +68,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test2pow3Factorial() throws Exception {
 		l.scan("2^3!"); // 2^(3!)
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(64.0, p.lastResult);
 	}
@@ -82,7 +75,6 @@ public class TestParserNonGreedy extends Assert{
 	@Test
 	public void test2pow3FactorialPlus1() throws Exception {
 		l.scan("2^3!+1"); // 2^(3!)+1
-		p.addTokens(l.getTokens());
 		p.exprList();
 		assertEquals(65.0, p.lastResult);
 	}

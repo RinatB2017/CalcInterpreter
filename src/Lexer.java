@@ -1,6 +1,8 @@
-/* Лексер разбивает входную строку на токены в соответствии с грамматикой и помещает их в ArrayList.
+/* Лексер считывает строки из stdin,
+ * разбивая на токены в соответствии с грамматикой и помещает токены в ArrayList.
  * Пробельные символы игнорируются,
  * символы, не совпавшие ни с одной маской – добавляются как ILLEGAL_TOKEN.
+ * Токены передаются в парсер по одному с каждым вызовом Lexer.getToken()
  */
 
 import java.io.BufferedReader;
@@ -24,6 +26,7 @@ public class Lexer {
 	ArrayList<Token> tokens; // Массив токенов <название, значение>
 
 	BufferedReader stdin=null;
+		
 	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
 	boolean lexerPrintTokens;
 	
@@ -35,7 +38,7 @@ public class Lexer {
 		// Инициализируем
 		this.lexerAutoEnd = lexerAutoEnd;
 		this.lexerPrintTokens = lexerPrintTokens;
-		this.stdin = stdin;
+		this.stdin = stdin; // stdin=null используется при тестировании: сначала вызываем Lexer::scan("тестируемая строка"), затем Parser::exprList
 		
 		masks = new ArrayList<TokenMask>();
 		tokens = new ArrayList<Token>();
@@ -99,7 +102,12 @@ public class Lexer {
 	int tokNum=0;
 	// Главметод, считывает строку и возвращает токен
 	public Token getToken() throws Exception {
+				
 		if(tokNum==tokens.size()){
+			if(stdin==null) // Для тестов
+				return new Token(Names.EXIT, "") ; // когда исчерпали все токены, то возвращаем EXIT
+			
+			// Для нормальной работы
 			tokNum=0;
 			
 			String str;
