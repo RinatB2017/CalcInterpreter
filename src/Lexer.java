@@ -15,10 +15,12 @@ public class Lexer {
 	class TokenMask { // Элемент Регексп-Имя
 		public String regexp;
 		public Names name;
-
+		Pattern pattern;
+		
 		public TokenMask(String r, Names n) {
 			regexp = r;
 			name = n;
+			pattern = Pattern.compile(regexp); 
 		}
 	}
 
@@ -219,13 +221,12 @@ public class Lexer {
 		// Этот метод генерит новые объекты и настраивает на них ссылку Cur
 		//System.out.println("Trying \""+substr+"\"...");
 		for (TokenMask tm : masks){
-			Pattern pattern = Pattern.compile(tm.regexp); // Шаблон
-			Matcher myMatcher = pattern.matcher(substr); // Ищет совпадения
+			Matcher myMatcher = tm.pattern.matcher(substr); // Ищет совпадения
 			if (myMatcher.matches()) {
 				// Эта ссылка должна быть полем класса, а не аргументом метода, для того чтобы ниженаписанное присвоение было видно в scan() 
 				// http://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
 				Cur = new Token(tm.name, substr); 
-
+				
 				//System.out.println("" + Cur.name + " " + Cur.value+"\n");
 				return true;
 			} else {
