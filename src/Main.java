@@ -6,6 +6,7 @@
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
@@ -29,8 +30,13 @@ public class Main {
 	    	if(s.equals("no_greedy_func")) greedyFunc = false;
 	    }// Применяем параметры командной строки
     	
-    	
-    	
+    	@SuppressWarnings("rawtypes")
+		HashSet<Option> options = new HashSet<Option>();
+    	options.add(new Option<Boolean>(Names.STRICTED, false));
+    	options.add(new Option<Boolean>(Names.LEXER_AUTO_END, false));
+    	options.add(new Option<Boolean>(Names.LEXER_PRINT_TOKENS, false));
+    	options.add(new Option<Boolean>(Names.AUTO_PRINT, true));
+    	options.add(new Option<Boolean>(Names.GREEDY_FUNC, false));
     	
     	
     	System.out.println("Добро пожаловать в интерпретатор.");
