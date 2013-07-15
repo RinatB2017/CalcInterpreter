@@ -68,7 +68,7 @@ public class Parser {
 			}else if (currTok.name==Names.IF){
 				get=if_();
 			}else{ // expr
-				if(autoPrint) {
+				if(autoPrint) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
 					echoPrint=true;
 					double v = expr(false);
 					System.out.println("= " + v + '\n');
@@ -456,8 +456,8 @@ public class Parser {
 	// Выводит ошибку и бросает исключение MyException
 	public static void error(String string) throws Exception{
 		errors++;
-		System.err.println("error: "+string);
-		throw new MyException();
+		//System.err.println("error: "+string);
+		throw new MyException(string);
 	}
 	
 	public enum what{ALL, TABLE, ERRORS, STRICTED};
@@ -553,14 +553,10 @@ public class Parser {
 		System.out.println("Текущее состояние:\nerrors:\t\t\t\t"+errors+ "\nsize of table:\t\t\t"+table.size()+"\nЗапрет автосоздания переменных: "+stricted+'\n');
 	};
 	
-	public Names getCurrTok() {// Возвращает Название текущего токена для проверок в вызывающем методе main
-		return currTok.name;
+	public Token getCurrTok() {// Возвращает Название текущего токена для проверок в вызывающем методе main
+		return currTok;
 	}
-	
-	public String getCurrTokValue() {// Возвращает значение текущего токена для проверок в вызывающем методе main
-		return currTok.value;
-	}
-	
+		
 	public double lastResult=Double.NaN;
 	
 	// Нижеприведённые методы нужны только лишь для тестов и отладки

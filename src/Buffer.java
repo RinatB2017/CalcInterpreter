@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Buffer {
 	ArrayList<Token> tokens; // Массив токенов <название, значение>
 	Lexer lexer;
+	String[] args;
 	
 	// Конструктор
 	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, boolean lexerAutoEnd, boolean lexerPrintTokens){
@@ -19,6 +20,7 @@ public class Buffer {
 		this.lexerAutoEnd = lexerAutoEnd;
 		this.lexerPrintTokens = lexerPrintTokens;
 		this.lexer=lexer;
+		this.args=args;
 	}
 	
 	long lineNum = 0;
@@ -27,21 +29,25 @@ public class Buffer {
 	boolean lexerPrintTokens;
 	int tokNum=0;
 	String str;
+	int numAgrs=0;
 	
 	// Главметод, гарантированно возвращает токен (в том числе Tokens.EXIT при невозможности дальнейшего считывания)
 	public Token getToken() throws Exception {
 		if(tokNum==tokens.size()){
 			tokens.clear();
-			if(stdin==null) // Для тестов
-				return new Token(Names.EXIT, "") ; // когда исчерпали все токены, то возвращаем EXIT
-			
-			// Для нормальной работы
-			tokNum=0;
-			
+			tokNum=0;// Для нормальной работы ^
+						
 			str = null;
+			
 			do{
 				lineNum++;
-				str = stdin.readLine(); // Считываем строку...
+				
+				if(numAgrs<args.length)
+					str = args[numAgrs++];
+				else if(stdin!=null) // stdin==null Для тестов
+					str = stdin.readLine(); // Считываем строку..., null когда строки закончились
+				else return new Token(Names.EXIT, "") ; // когда исчерпали все токены в args и нельзя читать из stdin, то возвращаем EXIT
+				
 				if(str==null){
 					return new Token(Names.EXIT, "") ;
 					//throw new Exception("Лексер: закончились строки");
@@ -57,6 +63,7 @@ public class Buffer {
 		return tokens.get(tokNum++);
 	}
 	
+	// Вывод найденных токенов
 	public void printTokens() {
 		System.out.print("lexer at line "+ lineNum+" ");
 		if(!tokens.isEmpty()){
@@ -78,5 +85,10 @@ public class Buffer {
 	
 	public int getTokNum() {
 		return tokNum-1; // т. к . в getToken() используется ++
+	}
+	
+	// Для тестов
+	public void setArgs(String[] args){
+		this.args = args;
 	}
 }

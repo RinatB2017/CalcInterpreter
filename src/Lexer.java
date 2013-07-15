@@ -60,17 +60,17 @@ public class Lexer {
 		
 		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Names.NAME);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
-		this.addItem("[+]{1}", Names.PLUS);
-		this.addItem("[-]{1}", Names.MINUS);
-		this.addItem("[*]{1}", Names.MUL);
-		this.addItem("[/]{1}", Names.DIV);
-		this.addItem("[\\^]{1}", Names.POW);
-		this.addItem("[;]{1}", Names.END);
-		this.addItem("[=]{1}", Names.ASSIGN);
-		this.addItem("[(]{1}", Names.LP);
-		this.addItem("[)]{1}", Names.RP);
-		this.addItem("[{]{1}", Names.LF);
-		this.addItem("[}]{1}", Names.RF);
+		this.addItem("\\+", Names.PLUS);
+		this.addItem("-", Names.MINUS);
+		this.addItem("\\*", Names.MUL);
+		this.addItem("/", Names.DIV);
+		this.addItem("\\^", Names.POW);
+		this.addItem(";", Names.END);
+		this.addItem("=", Names.ASSIGN);
+		this.addItem("\\(", Names.LP);
+		this.addItem("\\)", Names.RP);
+		this.addItem("\\{", Names.LF);
+		this.addItem("\\}", Names.RF);
 		
 		//this.addItem("//.+$", Names.SKIPABLE); // пробелы и комментарии
 		//this.addItem("\\s+|//$", Names.SKIPABLE); // пробелы и комментарии
@@ -79,25 +79,15 @@ public class Lexer {
 	}
 	
 	Token Cur=null; // Текущий полученный токен
-	String sstring; // Ещё ссылка для информации в printTokens()
-	
-	
-
-	
-	
-	
 	
 	
 	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
 	public void scan(final String string, final ArrayList<Token> tokens) throws Exception {
 		tokens.clear();
-		
-		this.sstring = string;
-		
+				
 		if(string==null || string.isEmpty()){
 			throw new Exception("scan(): argument string is null or empty.");
 		}
-		
 		
 		// Выделяем подстроку
 		int start = 0; // индекс первого символа, который войдёт в подстроку
