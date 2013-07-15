@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 public class Main {
 	public static void main(String[] args) throws Exception {
     	// Применяем параметры командной строки
-    	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
+    	boolean lexerAutoEnd = false; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
     	boolean lexerPrintTokens = false; // Вывод найденных лексем 
     	boolean autoPrint = true;
     	boolean greedyFunc = false;
@@ -36,8 +36,10 @@ public class Main {
     	System.out.println("Добро пожаловать в интерпретатор.");
     	BufferedReader stdin = null;
 		stdin = new BufferedReader(new InputStreamReader(System.in));
-	    Lexer l = new Lexer(stdin, lexerAutoEnd, lexerPrintTokens);
-	    Parser p = new Parser(l, autoPrint, greedyFunc);
+		
+	    Lexer l = new Lexer();
+	    Buffer b = new Buffer(l,  args, stdin,  lexerAutoEnd, lexerPrintTokens);
+	    Parser p = new Parser(b, autoPrint, greedyFunc);
 	    p.reset(Parser.what.ALL);
 	    
 	    while(true){
@@ -46,11 +48,11 @@ public class Main {
 			   	if (p.getCurrTok()==Names.RF) Parser.error("Неправильный выход из expr_list, из-за лишней RF }");
 			   	if (p.getCurrTok()==Names.EXIT) break;
 		    }catch(MyException m){
-		    	System.err.println("Ошибка на строке "+l.getLineNum());
+		    	System.err.println("Ошибка на строке "+b.getLineNum());
 		    	//m.printStackTrace();
 		    	continue;
 		    }catch(Exception e){
-		    	System.err.println("Критическая ошибка на строке "+l.getLineNum()+", продолжение работы невозможно.");
+		    	System.err.println("Критическая ошибка на строке "+b.getLineNum()+", продолжение работы невозможно.");
 		    	e.printStackTrace(); // TODO Debug-Mode
 		    	break;//while
 		    }

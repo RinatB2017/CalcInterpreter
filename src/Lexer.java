@@ -5,7 +5,6 @@
  * Токены передаются в парсер по одному с каждым вызовом Lexer.getToken()
  */
 
-import java.io.BufferedReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,25 +24,15 @@ public class Lexer {
 	}
 
 	ArrayList<TokenMask> masks; // массив масок токенов <рег_выраж, название>
-	ArrayList<Token> tokens; // Массив токенов <название, значение>
-
-	BufferedReader stdin=null;
-		
-	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-	boolean lexerPrintTokens;
 	
+
 	boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
 	
 	// Конструктор, добавляет маски, инициализирует ссылки
-	Lexer(BufferedReader stdin, boolean lexerAutoEnd, boolean lexerPrintTokens) {
+	Lexer() {
 		// Инициализируем
-		this.lexerAutoEnd = lexerAutoEnd;
-		this.lexerPrintTokens = lexerPrintTokens;
-		this.stdin = stdin; // stdin=null используется при тестировании: сначала вызываем Lexer::scan("тестируемая строка"), затем Parser::exprList
-		
 		masks = new ArrayList<TokenMask>();
-		tokens = new ArrayList<Token>();
-		
+
 		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
 		this.addItem("sin", Names.SIN);
@@ -92,47 +81,15 @@ public class Lexer {
 	Token Cur=null; // Текущий полученный токен
 	String sstring; // Ещё ссылка для информации в printTokens()
 	
-	long lineNum = 0;
 	
-	public long getLineNum() {
-		return lineNum;
-	}
 
 	
-	int tokNum=0;
-	// Главметод, считывает строку и возвращает токен
-	public Token getToken() throws Exception {
-				
-		if(tokNum==tokens.size()){
-			tokens.clear();
-			if(stdin==null) // Для тестов
-				return new Token(Names.EXIT, "") ; // когда исчерпали все токены, то возвращаем EXIT
-			
-			// Для нормальной работы
-			tokNum=0;
-			
-			String str;
-			do{
-				lineNum++;
-				str = stdin.readLine(); // Считываем строку...
-				if(str==null){
-					return new Token(Names.EXIT, "") ;
-					//throw new Exception("Лексер: закончились строки");
-				}
-				if(!str.isEmpty()) {
-					scan(str);
-					if(lexerPrintTokens) printTokens();
-				}
-			}while(tokens.isEmpty());
-		}
-		
-		return tokens.get(tokNum++);
-	}
+	
 	
 	
 	
 	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
-	public void scan(final String string) throws Exception {
+	public void scan(final String string, final ArrayList<Token> tokens) throws Exception {
 		tokens.clear();
 		
 		this.sstring = string;
@@ -217,10 +174,6 @@ public class Lexer {
 				else end = start + 1; // не обязательно, ибо end уже сдвинут при попытке захватить очередной символ
 			}
 		}//for
-		
-		
-		if(lexerAutoEnd)
-			tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
 	}
 
 	// Сопоставляет подстроку с масками-регэкспами, при первом же совпадении
@@ -262,21 +215,7 @@ public class Lexer {
 		System.out.println();
 	}
 	
-	public void printTokens() {
-		System.out.print("lexer at line "+ lineNum+" ");
-		if(!tokens.isEmpty()){
-			System.out.println("\""+sstring+"\" found next tokens:");
-			//System.out.println("<name> <value>\n");
-			for (int i =0; i < tokens.size(); i++) {
-				Token t = tokens.get(i);
-				//System.out.println(""+i+ " " + t.name + " " + t.value);
-				System.out.println(t);
-			}
-		}else
-			System.out.println("Nothing found for \""+ sstring+"\".");
-		//System.out.println();
-	}
-
+	
 	/*
 	 * "{n}" - n раз встретится символ
 	 * "{n, m}" - символ встретится от n до m раз 
