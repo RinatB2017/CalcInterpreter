@@ -10,5 +10,5 @@
 :: no_greedy_func
 
 
-java -Dfile.encoding=Cp866 -classpath ./bin Main
+java -Dfile.encoding=Cp866 -classpath ./bin Main lexer_auto_end
 ::pause
