@@ -12,21 +12,19 @@ public class Buffer {
 	ArrayList<Token> tokens; // Массив токенов <название, значение>
 	Lexer lexer;
 	String[] args;
+	Options options = null;
 	
 	// Конструктор
-	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, boolean lexerAutoEnd, boolean lexerPrintTokens){
+	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, Options options){
 		tokens = new ArrayList<Token>();
 		this.stdin = stdin; // stdin=null используется при тестировании: сначала вызываем Lexer::scan("тестируемая строка"), затем Parser::exprList
-		this.lexerAutoEnd = lexerAutoEnd;
-		this.lexerPrintTokens = lexerPrintTokens;
 		this.lexer=lexer;
 		this.args=args;
+		this.options=options;
 	}
 	
 	long lineNum = 0;
 	BufferedReader stdin=null;
-	boolean lexerAutoEnd; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-	boolean lexerPrintTokens;
 	int tokNum=0;
 	String str;
 	int numAgrs=0;
@@ -54,8 +52,8 @@ public class Buffer {
 				}
 				if(!str.isEmpty()) {
 					lexer.scan(str, tokens);
-					if(lexerAutoEnd) tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
-					if(lexerPrintTokens) printTokens();
+					if(options.getBoolean(BufferOpts.AUTO_END)) tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
+					if(options.getBoolean(BufferOpts.PRINT_TOKENS)) printTokens();
 				}
 			}while(tokens.isEmpty());
 		}

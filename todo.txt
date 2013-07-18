@@ -1,5 +1,13 @@
+разобраться, почему не работает "false" из командной строки "set auto_end=false" при AUTO_END==false
+Buffer: сделать отдельную нумерацию строк для args
+сделать компиляцию тестов, тесты для файла
+сделать set "set stricted=true", "set stricted=1" -> изменить грамматику
+доделать reset, убрать unset
+типы, complex, сравнения: < > == != для использования в if
+полиномы
+matrix/vectors
+
 запись текущего состояния (table, errors, ...) при помощи сериализации
-лексер: сделать комменты /* */
 help state, help if, ...
 test bigInt
 пользовательские функции "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
@@ -9,7 +17,3 @@ for
 do-while
 sum(i=1; i=n) { }
 mul(i=1; i=n) { }
-типы
-сравнения: < > == != для использования в if
-complex
-matrix/vectors

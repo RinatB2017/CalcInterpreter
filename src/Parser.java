@@ -14,26 +14,23 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class Parser {
-	Token currTok=null; // текущий обрабатываемый токен, изменяется методом get_token()
-	boolean autoPrint;
-	Buffer buf=null;
-	
+	Token currTok = null; // текущий обрабатываемый токен, изменяется методом getToken()
+	Buffer buf = null;
+	Options options = null;
+	HashMap<String, Double> table; // Таблица переменных
+		
 	//Конструктор
-	public Parser(Buffer buf, boolean autoPrint, boolean greedyFunc){
+	public Parser(Buffer buf, Options options){
 		table = new HashMap<String, Double>();
-		this.autoPrint=autoPrint;
-		this.greedyFunc=greedyFunc;
+		resetTable();
 		this.buf = buf;
+		this.options = options;
 	}
 	
-	public HashMap<String, Double> table; //Таблица переменных
-	static int precision = 5; // Точность, используемая при ркруглении малых значений методом zero_approximation() до 0
-	static int errors=0; // Счётчик возникших ошибок
-
-		
+	
 	private double numberValue;
 	private String stringValue;
-	boolean echoPrint=false; // Используется для эхопечати токенов при их чтении методом getToken() при void_func() : print
+	private boolean echoPrint=false; // Используется для эхопечати токенов при их чтении методом getToken() при void_func() : print
 	
 	// Получает очередной токен, изменяет number_value и string_value
 	private Names getToken() throws Exception{
@@ -54,7 +51,6 @@ public class Parser {
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была отменена из-за вызова error() -> MyException
 		boolean get=true;//нужно ли считывать токен в самом начале
 	    
-		//while (tokNum<tokens.size())
 		while (true)
 	    {
 	        if(get) getToken();
@@ -68,7 +64,7 @@ public class Parser {
 			}else if (currTok.name==Names.IF){
 				get=if_();
 			}else{ // expr
-				if(autoPrint) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
+				if(options.getBoolean(ParserOpts.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
 					echoPrint=true;
 					double v = expr(false);
 					System.out.println("= " + v + '\n');
@@ -81,12 +77,7 @@ public class Parser {
 			table.put("ans", lastResult);
 	    }
 	}
-	
-	double y; // для временного хранения результата func()
-	boolean stricted; // Для запрета автосоздания переменных
-	private boolean greedyFunc; // Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
-	
-	
+
 	// обрабатывает первичное
 	double prim(boolean get) throws Exception
 	{
@@ -99,15 +90,13 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case NAME:
-	    case SIN:
-	    case COS:
+	    case NAME:case SIN:case COS:
 	    {
 			if(func(/*y*/)) return y;
 			String name = new String(stringValue);
 			
 			if(!table.containsKey(name))
-				if(stricted) error("Запрещено автоматическое создание переменных в stricted-режиме");
+				if(options.getBoolean(ParserOpts.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else{
 					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
 					if(!echoPrint) System.out.println("Создана переменная "+name);
@@ -133,6 +122,8 @@ public class Parser {
 	    	}
 	    }
 	}
+		
+	double y; // для временного хранения результата func()
 	
 	// функции, возвращающие значение (non-void): sin, cos
 	boolean func() throws Exception{
@@ -141,7 +132,7 @@ public class Parser {
 		case COS:
 		{
 			Names funcName = currTok.name; // Запоминаем для дальнейшего использования
-			if(!greedyFunc){
+			if(!options.getBoolean(ParserOpts.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
 				if(currTok.name!=Names.LP) error("Ожидается (");
 			}
@@ -158,7 +149,7 @@ public class Parser {
 					error("Не хватает обработчика для функции " + funcName.toString());
 			}// "Настоящая" обработка sin и cos
 			
-			if(!greedyFunc){
+			if(!options.getBoolean(ParserOpts.GREEDY_FUNC)){
 				 // Проверка наличия )
 				if(currTok.name!=Names.RP) error("Ожидается )");
 				getToken();
@@ -179,8 +170,8 @@ public class Parser {
 	}
 	
 	
-	static boolean doubleCompare(double a, double b){
-		if (Math.abs(a-b) < 1.0/Math.pow(10, precision)) return true;
+	boolean doubleCompare(double a, double b){
+		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(ParserOpts.PRECISION))) return true;
 		return false;
 	}
 
@@ -350,7 +341,7 @@ public class Parser {
 					    System.out.println(""+li.getKey() + " " + li.getValue());
 					}
 				}
-			}else{ // c. выводим значение expression
+			}else{ // b. выводим значение expression
 				echoPrint = true;
 				
 				double v = expr(false);
@@ -403,12 +394,11 @@ public class Parser {
 		case RESET: {
 			getToken();
 			if(currTok.name==Names.MUL){ // Если reset * то сбрасываем всё
-				reset(what.ALL);
+				System.out.println("Таблица переменных и все насройки сброшены!");
+				options.resetAll();
+				resetTable();
 			}else if(currTok.name==Names.NAME){
-				if(stringValue.equals("table")) reset(what.TABLE);
-				else if(stringValue.equals("errors")) reset(what.ERRORS);
-				else if(stringValue.equals("stricted")) reset(what.STRICTED);
-				else error("После reset оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: table, errors.");
+				reset(stringValue);
 			}else error("После reset ожидается токен имя_переменной NAME либо токен MUL *");
 		} break;
 		
@@ -416,7 +406,7 @@ public class Parser {
 			getToken();
 			if(currTok.name==Names.NAME){
 				if(stringValue.equals("stricted")){
-					stricted=true;
+					//stricted=true;
 					System.out.println("Автоматическое создание переменных при обращении к ним запрещено.");
 				}
 				else error("После set оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: stricted.");
@@ -427,7 +417,7 @@ public class Parser {
 			getToken();
 			if(currTok.name==Names.NAME){
 				if(stringValue.equals("stricted")){
-					stricted=false;
+					//stricted=false;
 					System.out.println("Автоматическое создание переменных разрешено.");
 				}
 				else error("После unset оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: stricted.");
@@ -453,24 +443,32 @@ public class Parser {
 		return true;
 	}
 		
-	// Выводит ошибку и бросает исключение MyException
-	public static void error(String string) throws Exception{
+	// Бросает исключение MyException и увеичивает счётчик ошибок
+	public void error(String string) throws MyException{
+		int errors = options.getInt(ParserOpts.ERRORS);
 		errors++;
+		options.put(ParserOpts.ERRORS, errors);
 		//System.err.println("error: "+string);
 		throw new MyException(string);
 	}
 	
 	public enum what{ALL, TABLE, ERRORS, STRICTED};
-	// Сброс ...
-	void reset(what w){
-		switch(w){
+	
+	// Сброс
+	void reset(String what){
+		/*if(stringValue.equals("table")) reset(what.TABLE);
+		else if(stringValue.equals("errors")) reset(what.ERRORS);
+		else if(stringValue.equals("stricted")) reset(what.STRICTED);
+		else error("После reset оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: table, errors.");
+		*/
+		/*switch(w){
 			case ALL:
 				table.clear();
 				table.put("e", Math.E);
 				table.put("pi", Math.PI);
-				errors=0;
-				precision = 5;
-				stricted = false;
+				//errors=0;
+				//precision = 5;
+				//stricted = false;
 				System.out.println("reset *: Таблица переменных и счётчик ошибок установлены в исходное состояние.");
 				break;
 			case TABLE:
@@ -480,23 +478,29 @@ public class Parser {
 				System.out.println("reset: Таблица переменных установлена в исходное состояние.");
 				break;
 			case ERRORS:
-				errors=0;
+				//errors=0;
 				System.out.println("reset: Счётчик ошибок установлен в исходное состояние.");
 				break;
 			case STRICTED:
-				stricted = false;
+				//stricted = false;
 				System.out.println("reset: Режим stricted установлен в исходное состояние.");
 			default:
 				break;
-		}
-		System.out.println();
+		}*/
+		System.out.println("нужно убрать эту заглушку");
 	};
+	
+	void resetTable(){
+		table.clear();
+		table.put("e", Math.E);
+		table.put("pi", Math.PI);
+		table.put("ans", lastResult);
+	}
 	
 	// Помощь по грамматике
 	void help(){
-
 		System.out.println
-		("Грамматика:\n"+
+		("Грамматика(не актуальная):\n"+
 			"program:\n"+
 				"\texpr_list* EXIT\n"+
 			"\n"+
@@ -550,7 +554,8 @@ public class Parser {
 	
 	// Выводит информацию о текущем состоянии
 	void state(){
-		System.out.println("Текущее состояние:\nerrors:\t\t\t\t"+errors+ "\nsize of table:\t\t\t"+table.size()+"\nЗапрет автосоздания переменных: "+stricted+'\n');
+		System.out.println("Текущее состояние:\nПеременных: "+table.size());
+		options.printAll();
 	};
 	
 	public Token getCurrTok() {// Возвращает Название текущего токена для проверок в вызывающем методе main
@@ -560,8 +565,8 @@ public class Parser {
 	public double lastResult=Double.NaN;
 	
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
-	public static int getErrors() {
-		return errors;
+	public int getErrors() {
+		return options.getInt(ParserOpts.ERRORS);
 	}
 
 }

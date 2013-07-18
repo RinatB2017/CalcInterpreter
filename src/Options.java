@@ -1,10 +1,15 @@
+/*
+ * Хранит настройки буфера и парсера,
+ * предоставляет к ним доступ
+ */
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 interface Id{};
-	enum LexerOpts implements Id{AUTO_END, PRINT_TOKENS};
-	enum ParserOpts implements Id{PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
+	enum BufferOpts implements Id {AUTO_END, PRINT_TOKENS};
+	enum ParserOpts implements Id {PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
 
 /*class c0{};
 class c1 extends c0{};
@@ -21,24 +26,27 @@ class Option<T>{
 	}
 }
 
+
 @SuppressWarnings("rawtypes")
 public class Options {
-	HashMap<Id, Option> opts = new HashMap<Id, Option>();
-	HashMap<Id, Object> optsVals = new HashMap<Id, Object>(); 
+	HashMap<Id, Option> opts = new HashMap<Id, Option>(); // Ид : Опция
+	HashMap<Id, Object> optsVals = new HashMap<Id, Object>(); // Ид : Значение
 	
+	// Конструктор
 	@SuppressWarnings("unchecked")
 	public Options(){
-		this.add(ParserOpts.PRECISION, new Option(0.0001));
-		this.add(ParserOpts.ERRORS, new Option(0));
-		this.add(ParserOpts.STRICTED, new Option(false));
-		this.add(LexerOpts.AUTO_END, new Option(true));
-		this.add(LexerOpts.PRINT_TOKENS, new Option(false));
-		this.add(ParserOpts.AUTO_PRINT, new Option(true));
-		this.add(ParserOpts.GREEDY_FUNC, new Option(false));
+		this.add(BufferOpts.AUTO_END, new Option(false)); // Автодобавление токена END в конце считанной последовательности
+		this.add(BufferOpts.PRINT_TOKENS, new Option(true)); // Вывод найденных токенов для просканированной строки
+		
+		this.add(ParserOpts.PRECISION, new Option(5)); // Отрицательная степень 10, используемая при сравнении малых значений методом doubleCompare()
+		this.add(ParserOpts.ERRORS, new Option(0)); // Счётчик возникших ошибок
+		this.add(ParserOpts.STRICTED, new Option(false)); // Запрет автосоздания переменных
+		this.add(ParserOpts.AUTO_PRINT, new Option(true)); // Автоматический вывод значений выражений
+		this.add(ParserOpts.GREEDY_FUNC, new Option(false)); // Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
 	}
 		
 	// Добавление опций
-	void add(Id id, Option o){
+	private void add(Id id, Option o){
 		opts.put(id, o);
 		optsVals.put(id, o.defaultValue);
 	}
@@ -63,6 +71,7 @@ public class Options {
 		}
 	}
 	
+	// Вывод Ид : Значение
 	void printAll(){
 		Iterator<Entry<Id, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()){

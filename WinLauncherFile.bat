@@ -2,13 +2,10 @@
 
 :: [ПАРАМЕТР КОМАНДНОЙ СТРОКИ] - [ОПИСАНИЕ]
 
-:: lexer_auto_end - Автодобавление токена END ; в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
-:: no_lexer_auto_end
-:: lexer_print - Вывод найденных лексем
-:: no_lexer_print
+:: auto_end - Автодобавление токена END ; в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
+:: print_tokens - Вывод найденных лексем
 :: greedy_func - Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
-:: no_greedy_func
 
-java -classpath ./bin Main no_lexer_auto_end < "in.txt" > "out.txt" 2> "err.txt"
+java -classpath ./bin Executor "set auto_end=false" < "in.txt" > "out.txt" 2> "err.txt"
 ::java -classpath ./bin Main lexer_print < "in.txt" > "out.txt"
 ::pause
