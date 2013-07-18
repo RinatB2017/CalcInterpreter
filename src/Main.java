@@ -14,9 +14,10 @@ public class Main {
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		
 		Options o = new Options();
+		//o.printAll();
 	    Lexer l = new Lexer();
-	    Buffer b = new Buffer(l,  args, stdin,  o.getBoolean(Id.LEXER_AUTO_END), o.getBoolean(Id.LEXER_PRINT_TOKENS));
-	    Parser p = new Parser(b, o.getBoolean(Id.AUTO_PRINT), o.getBoolean(Id.GREEDY_FUNC));
+	    Buffer b = new Buffer(l,  args, stdin,  o.getBoolean(LexerOpts.AUTO_END), o.getBoolean(LexerOpts.PRINT_TOKENS));
+	    Parser p = new Parser(b, o.getBoolean(ParserOpts.AUTO_PRINT), o.getBoolean(ParserOpts.GREEDY_FUNC));
 	    p.reset(Parser.what.ALL);
 	    
 	    while(true){

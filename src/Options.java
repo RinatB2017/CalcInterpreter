@@ -1,32 +1,40 @@
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
-//enum Type{INT, DOUBLE, BOOL};
-enum Id{PRECISION, TABLE, ERRORS, STRICTED, LEXER_AUTO_END, LEXER_PRINT_TOKENS, AUTO_PRINT, GREEDY_FUNC};
+interface Id{};
+	enum LexerOpts implements Id{AUTO_END, PRINT_TOKENS};
+	enum ParserOpts implements Id{PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
 
+/*class c0{};
+class c1 extends c0{};
+
+enum e0{};
+enum e1 extends e0{}; // lulz
+*/
+	
 class Option<T>{
-	//Type type;
 	T defaultValue;
 	
-	Option(/*Type type,*/ T defaultValue){
+	Option(T defaultValue){
 		this.defaultValue = defaultValue;
-		//this.type = type;
 	}
 }
 
+@SuppressWarnings("rawtypes")
 public class Options {
-	
 	HashMap<Id, Option> opts = new HashMap<Id, Option>();
 	HashMap<Id, Object> optsVals = new HashMap<Id, Object>(); 
 	
+	@SuppressWarnings("unchecked")
 	public Options(){
-		this.add(Id.PRECISION, new Option(/*Type.INT,*/ 0.0001));
-		//this.add(Id.TABLE, new Option(/*Type.INT, */2));
-		this.add(Id.ERRORS, new Option(/*Type.INT,*/ 0));
-		this.add(Id.STRICTED, new Option(/*Type.BOOL,*/ false));
-		this.add(Id.LEXER_AUTO_END, new Option(/*Type.BOOL,*/ true));
-		this.add(Id.LEXER_PRINT_TOKENS, new Option(/*Type.BOOL,*/ false));
-		this.add(Id.AUTO_PRINT, new Option(/*Type.BOOL,*/ true));
-		this.add(Id.GREEDY_FUNC, new Option(/*Type.BOOL,*/ false));
+		this.add(ParserOpts.PRECISION, new Option(0.0001));
+		this.add(ParserOpts.ERRORS, new Option(0));
+		this.add(ParserOpts.STRICTED, new Option(false));
+		this.add(LexerOpts.AUTO_END, new Option(true));
+		this.add(LexerOpts.PRINT_TOKENS, new Option(false));
+		this.add(ParserOpts.AUTO_PRINT, new Option(true));
+		this.add(ParserOpts.GREEDY_FUNC, new Option(false));
 	}
 		
 	// Добавление опций
@@ -40,9 +48,27 @@ public class Options {
 		optsVals.put(id, o);
 	}
 	
+	// Сброс
 	void reset(Id id){
 		Option getted4getDefault = opts.get(id);
 		optsVals.put(id, getted4getDefault.defaultValue);
+	}
+	
+	void resetAll(){
+		Iterator<Entry<Id, Object>> it = optsVals.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<Id, Object> li = it.next();
+		    //System.out.println(""+li.getKey() + " " + li.getValue());
+			reset(li.getKey());
+		}
+	}
+	
+	void printAll(){
+		Iterator<Entry<Id, Object>> it = optsVals.entrySet().iterator();
+		while (it.hasNext()){
+			Entry<Id, Object> li = it.next();
+		    System.out.println(""+li.getKey() + " " + li.getValue());
+		}
 	}
 	
 	// Получение значения
