@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 public class Main {
 	public static void main(String[] args) throws Exception {
     	// TODO сделать класс опций и обработку их в виде "set lexer_auto_end"
-    	boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
+    	/*boolean lexerAutoEnd = true; // Автодобавление токена END в конце считанной последовательности, чтобы не добавлять его вручную при интерактивном вводе
     	boolean lexerPrintTokens = false; // Вывод найденных лексем 
     	boolean autoPrint = true; // Автоматический вывод значений без print
     	boolean greedyFunc = false; // Жадные функции: всё написанное после имени ф-ии и до токена ; считается аргументом функции
@@ -36,14 +36,19 @@ public class Main {
     	options.add(new Option<Boolean>(Names.AUTO_PRINT, true));
     	options.add(new Option<Boolean>(Names.GREEDY_FUNC, false));
     	*/
-
+    	
+    	
+    	
     	System.out.println("Добро пожаловать в интерпретатор.");
     	BufferedReader stdin = null;
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		
+		Options o = new Options();
 	    Lexer l = new Lexer();
-	    Buffer b = new Buffer(l,  args, stdin,  lexerAutoEnd, lexerPrintTokens);
-	    Parser p = new Parser(b, autoPrint, greedyFunc);
+	    //Buffer b = new Buffer(l,  args, stdin,  lexerAutoEnd, lexerPrintTokens);
+	    Buffer b = new Buffer(l,  args, stdin,  o.getBoolean(Id.LEXER_AUTO_END), o.getBoolean(Id.LEXER_PRINT_TOKENS));
+	    //Parser p = new Parser(b, autoPrint, greedyFunc);
+	    Parser p = new Parser(b, o.getBoolean(Id.AUTO_PRINT), o.getBoolean(Id.GREEDY_FUNC));
 	    p.reset(Parser.what.ALL);
 	    
 	    while(true){
