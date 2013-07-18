@@ -15,8 +15,8 @@ class Option<T>{
 
 public class Options {
 	
-	HashMap<Id, Option> opts;
-	HashMap<Id, Object> optsVals;
+	HashMap<Id, Option> opts = new HashMap<Id, Option>();
+	HashMap<Id, Object> optsVals = new HashMap<Id, Object>(); 
 	
 	public Options(){
 		this.add(Id.PRECISION, new Option(/*Type.INT,*/ 0.0001));
