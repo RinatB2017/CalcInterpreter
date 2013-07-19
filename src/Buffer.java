@@ -27,11 +27,12 @@ public class Buffer {
 	int tokNum=0;
 	String str;
 	int numAgrs=0;
-	//private enum NowProcessed{NOTHING, ARGS, STDIN};
-	//NowProcessed now=NowProcessed.NOTHING;
+	private enum NowProcessed{NOTHING, ARGS, STDIN};
+	NowProcessed now=NowProcessed.NOTHING;
 	
 	// Главметод, гарантированно возвращает токен (в том числе Tokens.EXIT при невозможности дальнейшего считывания)
 	public Token getToken() throws Exception {
+		// Если все токены из списка уже были получены, либо список пуст 
 		if(tokNum==tokens.size()){
 			tokens.clear();
 			tokNum=0;// Для нормальной работы ^
@@ -39,33 +40,46 @@ public class Buffer {
 			str = null;
 			
 			do{
-				lineNum++;
+				if(numAgrs<args.length) now=NowProcessed.ARGS; // Если args - не пустой массив
+				else if(stdin!=null) now=NowProcessed.STDIN; // если есть поток ввода и мы уже обработали все args
+				else now=NowProcessed.NOTHING; // когда исчерпали все токены в args и нельзя читать из stdin, то возвращаем EXIT
 				
-				//if
-				
-				if(numAgrs<args.length)
+				switch(now){
+				case ARGS:
 					str = args[numAgrs];
-				else if(stdin!=null) // stdin==null Для тестов
+					break;
+				case STDIN:
 					str = stdin.readLine(); // Считываем строку..., null когда строки закончились
-				else return new Token(Names.EXIT, "") ; // когда исчерпали все токены в args и нельзя читать из stdin, то возвращаем EXIT
-				
-				if(str==null){
-					return new Token(Names.EXIT, "") ;
-					//throw new Exception("Лексер: закончились строки");
+					if(str==null) return new Token(Names.EXIT, "");
+					lineNum++;
+					break;
+				case NOTHING: 
+					return new Token(Names.EXIT, "");
 				}
+				
 				if(!str.isEmpty()) {
 					lexer.scan(str, tokens);
+					
 					// autoending :)
-					if(numAgrs<args.length) // Если args - не пустой массив и мы сейчас его обрабатываем
+					switch(now){
+					case ARGS:
 						if(options.getBoolean(BufferOpts.ARGS_AUTO_END)) tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
-					if(stdin!=null) // если есть поток ввода и мы сейчас его обрабатываем
+						break;
+					case STDIN:
 						if(options.getBoolean(BufferOpts.AUTO_END)) tokens.add(new Token(Names.END, ";")); // Автодобавление токена END
+						break;
+					default:
+						break;
+					}
+					
 					if(options.getBoolean(BufferOpts.PRINT_TOKENS)) printTokens();
 				}
+				
 				if(numAgrs<args.length) numAgrs++;
 			}while(tokens.isEmpty());
 		}
 		
+		// Возвращаем очередной токен
 		return tokens.get(tokNum++);
 	}
 	
@@ -86,7 +100,14 @@ public class Buffer {
 	}
 	
 	public String getLineNum() {
-		return ""+lineNum;
+		switch(now){
+		case ARGS:
+			return "входном параметре №"+numAgrs;
+		case STDIN:
+			return "строке №"+lineNum;
+		default:
+			return "нигде, numAgrs=" + numAgrs + ", lineNum=" + lineNum;
+		}
 	}
 	
 	public int getTokNum() {

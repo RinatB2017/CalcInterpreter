@@ -6,5 +6,5 @@
 :: print_tokens - Вывод найденных лексем
 :: greedy_func - Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
 
-java -classpath ./bin Executor "set auto_end=false" < "in.txt" > "out.txt" 2> "err.txt"
+java -classpath ./bin Executor "set auto_end=0" < "in.txt" > "out.txt" 2> "err.txt"
 ::pause

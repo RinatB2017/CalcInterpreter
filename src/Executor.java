@@ -24,7 +24,7 @@ public class Executor {
 			   	if (p.getCurrTok().name==Names.RF) p.error("Неправильный выход из expr_list, из-за лишней RF }");
 			   	if (p.getCurrTok().name==Names.EXIT) break;
 		    }catch(MyException m){
-		    	System.err.println("Ошибка на строке №" + b.getLineNum() + " на токене №" + b.getTokNum() + " "+p.getCurrTok() + ":");
+		    	System.err.println("Ошибка на " + b.getLineNum() + " на токене №" + b.getTokNum() + " "+p.getCurrTok() + ":");
 		    	System.err.println(m.getMessage() + "\n");
 		    	continue;
 		    }catch(Exception e){
