@@ -53,8 +53,11 @@ public class Options {
 	}
 	
 	// Перезапись значений. Object должен совпадать с типом <T>@Option
-	void set(Id id, Object o){
-		if(o.getClass()!=optsVals.get(id).getClass()) System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
+	void set(Id id, Object o) throws Exception{
+		if(o.getClass()!=optsVals.get(id).getClass()){
+			System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
+			throw new Exception("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass()); // TODO error();
+		}
 		//if(!o.getClass().getName().equals(optsVals.get(id).getName())) System.err.println("Неверный класс "+o.getClass()+", тебуется "+optsVals.get(id));
 		System.err.println("класс "+o.getClass().getName()+", перезаписал класс "+optsVals.get(id).getClass().getName());
 		optsVals.put(id, o);
@@ -62,7 +65,7 @@ public class Options {
 	
 	// http://www.quizful.net/post/java-reflection-api
 	void set(Token name, Token value) throws Exception{
-		if(name.name!=Names.SET_NAMES) throw new Exception("неверное название опции"); //error();
+		if(name.name!=Names.SET_NAMES) throw new Exception("неверное название опции"); // TODO error();
 		//получить:
 		ParserOpts id = ParserOpts.AUTO_PRINT; // Убрать этот частный случай и Сделать по-нормальному! //id <- (String)name.value
 		Class c = opts.get(id).getClass(); // тип <- id
@@ -73,11 +76,10 @@ public class Options {
 			set(id, true);
 		case FALSE:
 			set(id, false);
+		case NUMBER:
+			set(id, Integer.parseInt(value.value));
 		default:
-			Object o1 =(int)value.value; // как узнать (int) во врем компиляции
-			Object o2 =(double)value.value;
-			Object o3 =(boolean)value.value;
-			set(id, o123);
+			throw new Exception("неверный тип значения опции"); // TODO error();
 		}
 		//set(id, переменная_требуемого_типа);
 	}/**/
