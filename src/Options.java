@@ -61,14 +61,26 @@ public class Options {
 	}
 	
 	// http://www.quizful.net/post/java-reflection-api
-	/*void set(Token name, Token value){
-		if(name.name!=SET_NAMES) error();
-		получить:
-		id <- (String)name.value
+	void set(Token name, Token value) throws Exception{
+		if(name.name!=Names.SET_NAMES) throw new Exception("неверное название опции"); //error();
+		//получить:
+		ParserOpts id = ParserOpts.AUTO_PRINT; // Убрать этот частный случай и Сделать по-нормальному! //id <- (String)name.value
 		Class c = opts.get(id).getClass(); // тип <- id
 		Object obj = c.newInstance(); // переменная_требуемого_типа <- ???(String)value.value , тип
-		set(id, переменная_требуемого_типа);
-	}*/
+		//Object o2 =()value.value;
+		switch(value.name){
+		case TRUE:
+			set(id, true);
+		case FALSE:
+			set(id, false);
+		default:
+			Object o1 =(int)value.value; // как узнать (int) во врем компиляции
+			Object o2 =(double)value.value;
+			Object o3 =(boolean)value.value;
+			set(id, o123);
+		}
+		//set(id, переменная_требуемого_типа);
+	}/**/
 	
 	// Сброс
 	void reset(Id id){
