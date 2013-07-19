@@ -447,7 +447,7 @@ public class Parser {
 	public void error(String string) throws MyException{
 		int errors = options.getInt(ParserOpts.ERRORS);
 		errors++;
-		options.put(ParserOpts.ERRORS, errors);
+		options.set(ParserOpts.ERRORS, errors);
 		//System.err.println("error: "+string);
 		throw new MyException(string);
 	}

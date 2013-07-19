@@ -14,10 +14,10 @@ public class Executor {
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		
 		Options o = new Options();
-	    Lexer l = new Lexer();
+		Lexer l = new Lexer();
 	    Buffer b = new Buffer(l,  args, stdin,  o);
 	    Parser p = new Parser(b, o);
-	    	    
+	    o.set(ParserOpts.ERRORS, 6);
 	    while(true){
 		    try{
 			    p.exprList();

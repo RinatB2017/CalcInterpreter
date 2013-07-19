@@ -52,10 +52,23 @@ public class Options {
 		optsVals.put(id, o.defaultValue);
 	}
 	
-	// Перезапись значений
-	void put(Id id, Object o){
+	// Перезапись значений. Object должен совпадать с типом <T>@Option
+	void set(Id id, Object o){
+		if(o.getClass()!=optsVals.get(id).getClass()) System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
+		//if(!o.getClass().getName().equals(optsVals.get(id).getName())) System.err.println("Неверный класс "+o.getClass()+", тебуется "+optsVals.get(id));
+		System.err.println("класс "+o.getClass().getName()+", перезаписал класс "+optsVals.get(id).getClass().getName());
 		optsVals.put(id, o);
 	}
+	
+	// http://www.quizful.net/post/java-reflection-api
+	/*void set(Token name, Token value){
+		if(name.name!=SET_NAMES) error();
+		получить:
+		id <- (String)name.value
+		Class c = opts.get(id).getClass(); // тип <- id
+		Object obj = c.newInstance(); // переменная_требуемого_типа <- ???(String)value.value , тип
+		set(id, переменная_требуемого_типа);
+	}*/
 	
 	// Сброс
 	void reset(Id id){
