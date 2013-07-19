@@ -28,7 +28,7 @@ public class Executor {
 		    	System.err.println(m.getMessage() + "\n");
 		    	continue;
 		    }catch(Exception e){
-		    	System.err.println("Критическая ошибка на строке "+b.getLineNum()+", продолжение работы невозможно.");
+		    	System.err.println("Критическая ошибка на "+b.getLineNum()+", продолжение работы невозможно.");
 		    	System.err.println(e.getMessage() + "\n");
 		    	e.printStackTrace();
 		    	break;//while

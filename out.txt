@@ -1,92 +1,20 @@
 Добро пожаловать в интерпретатор.
-lexer at line 1 "set auto_end=false" found next tokens:
-Token [name=SET, value=set]
-Token [name=NAME, value=auto_end]
-Token [name=ASSIGN, value==]
-Token [name=NAME, value=false]
-false lexer at line 2 "giga/*gggig=666*/=59;" found next tokens:
-Token [name=NAME, value=giga]
-Token [name=ASSIGN, value==]
-Token [name=NUMBER, value=59]
-Token [name=END, value=;]
-= 0.0
+false = 0.0
 
-59 = 59.0
+giga = 59 = 59.0
 
-lexer at line 3 Nothing found for "/*tera".
-lexer at line 5 Nothing found for "#$@$#@".
-lexer at line 6 "*/penta=5;" found next tokens:
-Token [name=NAME, value=penta]
-Token [name=ASSIGN, value==]
-Token [name=NUMBER, value=5]
-Token [name=END, value=;]
 penta = 5 = 5.0
 
-lexer at line 7 Nothing found for "/* */".
-lexer at line 8 "uiuiui;" found next tokens:
-Token [name=NAME, value=uiuiui]
-Token [name=END, value=;]
 uiuiui = 0.0
 
-lexer at line 9 Nothing found for "/**//**/".
-lexer at line 10 Nothing found for "/*".
-lexer at line 11 Nothing found for "*/".
-lexer at line 12 Nothing found for "/*".
-lexer at line 14 Nothing found for "*/".
-lexer at line 15 Nothing found for "//*del *;".
-lexer at line 16 "a" found next tokens:
-Token [name=NAME, value=a]
-a lexer at line 17 "=1;" found next tokens:
-Token [name=ASSIGN, value==]
-Token [name=NUMBER, value=1]
-Token [name=END, value=;]
-= 1 = 1.0
+a = 1 = 1.0
 
-lexer at line 18 "b=a+2; " found next tokens:
-Token [name=NAME, value=b]
-Token [name=ASSIGN, value==]
-Token [name=NAME, value=a]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=2]
-Token [name=END, value=;]
 b = a + 2 = 3.0
 
-lexer at line 19 "c=sin(b*b);" found next tokens:
-Token [name=NAME, value=c]
-Token [name=ASSIGN, value==]
-Token [name=SIN, value=sin]
-Token [name=LP, value=(]
-Token [name=NAME, value=b]
-Token [name=MUL, value=*]
-Token [name=NAME, value=b]
-Token [name=RP, value=)]
-Token [name=END, value=;]
 c = sin ( b * b ) = 0.4121184852417566
 
-lexer at line 20 "if(a)" found next tokens:
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=NAME, value=a]
-Token [name=RP, value=)]
-lexer at line 21 " {print c;}" found next tokens:
-Token [name=LF, value={]
-Token [name=PRINT, value=print]
-Token [name=NAME, value=c]
-Token [name=END, value=;]
-Token [name=RF, value=}]
 c = 0.4121184852417566
 
-lexer at line 22 "else" found next tokens:
-Token [name=ELSE, value=else]
-lexer at line 23 " {print pi; }" found next tokens:
-Token [name=LF, value={]
-Token [name=PRINT, value=print]
-Token [name=NAME, value=pi]
-Token [name=END, value=;]
-Token [name=RF, value=}]
-lexer at line 24 "print;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=END, value=;]
 [table]:
 e 2.718281828459045
 b 3.0
@@ -97,120 +25,25 @@ uiuiui 0.0
 false 0.0
 ans 0.4121184852417566
 pi 3.141592653589793
+giga 59.0
 
-lexer at line 26 "print sin (pi/2 + pi/2)/2 ;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=SIN, value=sin]
-Token [name=LP, value=(]
-Token [name=NAME, value=pi]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NAME, value=pi]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=RP, value=)]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=END, value=;]
 sin ( pi / 2 + pi / 2 ) / 2 = 0.0
 
-lexer at line 27 "print sin ((pi/2 + pi/2)/2);" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=SIN, value=sin]
-Token [name=LP, value=(]
-Token [name=LP, value=(]
-Token [name=NAME, value=pi]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NAME, value=pi]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=RP, value=)]
-Token [name=DIV, value=/]
-Token [name=NUMBER, value=2]
-Token [name=RP, value=)]
-Token [name=END, value=;]
 sin ( ( pi / 2 + pi / 2 ) / 2 ) = 1.0
 
-lexer at line 29 "b=b+111;" found next tokens:
-Token [name=NAME, value=b]
-Token [name=ASSIGN, value==]
-Token [name=NAME, value=b]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=111]
-Token [name=END, value=;]
 b = b + 111 = 114.0
 
-lexer at line 30 "print b;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=NAME, value=b]
-Token [name=END, value=;]
 b = 114.0
 
-lexer at line 32 "print a=a-200*3;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=NAME, value=a]
-Token [name=ASSIGN, value==]
-Token [name=NAME, value=a]
-Token [name=MINUS, value=-]
-Token [name=NUMBER, value=200]
-Token [name=MUL, value=*]
-Token [name=NUMBER, value=3]
-Token [name=END, value=;]
 a = a - 200 * 3 = -599.0
 
-lexer at line 33 "print a;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=NAME, value=a]
-Token [name=END, value=;]
 a = -599.0
 
-lexer at line 35 "if(sin(megavar))" found next tokens:
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=SIN, value=sin]
-Token [name=LP, value=(]
-Token [name=NAME, value=megavar]
-Token [name=RP, value=)]
-Token [name=RP, value=)]
 Создана переменная megavar
-lexer at line 36 "{" found next tokens:
-Token [name=LF, value={]
-lexer at line 37 "	print e;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=NAME, value=e]
-Token [name=END, value=;]
-lexer at line 38 "	print pi;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=NAME, value=pi]
-Token [name=END, value=;]
-lexer at line 39 "}else{" found next tokens:
-Token [name=RF, value=}]
-Token [name=ELSE, value=else]
-Token [name=LF, value={]
-lexer at line 40 "	print -1*e;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=MINUS, value=-]
-Token [name=NUMBER, value=1]
-Token [name=MUL, value=*]
-Token [name=NAME, value=e]
-Token [name=END, value=;]
 - 1 * e = -2.718281828459045
 
-lexer at line 41 "	print -pi;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=MINUS, value=-]
-Token [name=NAME, value=pi]
-Token [name=END, value=;]
 - pi = -3.141592653589793
 
-lexer at line 42 "}" found next tokens:
-Token [name=RF, value=}]
-lexer at line 43 "print;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=END, value=;]
 [table]:
 e 2.718281828459045
 b 114.0
@@ -222,16 +55,10 @@ megavar 0.0
 false 0.0
 ans -3.141592653589793
 pi 3.141592653589793
+giga 59.0
 
-lexer at line 44 "del a;" found next tokens:
-Token [name=DEL, value=del]
-Token [name=NAME, value=a]
-Token [name=END, value=;]
 del: Переменная a удалена.
 
-lexer at line 45 "print;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=END, value=;]
 [table]:
 e 2.718281828459045
 b 114.0
@@ -242,106 +69,28 @@ megavar 0.0
 false 0.0
 ans -3.141592653589793
 pi 3.141592653589793
+giga 59.0
 
-lexer at line 46 Nothing found for "//suck".
-lexer at line 47 "set stricted;" found next tokens:
-Token [name=SET, value=set]
-Token [name=NAME, value=stricted]
-Token [name=END, value=;]
 Автоматическое создание переменных при обращении к ним запрещено.
 
-lexer at line 48 "add ddddd=999;" found next tokens:
-Token [name=ADD, value=add]
-Token [name=NAME, value=ddddd]
-Token [name=ASSIGN, value==]
-Token [name=NUMBER, value=999]
-Token [name=END, value=;]
 Создана переменная ddddd
-lexer at line 49 "add zx;" found next tokens:
-Token [name=ADD, value=add]
-Token [name=NAME, value=zx]
-Token [name=END, value=;]
 Создана переменная zx
-lexer at line 51 "if(1){" found next tokens:
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=NUMBER, value=1]
-Token [name=RP, value=)]
-Token [name=LF, value={]
-lexer at line 52 "add kkk = 2+2+2+2+2*6;" found next tokens:
-Token [name=ADD, value=add]
-Token [name=NAME, value=kkk]
-Token [name=ASSIGN, value==]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=2]
-Token [name=PLUS, value=+]
-Token [name=NUMBER, value=2]
-Token [name=MUL, value=*]
-Token [name=NUMBER, value=6]
-Token [name=END, value=;]
 Создана переменная kkk
-lexer at line 53 "}" found next tokens:
-Token [name=RF, value=}]
-lexer at line 55 "else{eeee;}" found next tokens:
-Token [name=ELSE, value=else]
-Token [name=LF, value={]
-Token [name=NAME, value=eeee]
-Token [name=END, value=;]
-Token [name=RF, value=}]
-lexer at line 57 "print;" found next tokens:
-Token [name=PRINT, value=print]
-Token [name=END, value=;]
 [table]:
-zx 0.0
 e 2.718281828459045
-b 114.0
 penta 5.0
+b 114.0
 c 0.4121184852417566
 ddddd 999.0
 uiuiui 0.0
 megavar 0.0
+giga 59.0
+zx 0.0
 false 0.0
 kkk 20.0
-ans 20.0
 pi 3.141592653589793
+ans 20.0
 
-lexer at line 58 "if(0){}else{}" found next tokens:
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=NUMBER, value=0]
-Token [name=RP, value=)]
-Token [name=LF, value={]
-Token [name=RF, value=}]
-Token [name=ELSE, value=else]
-Token [name=LF, value={]
-Token [name=RF, value=}]
-lexer at line 60 Nothing found for "//".
-lexer at line 61 Nothing found for "//copy".
-lexer at line 63 "if(0-1) { if(1){del ddddd; exit;}}" found next tokens:
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=NUMBER, value=0]
-Token [name=MINUS, value=-]
-Token [name=NUMBER, value=1]
-Token [name=RP, value=)]
-Token [name=LF, value={]
-Token [name=IF, value=if]
-Token [name=LP, value=(]
-Token [name=NUMBER, value=1]
-Token [name=RP, value=)]
-Token [name=LF, value={]
-Token [name=DEL, value=del]
-Token [name=NAME, value=ddddd]
-Token [name=END, value=;]
-Token [name=EXIT, value=exit]
-Token [name=END, value=;]
-Token [name=RF, value=}]
-Token [name=RF, value=}]
 del: Переменная ddddd удалена.
 
 Выход...

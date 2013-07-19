@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 interface Id{};
-	enum BufferOpts implements Id {AUTO_END, PRINT_TOKENS};
+	enum BufferOpts implements Id {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS};
 	enum ParserOpts implements Id {PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
 
 /*class c0{};
@@ -35,8 +35,9 @@ public class Options {
 	// Конструктор
 	@SuppressWarnings("unchecked")
 	public Options(){
+		this.add(BufferOpts.ARGS_AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
 		this.add(BufferOpts.AUTO_END, new Option(false)); // Автодобавление токена END в конце считанной последовательности
-		this.add(BufferOpts.PRINT_TOKENS, new Option(true)); // Вывод найденных токенов для просканированной строки
+		this.add(BufferOpts.PRINT_TOKENS, new Option(false)); // Вывод найденных токенов для просканированной строки
 		
 		this.add(ParserOpts.PRECISION, new Option(5)); // Отрицательная степень 10, используемая при сравнении малых значений методом doubleCompare()
 		this.add(ParserOpts.ERRORS, new Option(0)); // Счётчик возникших ошибок
