@@ -53,23 +53,28 @@ public class Options {
 	}
 	
 	// Перезапись значений. Object должен совпадать с типом <T>@Option
-	void set(Id id, Object o) throws Exception{
+	void set(Id id, Object o) throws MyException{
 		if(o.getClass()!=optsVals.get(id).getClass()){
 			System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
-			throw new Exception("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass()); // TODO error();
+			throw new MyException("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass()); // TODO error();
 		}
 		//if(!o.getClass().getName().equals(optsVals.get(id).getName())) System.err.println("Неверный класс "+o.getClass()+", тебуется "+optsVals.get(id));
 		System.err.println("класс "+o.getClass().getName()+", перезаписал класс "+optsVals.get(id).getClass().getName());
 		optsVals.put(id, o);
 	}
 	
+	Id getIdByString(String s){
+		if
+	}
+	
 	// http://www.quizful.net/post/java-reflection-api
-	void set(Token name, Token value) throws Exception{
-		if(name.name!=Names.SET_NAMES) throw new Exception("неверное название опции"); // TODO error();
+	void set(Token name, Token value) throws MyException{
+		if(name.name!=Names.SET_NAMES) throw new MyException("неверное название опции"); // TODO error();
 		//получить:
-		ParserOpts id = ParserOpts.AUTO_PRINT; // Убрать этот частный случай и Сделать по-нормальному! //id <- (String)name.value
-		Class c = opts.get(id).getClass(); // тип <- id
-		Object obj = c.newInstance(); // переменная_требуемого_типа <- ???(String)value.value , тип
+		Id id = getIdByString(name.value);
+		//ParserOpts id = ParserOpts.AUTO_PRINT; // Убрать этот частный случай и Сделать по-нормальному! //id <- (String)name.value
+		//Class c = opts.get(id).getClass(); // тип <- id
+		//Object obj = c.newInstance(); // переменная_требуемого_типа <- ???(String)value.value , тип
 		//Object o2 =()value.value;
 		switch(value.name){
 		case TRUE:
@@ -79,7 +84,7 @@ public class Options {
 		case NUMBER:
 			set(id, Integer.parseInt(value.value));
 		default:
-			throw new Exception("неверный тип значения опции"); // TODO error();
+			throw new MyException("неверный тип значения опции"); // TODO error();
 		}
 		//set(id, переменная_требуемого_типа);
 	}/**/
