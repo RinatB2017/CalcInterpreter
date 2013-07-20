@@ -127,22 +127,38 @@ public class Parser {
 	    	}
 	    }
 	}
-		
+	
+	/*
+	private boolean trig(Terminal name){
+		return ofRadian(name) || returnsRadian(name);
+	}
+	*/
+	
+	private boolean ofRadian(Terminal name){
+		switch(name){
+		case SIN: case COS:
+			return true;
+		default: return false;
+		}
+	}
+	
+	/*
+	private boolean returnsRadian(Terminal name){
+		return false; // TODO это заглушка
+	}
+	*/
+	
 	double y; // для временного хранения результата func()
 	
 	// функции, возвращающие значение (non-void): sin, cos
 	private boolean func() throws Exception{
-		switch(currTok.name){
-		case SIN: // для режима greedyFunc
-		case COS:
-		{
+		if(ofRadian(currTok.name)){
 			Terminal funcName = currTok.name; // Запоминаем для дальнейшего использования
 			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
 				if(currTok.name!=Terminal.LP) error("Ожидается (");
 			}
-					
-			// "Настоящая" обработка sin и cos
+			
 			switch(funcName){
 				case SIN:
 					y = Math.sin(expr(true)); // следующий токен END для prim()<-term()<-expr()<-expr_list() получен в этом вызове expr()
@@ -167,12 +183,11 @@ public class Parser {
 			y = (doubleCompare(y, -0.5)) ? -0.5 : y;
 			y = (doubleCompare(y, 1)) ? 1 : y;
 			y = (doubleCompare(y, -1)) ? -1 : y;
+			
 			return true;
 		}
 		
-		default:
-			return false;
-		}
+		return false;
 	}
 	
 	
@@ -421,7 +436,7 @@ public class Parser {
 		}
 	}
 	
-	private boolean setname(Terminal name) throws Exception{
+	private boolean setname(Terminal name){
 		switch(name){
 		case ARGS_AUTO_END: case AUTO_END: case PRINT_TOKENS:
 		case PRECISION: case ERRORS: case STRICTED: case AUTO_PRINT: case GREEDY_FUNC:

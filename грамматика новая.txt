@@ -42,11 +42,11 @@ prim:
 	func
 
 func:
-	of_radian | returns_radian | LOG
+	of_radian | returns_radian | LOG '(' expr ')'
 
 of_radian:
-	SIN '(' expr ')'
-	COS '(' expr ')'
+	SIN
+	COS
 
 void_func:
 	print
