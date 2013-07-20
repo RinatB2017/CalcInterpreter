@@ -24,11 +24,11 @@ term:
 	power
 
 power:
-	factorial '^' factorial
+	power '^' factorial
 	factorial
 	
 factorial:
-	prim '!'
+	factorial '!'
 	prim
 
 prim:
