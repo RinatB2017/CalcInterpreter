@@ -57,16 +57,16 @@ public class Lexer {
 		this.addItem("/\\*", Terminal.L_COMMENT); // начало многострокового комментария "/*"
 		this.addItem("\\*/", Terminal.R_COMMENT); // конец многострокового комментария "*/"
 		
-		this.addItem("ARGS_AUTO_END", Terminal. ARGS_AUTO_END);
-		this.addItem("AUTO_END", Terminal. AUTO_END);
-		this.addItem("PRINT_TOKENS", Terminal. PRINT_TOKENS);
+		this.addItem("args_auto_end", Terminal. ARGS_AUTO_END);
+		this.addItem("auto_end", Terminal. AUTO_END);
+		this.addItem("print_tokens", Terminal. PRINT_TOKENS);
 		
-		this.addItem("VAR_TABLE", Terminal.TABLE);
-		this.addItem("PRECISION", Terminal. PRECISION);
-		this.addItem("ERRORS", Terminal. ERRORS);
-		this.addItem("STRICTED", Terminal. STRICTED);
-		this.addItem("AUTO_PRINT", Terminal. AUTO_PRINT);
-		this.addItem("GREEDY_FUNC", Terminal. GREEDY_FUNC);
+		this.addItem("var_table", Terminal.TABLE);
+		this.addItem("precision", Terminal. PRECISION);
+		this.addItem("errors", Terminal. ERRORS);
+		this.addItem("stricted", Terminal. STRICTED);
+		this.addItem("auto_print", Terminal. AUTO_PRINT);
+		this.addItem("greedy_func", Terminal. GREEDY_FUNC);
 		
 		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Terminal.USER_DEFINED_NAME);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Terminal.NUMBER); // Здесь - заэкранированная точка

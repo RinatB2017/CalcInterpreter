@@ -72,6 +72,7 @@ public class Options {
 		default:
 			throw new MyException("неверный тип значения опции"); 
 		}
+		System.out.println("Установлена опция "+id.toString());
 	}
 	
 	// Сброс
