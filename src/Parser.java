@@ -51,30 +51,34 @@ public class Parser {
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была отменена из-за вызова error() -> MyException
 		boolean get=true;//нужно ли считывать токен в самом начале
 	    
-		while (true)
-	    {
+		while(true){
 	        if(get) getToken();
 	        get=true;
 
-	        if (currTok.name==Terminals.EXIT) break;
-			if (currTok.name==Terminals.END) continue;
-			if (currTok.name==Terminals.RF) return;
-			if (voidFunc()){
-				if (currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
-			}else if (currTok.name==Terminals.IF){
-				get=if_();
-			}else{ // expr
-				if(options.getBoolean(ParserOpts.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
-					echoPrint=true;
-					double v = expr(false);
-					System.out.println("= " + v + '\n');
-					echoPrint=false;
-				}else{
-					expr(false);
+	        switch(currTok.name){
+	        case EXIT: return;
+	        case END: continue;
+	        case RF: return;
+	        case IF: 
+	        	get=if_();
+	        	break;//switch
+	        default:
+				if(voidFunc()){
+					if(currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
+				}else{ // expr
+					// если AUTO_PRINT, то ...
+					if(options.getBoolean(ParserOpts.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
+						echoPrint=true; // ... включаем эхо-печать в this.getToken() ...
+						double v = expr(false);
+						System.out.println("= " + v + '\n');
+						echoPrint=false; // ... а теперь выключаем
+					}else{
+						expr(false);
+					}
+					if (currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
 				}
-				if (currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
-			}
-			table.put("ans", lastResult);
+	        }//switch
+	        table.put("ans", lastResult);
 	    }
 	}
 
@@ -90,10 +94,10 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case USER_DEFINED_NAME:case SIN:case COS: // TODO заменить switch на if из-за этого
+	    case USER_DEFINED_NAME:case SIN:case COS: // TODO сделать как в exprList
 	    {
 			if(func(/*y*/)) return y;
-			String name = new String(stringValue);
+			String name = new String(stringValue);  // TODO убрать 
 			
 			if(!table.containsKey(name))
 				if(options.getBoolean(ParserOpts.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
@@ -131,7 +135,7 @@ public class Parser {
 		case SIN: // для режима greedyFunc
 		case COS:
 		{
-			Terminals funcName = currTok.name; // Запоминаем для дальнейшего использования
+			Terminals funcName = currTok.name; // TODO убрать // Запоминаем для дальнейшего использования
 			if(!options.getBoolean(ParserOpts.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
 				if(currTok.name!=Terminals.LP) error("Ожидается (");
@@ -230,8 +234,6 @@ public class Parser {
 	        switch(currTok.name)
 	        {
 	        case POW:
-	            // случай '+'
-	            //left += prim(true);
 	            left = Math.pow(left, factorial(true));
 	            break; // этот break относится к switch
 	        default:
@@ -388,7 +390,7 @@ public class Parser {
 	void add() throws Exception{
 		getToken();
 		if(currTok.name==Terminals.USER_DEFINED_NAME){
-			String varName = new String(stringValue); 
+			String varName = new String(stringValue); // TODO убрать
 			getToken();
 			if(currTok.name==Terminals.ASSIGN){
 				table.put(varName, expr(true)); // expr() оставляет токен в currTok.name ...
