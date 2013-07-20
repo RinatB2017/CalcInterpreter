@@ -50,11 +50,11 @@ public class Buffer {
 					break;
 				case STDIN:
 					str = stdin.readLine(); // Считываем строку..., null когда строки закончились
-					if(str==null) return new Token(Terminals.EXIT, "");
+					if(str==null) return new Token(Terminal.EXIT, "");
 					lineNum++;
 					break;
 				case NOTHING: 
-					return new Token(Terminals.EXIT, "");
+					return new Token(Terminal.EXIT, "");
 				}
 				
 				if(!str.isEmpty()) {
@@ -63,16 +63,16 @@ public class Buffer {
 					// autoending :)
 					switch(now){
 					case ARGS:
-						if(options.getBoolean(BufferOpts.ARGS_AUTO_END)) tokens.add(new Token(Terminals.END, ";")); // Автодобавление токена END
+						if(options.getBoolean(Terminal.ARGS_AUTO_END)) tokens.add(new Token(Terminal.END, ";")); // Автодобавление токена END
 						break;
 					case STDIN:
-						if(options.getBoolean(BufferOpts.AUTO_END)) tokens.add(new Token(Terminals.END, ";")); // Автодобавление токена END
+						if(options.getBoolean(Terminal.AUTO_END)) tokens.add(new Token(Terminal.END, ";")); // Автодобавление токена END
 						break;
 					default:
 						break;
 					}
 					
-					if(options.getBoolean(BufferOpts.PRINT_TOKENS)) printTokens();
+					if(options.getBoolean(Terminal.PRINT_TOKENS)) printTokens();
 				}
 				
 				if(numAgrs<args.length) numAgrs++;

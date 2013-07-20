@@ -1,7 +1,7 @@
 /* Перечисление названий всех возможных терминалов
  * */
 
-public enum Terminals {
+public enum Terminal {
 	NUMBER, TRUE, FALSE, 
 	USER_DEFINED_NAME, IF, ELSE,
 	ARGS_AUTO_END, AUTO_END, PRINT_TOKENS,

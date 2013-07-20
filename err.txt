@@ -1,13 +1,9 @@
-класс java.lang.Integer, перезаписал класс java.lang.Integer
-класс java.lang.Integer, перезаписал класс java.lang.Integer
 Ошибка на входном параметре №1 на токене №1 Token [name=USER_DEFINED_NAME, value=auto_end]:
-Не верный конец, нужен токен END ;
+set: неверная опция
 
-класс java.lang.Integer, перезаписал класс java.lang.Integer
 Ошибка на входном параметре №1 на токене №2 Token [name=ASSIGN, value==]:
 требуется первичное_выражение (нетерминал prim)
 
-класс java.lang.Integer, перезаписал класс java.lang.Integer
 Ошибка на строке №46 на токене №1 Token [name=USER_DEFINED_NAME, value=stricted]:
-Не верный конец, нужен токен END ;
+set: неверная опция
 

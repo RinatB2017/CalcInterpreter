@@ -1,9 +1,9 @@
 // Пара Имя-Значение
 public class Token {
-	public Terminals name;
+	public Terminal name;
 	public String value;
 
-	public Token(Terminals n, String v) {
+	public Token(Terminal n, String v) {
 		name = n;
 		value = v;
 	}
