@@ -43,7 +43,7 @@ print;
 del a;
 print;
 //suck
-set stricted;
+set stricted = true;
 add ddddd=999;
 add zx;
 
@@ -52,7 +52,9 @@ add kkk = 2+2+2+2+2*6;
 }
 
 else{eeee;}
-
+/*
+gog=-2;
+*/
 print;
 if(0){}else{}
 

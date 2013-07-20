@@ -37,7 +37,10 @@ public class Lexer {
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
 		this.addItem("sin", Terminal.SIN);
 		this.addItem("cos", Terminal.COS);
-		this.addItem("[!]{1}", Terminal.FACTORIAL);
+		this.addItem("!", Terminal.FACTORIAL);
+		
+		this.addItem("true", Terminal.TRUE);
+		this.addItem("false", Terminal.FALSE);
 		
 		this.addItem("exit", Terminal.EXIT);
 		this.addItem("quit", Terminal.EXIT);
