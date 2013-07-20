@@ -9,21 +9,25 @@ public class TestParserGreedyMost extends Assert{
 	String inputString=null;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws MyException {
 		//StringReader in2 = new StringReader(inputString);
 		//BufferedReader stdio = new BufferedReader(in2);
-
+		
 		l = new Lexer();
-		b = new Buffer(l,  null, null,  true, false);
-		p = new Parser(b, true, true);
-		p.reset(Parser.what.ALL);
+		Options o = new Options();
+		o.set(Terminal.AUTO_END, true);
+		o.set(Terminal.GREEDY_FUNC, true);
+		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens : true, false
+		b = new Buffer(l,  null, null,  o);
+		// Старый конструктор Parser: опции autoPrint, greedyFunc : true, true
+		p = new Parser(b, o);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		if (p.getCurrTok().name==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
-		if(Parser.getErrors()>0) System.err.println("Ошибка на строке "+b.getLineNum());
-		assertTrue(Parser.getErrors()==0);
+		if (p.getCurrTok().name==Terminal.RF) p.error("Неправильный выход из expr_list, возможно лишняя RF }");
+		if(p.getErrors()>0) System.err.println("Ошибка на "+b.getLineNum());
+		assertTrue(p.getErrors()==0);
 	}
 	
 	

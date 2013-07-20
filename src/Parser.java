@@ -94,10 +94,9 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case USER_DEFINED_NAME:case SIN:case COS: // TODO сделать как в exprList
+	    case USER_DEFINED_NAME:
 	    {
-			if(func(/*y*/)) return y;
-			String name = new String(stringValue);  // TODO подумать, убрать если можно 
+			String name = new String(stringValue); // нужно, ибо expr() может затереть stringValue 
 			
 			if(!table.containsKey(name))
 				if(options.getBoolean(Terminal.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
@@ -121,6 +120,8 @@ public class Parser {
 	        return e;
 	    	}
 	    default:{
+	    	if(func()) return y;
+	    	
 	        error("требуется первичное_выражение (нетерминал prim)");
 	        return 0;
 	    	}
@@ -135,7 +136,7 @@ public class Parser {
 		case SIN: // для режима greedyFunc
 		case COS:
 		{
-			Terminal funcName = currTok.name; // TODO убрать // Запоминаем для дальнейшего использования
+			Terminal funcName = currTok.name; // Запоминаем для дальнейшего использования
 			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
 				if(currTok.name!=Terminal.LP) error("Ожидается (");
@@ -154,10 +155,11 @@ public class Parser {
 			}// "Настоящая" обработка sin и cos
 			
 			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
-				 // Проверка наличия )
+				 // Проверка наличия ')' - её оставил expr()
 				if(currTok.name!=Terminal.RP) error("Ожидается )");
-				getToken();
-			}
+				getToken(); // считываем токен, следующий за ')'
+			} // если Нежадные, то в currTok останется токен, на котором "запнулся" expr
+			// Таким образом достигается единообразие оставленного в currTok токена для не- и жадного режимов
 			
 			// Округление до привычных значений
 			y = (doubleCompare(y, 0)) ? 0 : y;
@@ -390,7 +392,7 @@ public class Parser {
 	private void add() throws Exception{
 		getToken();
 		if(currTok.name==Terminal.USER_DEFINED_NAME){
-			String varName = new String(stringValue); // TODO убрать
+			String varName = new String(stringValue); // ибо stringValue может затереться при вызове expr()
 			getToken();
 			if(currTok.name==Terminal.ASSIGN){
 				table.put(varName, expr(true)); // expr() оставляет токен в currTok.name ...

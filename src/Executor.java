@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 
 public class Executor {
 	public static void main(String[] args) throws Exception {
-    	System.out.println("Добро пожаловать в интерпретатор.");
+    	System.out.println("Добро пожаловать в интерпретатор.\n");
     	BufferedReader stdin = null;
 		stdin = new BufferedReader(new InputStreamReader(System.in));
 		

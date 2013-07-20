@@ -8,34 +8,38 @@ public class TestParserFails extends Assert{
 	static Parser p;
 		
 	@Before
-	public void setUp() {
+	public void setUp() throws MyException {
 		l = new Lexer();
-		b = new Buffer(l, null, null, true, false);
-		p = new Parser(b, true, true); // greedy
-		p.reset(Parser.what.ALL);
+		Options o = new Options();
+		o.set(Terminal.AUTO_END, true);
+		o.set(Terminal.GREEDY_FUNC, true);
+		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens : true, false
+		b = new Buffer(l,  null, null,  o);
+		// Старый конструктор Parser: опции autoPrint, greedyFunc : true, true
+		p = new Parser(b, o);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		assertTrue(Parser.getErrors()!=0);
+		assertTrue(p.getErrors()!=0);
 	}
 
 	
 	@Test (expected=MyException.class)
 	public void checkDivZero() throws Exception {
-		b.setArgs(new String[] {"1/sin(-pi)}"}); // Работает округление до 0 в Parser.func()
+		b.setArgs(new String[] {"1/sin(-pi)"}); // Работает округление до 0 в Parser.func()
 		p.exprList();
 	}
 		
 	@Test (expected=MyException.class)
 	public void checkFactorial() throws Exception {
-		b.setArgs(new String[] {"-3!"});
+		b.setArgs(new String[] {"-3!"}); // Факториал отрицательного
 		p.exprList();
 	}
 	
 	@Test (expected=MyException.class, timeout=2000)
 	public void checkFactorialCos() throws Exception {
-		b.setArgs(new String[] {"(cos pi)!"}); // Greedy!
+		b.setArgs(new String[] {"(cos pi)!"}); // Greedy! // Факториал отрицательного
 		p.exprList();
 	}
 	
@@ -51,11 +55,18 @@ public class TestParserFails extends Assert{
 		p.exprList();
 	}
 	
+	@Ignore // Ложный тест врного выражения, которое не бросит исключения
+	@Test (expected=MyException.class)
+	public void checkExtraRFIgrore() throws Exception {
+		b.setArgs(new String[] {"sin(-pi/2)"});
+		p.exprList();
+	}
+	
 	@Test (expected=MyException.class)
 	public void checkExtraRFIf() throws Exception {
 		b.setArgs(new String[] {"if(1+-9){sin(-pi/4);}}"});
 		p.exprList();
 		
-		if (p.getCurrTok().name==Names.RF) Parser.error("Неправильный выход из expr_list, возможно лишняя RF }");
+		if (p.getCurrTok().name==Terminal.RF) p.error("Неправильный выход из expr_list, возможно лишняя RF }");
 	}
 }
