@@ -26,10 +26,10 @@ public class Lexer {
 	ArrayList<TokenMask> masks; // массив масок токенов <рег_выраж, название>
 	
 
-	boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
+	private boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
 	
 	// Конструктор, добавляет маски, инициализирует ссылки
-	Lexer() {
+	public Lexer() {
 		// Инициализируем
 		masks = new ArrayList<TokenMask>();
 
@@ -140,7 +140,7 @@ public class Lexer {
 				
 				// ни с одним регекспом подстрока не совпала
 				if((matched==false && prevMatched==false)){
-					throw new Exception(); // Если зашли сюда, то ошибка. Проверь регулярку на ILLEGAL_TOKEN.
+					throw new Exception("Возможно нет регулярного выражения на ILLEGAL_TOKEN"); // Если зашли сюда, то ошибка. Проверь регулярку на ILLEGAL_TOKEN.
 				}
 			}
 			
@@ -175,7 +175,7 @@ public class Lexer {
 
 	// Сопоставляет подстроку с масками-регэкспами, при первом же совпадении
 	// возвращает true и (ре)инициализирует ссылку Cur
-	public boolean isMatchWithMasks(String substr) {
+	private boolean isMatchWithMasks(String substr) {
 		// Этот метод генерит новые объекты и настраивает на них ссылку Cur
 		//System.out.println("Trying \""+substr+"\"...");
 		for (TokenMask tm : masks){

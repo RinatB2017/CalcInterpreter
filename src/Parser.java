@@ -14,10 +14,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class Parser {
-	Token currTok = null; // текущий обрабатываемый токен, изменяется методом getToken()
-	Buffer buf = null;
-	Options options = null;
-	HashMap<String, Double> table; // Таблица переменных
+	private Token currTok = null; // текущий обрабатываемый токен, изменяется методом getToken()
+	private Buffer buf = null;
+	private Options options = null;
+	private HashMap<String, Double> table; // Таблица переменных
 		
 	//Конструктор
 	public Parser(Buffer buf, Options options){
@@ -84,7 +84,7 @@ public class Parser {
 
 	// один из вариантов решения проблемы с возвращением разных типов : void, а case NUMBER, TERUE и FALSE записывают соответствующие поля класса + записывают поле класса - индикатор, какой конкретно тип мы возвращаем 
 	// обрабатывает первичное
-	double prim(boolean get) throws Exception
+	private double prim(boolean get) throws Exception
 	{
 		if(get) getToken();
 
@@ -130,7 +130,7 @@ public class Parser {
 	double y; // для временного хранения результата func()
 	
 	// функции, возвращающие значение (non-void): sin, cos
-	boolean func() throws Exception{
+	private boolean func() throws Exception{
 		switch(currTok.name){
 		case SIN: // для режима greedyFunc
 		case COS:
@@ -181,7 +181,7 @@ public class Parser {
 
 
 	// умножает и делит
-	double term(boolean get) throws Exception
+	private double term(boolean get) throws Exception
 	{
 	    double left = power(get);
 	    for(;;)
@@ -205,7 +205,7 @@ public class Parser {
 	}
 	
 	// складывает и вычитает
-	double expr(boolean get) throws Exception
+	private double expr(boolean get) throws Exception
 	{
 	    double left = term(get);
 	    for(;;)
@@ -227,7 +227,7 @@ public class Parser {
 	}
 	
 	// Степень a^b
-	double power(boolean get) throws Exception{
+	private double power(boolean get) throws Exception{
 	    double left = factorial(get);
 	    for(;;)
 	        // ``вечно''
@@ -241,7 +241,7 @@ public class Parser {
 	        }
 	}
 	
-	double factorial(boolean get) throws Exception
+	private double factorial(boolean get) throws Exception
 	{
 	    double left = prim(get);
 	    for(;;)
@@ -262,7 +262,7 @@ public class Parser {
 	        }
 	}
 	
-	boolean if_() throws Exception{
+	private boolean if_() throws Exception{
 		getToken();
 		if(currTok.name!=Terminal.LP){ // '('
 			error("Ожидается LP (");
@@ -297,7 +297,7 @@ public class Parser {
 	
 	// { expr_list }
 	// Внимание: после вызова всегда нужно проверять currTok.name==Names.EXIT, как - см. в if_()
-	void block() throws Exception{
+	private void block() throws Exception{
 		getToken();
 		if(currTok.name!=Terminal.LF){ // '{'
 			error("Ожидается LF {");
@@ -312,7 +312,7 @@ public class Parser {
 	}
 	
 	// Пропуск блока {}
-	boolean skipBlock() throws Exception{
+	private boolean skipBlock() throws Exception{
 		int num = 0;
 		Terminal ch;
 		
@@ -328,7 +328,7 @@ public class Parser {
 	}
 	
 	// Функции, не возвращающие значение (void): print, add, del, reset, help, state
-	boolean voidFunc() throws Exception{
+	private boolean voidFunc() throws Exception{
 		boolean isNeedReadEndToken=true; // Нужно ли считать токен END для анализа в exprList или он уже считан expr
 		switch(currTok.name){
 		case PRINT: 
@@ -365,7 +365,7 @@ public class Parser {
 	}
 	
 	// Выводит значение выражения expr либо всю таблицу переменных
-	void print() throws Exception{
+	private void print() throws Exception{
 		getToken();
 		if(currTok.name==Terminal.END){ // a. если нет expression, то выводим все переменные
 			if(table.isEmpty()){
@@ -387,7 +387,7 @@ public class Parser {
 	}
 	
 	// Добавляет переменную
-	void add() throws Exception{
+	private void add() throws Exception{
 		getToken();
 		if(currTok.name==Terminal.USER_DEFINED_NAME){
 			String varName = new String(stringValue); // TODO убрать
@@ -402,7 +402,7 @@ public class Parser {
 	}
 	
 	// Удаляет переменную
-	void del() throws Exception{
+	private void del() throws Exception{
 		getToken();
 		if(currTok.name==Terminal.MUL){
 			table.clear();
@@ -419,7 +419,7 @@ public class Parser {
 		}
 	}
 	
-	boolean setname(Terminal name) throws Exception{
+	private boolean setname(Terminal name) throws Exception{
 		switch(name){
 		case ARGS_AUTO_END: case AUTO_END: case PRINT_TOKENS:
 		case PRECISION: case ERRORS: case STRICTED: case AUTO_PRINT: case GREEDY_FUNC:
@@ -429,7 +429,7 @@ public class Parser {
 	}
 	
 	// Установка опций
-	void set() throws Exception{
+	private void set() throws Exception{
 		getToken();
 		if(!setname(currTok.name)) error("set: неверная опция");
 		Terminal what = currTok.name;
@@ -442,7 +442,7 @@ public class Parser {
 	}
 	
 	// Сброс опций или таблицы переменных
-	void reset() throws Exception{
+	private void reset() throws Exception{
 		getToken();
 		switch(currTok.name){
 		case MUL:

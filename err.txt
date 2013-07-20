@@ -1,9 +1,6 @@
-Ошибка на входном параметре №1 на токене №1 Token [name=USER_DEFINED_NAME, value=auto_end]:
-set: неверная опция
+Ошибка на входном параметре №1 на токене №3 Token [name=NUMBER, value=0]:
+Неверный класс class java.lang.Integer, требуется class java.lang.Boolean
 
-Ошибка на входном параметре №1 на токене №2 Token [name=ASSIGN, value==]:
-требуется первичное_выражение (нетерминал prim)
-
-Ошибка на строке №46 на токене №1 Token [name=USER_DEFINED_NAME, value=stricted]:
-set: неверная опция
+Ошибка на строке №46 на токене №2 Token [name=END, value=;]:
+set: ожидается =
 

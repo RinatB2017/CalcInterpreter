@@ -8,10 +8,10 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 
 public class Buffer {
-	ArrayList<Token> tokens; // Массив токенов <название, значение>
-	Lexer lexer;
-	String[] args;
-	Options options = null;
+	private ArrayList<Token> tokens; // Массив токенов <название, значение>
+	private Lexer lexer;
+	private String[] args;
+	private Options options = null;
 	
 	// Конструктор
 	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, Options options){
@@ -22,13 +22,13 @@ public class Buffer {
 		this.options=options;
 	}
 	
-	long lineNum = 0;
-	BufferedReader stdin=null;
-	int tokNum=0;
-	String str;
-	int numAgrs=0;
+	private long lineNum = 0;
+	private BufferedReader stdin=null;
+	private int tokNum=0;
+	private String str;
+	private int numAgrs=0;
 	private enum NowProcessed{NOTHING, ARGS, STDIN};
-	NowProcessed now=NowProcessed.NOTHING;
+	private NowProcessed now=NowProcessed.NOTHING;
 	
 	// Главметод, гарантированно возвращает токен (в том числе Tokens.EXIT при невозможности дальнейшего считывания)
 	public Token getToken() throws Exception {
