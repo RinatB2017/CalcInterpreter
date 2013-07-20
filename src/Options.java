@@ -63,15 +63,16 @@ public class Options {
 		optsVals.put(id, o);
 	}
 	
-	Id getIdByString(String s){
-		if
+	Id getIdByString(Terminals name){
+		return BufferOpts.ARGS_AUTO_END; // TODO это заглушка
 	}
 	
+	// TODO это пока не сделано
 	// http://www.quizful.net/post/java-reflection-api
 	void set(Token name, Token value) throws MyException{
-		if(name.name!=Names.SET_NAMES) throw new MyException("неверное название опции"); // TODO error();
+		if(name.name!=Terminals.ARGS_AUTO_END) throw new MyException("неверное название опции"); // TODO error();
 		//получить:
-		Id id = getIdByString(name.value);
+		Id id = getIdByString(name.name);
 		//ParserOpts id = ParserOpts.AUTO_PRINT; // Убрать этот частный случай и Сделать по-нормальному! //id <- (String)name.value
 		//Class c = opts.get(id).getClass(); // тип <- id
 		//Object obj = c.newInstance(); // переменная_требуемого_типа <- ???(String)value.value , тип

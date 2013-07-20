@@ -33,15 +33,15 @@ public class Parser {
 	private boolean echoPrint=false; // Используется для эхопечати токенов при их чтении методом getToken() при void_func() : print
 	
 	// Получает очередной токен, изменяет number_value и string_value
-	private Names getToken() throws Exception{
-		if(echoPrint  &&  currTok.name != Names.END)
+	private Terminals getToken() throws Exception{
+		if(echoPrint  &&  currTok.name != Terminals.END)
 			System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
 		
 		currTok=buf.getToken();
 		
-		if(currTok.name==Names.NUMBER)
+		if(currTok.name==Terminals.NUMBER)
 			numberValue= Double.parseDouble(currTok.value);
-		if(currTok.name==Names.NAME)
+		if(currTok.name==Terminals.USER_DEFINED_NAME)
 			stringValue=currTok.value;
 		return currTok.name;
 	}
@@ -56,12 +56,12 @@ public class Parser {
 	        if(get) getToken();
 	        get=true;
 
-	        if (currTok.name==Names.EXIT) break;
-			if (currTok.name==Names.END) continue;
-			if (currTok.name==Names.RF) return;
+	        if (currTok.name==Terminals.EXIT) break;
+			if (currTok.name==Terminals.END) continue;
+			if (currTok.name==Terminals.RF) return;
 			if (voidFunc()){
-				;
-			}else if (currTok.name==Names.IF){
+				if (currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
+			}else if (currTok.name==Terminals.IF){
 				get=if_();
 			}else{ // expr
 				if(options.getBoolean(ParserOpts.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
@@ -72,7 +72,7 @@ public class Parser {
 				}else{
 					expr(false);
 				}
-				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
+				if (currTok.name!=Terminals.END) error("Не верный конец, нужен токен END ;");
 			}
 			table.put("ans", lastResult);
 	    }
@@ -90,7 +90,7 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case NAME:case SIN:case COS:
+	    case USER_DEFINED_NAME:case SIN:case COS: // TODO заменить switch на if из-за этого
 	    {
 			if(func(/*y*/)) return y;
 			String name = new String(stringValue);
@@ -102,7 +102,7 @@ public class Parser {
 					if(!echoPrint) System.out.println("Создана переменная "+name);
 				}
 			double v=table.get(name);
-	        if (getToken()==Names.ASSIGN){
+	        if (getToken()==Terminals.ASSIGN){
 	        	v = expr(true);
 	        	table.put(name, v);}
 	        return v;
@@ -112,7 +112,7 @@ public class Parser {
 	    	}
 	    case LP:{
 	        double e = expr(true);
-	        if (currTok.name!=Names.RP) error("требуется )");
+	        if (currTok.name!=Terminals.RP) error("требуется )");
 	        getToken(); // пропустить ')' //получить следующий токен ...
 	        return e;
 	    	}
@@ -131,10 +131,10 @@ public class Parser {
 		case SIN: // для режима greedyFunc
 		case COS:
 		{
-			Names funcName = currTok.name; // Запоминаем для дальнейшего использования
+			Terminals funcName = currTok.name; // Запоминаем для дальнейшего использования
 			if(!options.getBoolean(ParserOpts.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
-				if(currTok.name!=Names.LP) error("Ожидается (");
+				if(currTok.name!=Terminals.LP) error("Ожидается (");
 			}
 					
 			// "Настоящая" обработка sin и cos
@@ -151,7 +151,7 @@ public class Parser {
 			
 			if(!options.getBoolean(ParserOpts.GREEDY_FUNC)){
 				 // Проверка наличия )
-				if(currTok.name!=Names.RP) error("Ожидается )");
+				if(currTok.name!=Terminals.RP) error("Ожидается )");
 				getToken();
 			}
 			
@@ -262,28 +262,28 @@ public class Parser {
 	
 	boolean if_() throws Exception{
 		getToken();
-		if(currTok.name!=Names.LP){ // '('
+		if(currTok.name!=Terminals.LP){ // '('
 			error("Ожидается LP (");
 
 		}
 		double condition = expr(true);
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его анализируем
-		if(currTok.name!=Names.RP) { // ')'
+		if(currTok.name!=Terminals.RP) { // ')'
 			error("Ожидается RP )");
 		}
 		if(!doubleCompare(condition, 0)){	// если condition==true
 			block();
-			if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функиии, вызвавшие if_() увидели EXIT
+			if(currTok.name==Terminals.EXIT) return false; // возвращаем false, чтобы функиии, вызвавшие if_() увидели EXIT
 		}else{				// если condition==false
 			skipBlock();	// пропусить true brach {}
 		}
 		
 		getToken(); //считываем очередной токен
 
-		if(currTok.name==Names.ELSE){
+		if(currTok.name==Terminals.ELSE){
 			if(doubleCompare(condition, 0)){
 				block();
-				if(currTok.name==Names.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
+				if(currTok.name==Terminals.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
 			}else{
 				skipBlock();	// пропусить false brach {}
 			}
@@ -297,13 +297,13 @@ public class Parser {
 	// Внимание: после вызова всегда нужно проверять currTok.name==Names.EXIT, как - см. в if_()
 	void block() throws Exception{
 		getToken();
-		if(currTok.name!=Names.LF){ // '{'
+		if(currTok.name!=Terminals.LF){ // '{'
 			error("Ожидается LF {");
 			//return;
 		}
 		exprList();
-		if(currTok.name==Names.EXIT) return;
-		if(currTok.name!=Names.RF){
+		if(currTok.name==Terminals.EXIT) return;
+		if(currTok.name!=Terminals.RF){
 			error("block() Ожидается RF }"); // '}'
 			//return;
 		}
@@ -312,183 +312,122 @@ public class Parser {
 	// Пропуск блока {}
 	boolean skipBlock() throws Exception{
 		int num = 0;
-		Names ch;
+		Terminals ch;
 		
 		do{
 			ch=getToken();
-			if(num==0 && ch!=Names.LF) error("Ожидается {");
-			if(ch==Names.LF) num++;
-			if(ch==Names.RF) num--;
+			if(num==0 && ch!=Terminals.LF) error("Ожидается {");
+			if(ch==Terminals.LF) num++;
+			if(ch==Terminals.RF) num--;
 			if(num==0) return true;
 		}while(num>0);
 		error("Забыли токен токен LF {");
 		return false;//Ошибка
 	}
 	
-	// функции, не возвращающие значение (void): print, del, reset, help, state
+	// Функции, не возвращающие значение (void): print, add, del, reset, help, state
 	boolean voidFunc() throws Exception{
+		boolean isNeedReadEndToken=true; // Нужно ли считать токен END для анализа в exprList или он уже считан expr
 		switch(currTok.name){
-		case PRINT: {
-			getToken();
-			if(currTok.name==Names.END){ // a. если нет expression, то выводим все переменные
-				if(table.isEmpty()){
-					System.out.println("table is empty!");
-				}else{
-					System.out.println("[table]:");
-					Iterator<Entry<String, Double>> it = table.entrySet().iterator();
-					while (it.hasNext()){
-						Entry<String, Double> li = it.next();
-					    System.out.println(""+li.getKey() + " " + li.getValue());
-					}
-				}
-			}else{ // b. выводим значение expression
-				echoPrint = true;
-				
-				double v = expr(false);
-				System.out.println("= "+v);
-				//lastResult = v;
-				// expr() оставляет токен в currTok.name, мы здесь его анализируем...
-				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
-				
-				echoPrint = false;
-			}
-			System.out.println();
-			return true; //...и здесь же выходим
-		} //break;
-		
-		case ADD: {
-			getToken();
-			if(currTok.name==Names.NAME){
-				String varName = new String(stringValue); 
-				getToken();
-				if(currTok.name==Names.ASSIGN){
-					table.put(varName, expr(true));
-				}else if(currTok.name==Names.END){
-					table.put(varName, 0.0);
-				} else error("Неверное использование ADD: правильно так: add VARIABLE_NAME; add VARIABLE_NAME = expr;");
-				System.out.println("Создана переменная "+varName);
-				// expr() оставляет токен в currTok.name, мы здесь его анализируем...
-				if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
-
-			}else error("Неверное использование ADD: правильно так: add VARIABLE_NAME; add VARIABLE_NAME = expr;");
-			return true; //...и здесь же выходим
-		} //break;
-		
-		case DEL: {
-			getToken();
-			if(currTok.name==Names.MUL){
-				table.clear();
-				System.out.println("Все переменные удалены!");
-			}else if(currTok.name!=Names.NAME) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
-			
-			if(!table.isEmpty()){
-				if(!table.containsKey(stringValue)){
-					System.out.println("del: Переменной "+stringValue+" нет в таблице переменных!");
-				}else{
-					table.remove(stringValue);
-					System.out.println("del: Переменная "+stringValue+" удалена.");
-				}
-			}
-		} break;
-		
-		case RESET: {
-			getToken();
-			if(currTok.name==Names.MUL){ // Если reset * то сбрасываем всё
-				System.out.println("Таблица переменных и все насройки сброшены!");
-				options.resetAll();
-				resetTable();
-			}else if(currTok.name==Names.NAME){
-				reset(stringValue);
-			}else error("После reset ожидается токен имя_переменной NAME либо токен MUL *");
-		} break;
-		
-		case SET:{
-			getToken();
-			if(currTok.name==Names.NAME){
-				if(stringValue.equals("stricted")){
-					//stricted=true;
-					System.out.println("Автоматическое создание переменных при обращении к ним запрещено.");
-				}
-				else error("После set оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: stricted.");
-			}else error("После set ожидается токен имя_переменной NAME");
-		} break;
-		
-		case UNSET:{
-			getToken();
-			if(currTok.name==Names.NAME){
-				if(stringValue.equals("stricted")){
-					//stricted=false;
-					System.out.println("Автоматическое создание переменных разрешено.");
-				}
-				else error("После unset оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: stricted.");
-			}else error("После unset ожидается токен имя_переменной NAME");
-		} break;
-		
-		case HELP:{
+		case PRINT: 
+			print(); // expr() оставляет токен в currTok.name ...
+			isNeedReadEndToken=false; //...и здесь мы отменяем считывние нового токена для проверки END в expr_List
+			break;
+		case ADD:
+			add(); // expr() оставляет токен в currTok.name ...
+			isNeedReadEndToken=false; //...и здесь мы отменяем считывние нового токена для проверки END в expr_List
+			break;
+		case DEL:
+			del();
+			break;
+		case RESET:
+			reset();
+			break;
+		case SET:
+			set();
+			break;
+		case HELP:
 			help();
-		} break;
-		
-		case STATE: {
+			break;
+		case STATE:
 			state();
-		} break;
-		
+			break;
 		default: // не совпало ни с одним именем функции
 			return false;
 		}
 		
 		System.out.println();
-		
-		getToken();
-		if (currTok.name!=Names.END) error("Не верный конец, нужен токен END ;");
+		if(isNeedReadEndToken)
+			getToken();
 		return true;
 	}
-		
-	// Бросает исключение MyException и увеичивает счётчик ошибок
-	public void error(String string) throws MyException{
-		int errors = options.getInt(ParserOpts.ERRORS);
-		errors++;
-		options.set(ParserOpts.ERRORS, errors);
-		//System.err.println("error: "+string);
-		throw new MyException(string);
+	
+	// Выводит значение выражения expr либо всю таблицу переменных
+	void print() throws Exception{
+		getToken();
+		if(currTok.name==Terminals.END){ // a. если нет expression, то выводим все переменные
+			if(table.isEmpty()){
+				System.out.println("table is empty!");
+			}else{
+				System.out.println("[table]:");
+				Iterator<Entry<String, Double>> it = table.entrySet().iterator();
+				while (it.hasNext()){
+					Entry<String, Double> li = it.next();
+				    System.out.println(""+li.getKey() + " " + li.getValue());
+				}
+			}
+		}else{ // b. выводим значение expression
+			echoPrint = true;
+			double v = expr(false); // expr() оставляет токен в currTok.name ...
+			System.out.println("= "+v);
+			echoPrint = false;
+		}
 	}
 	
-	public enum what{ALL, TABLE, ERRORS, STRICTED};
+	// Добавляет переменную
+	void add() throws Exception{
+		getToken();
+		if(currTok.name==Terminals.USER_DEFINED_NAME){
+			String varName = new String(stringValue); 
+			getToken();
+			if(currTok.name==Terminals.ASSIGN){
+				table.put(varName, expr(true)); // expr() оставляет токен в currTok.name ...
+			}else if(currTok.name==Terminals.END){
+				table.put(varName, 0.0);
+			}
+			System.out.println("Создана переменная "+varName);
+		}else error("add: ожидается имя переменной");
+	}
 	
-	// Сброс
-	void reset(String what){
-		/*if(stringValue.equals("table")) reset(what.TABLE);
-		else if(stringValue.equals("errors")) reset(what.ERRORS);
-		else if(stringValue.equals("stricted")) reset(what.STRICTED);
-		else error("После reset оказался токен NAME, указывающий на несуществующую системную переменную, разрешённые значения: table, errors.");
-		*/
-		/*switch(w){
-			case ALL:
-				table.clear();
-				table.put("e", Math.E);
-				table.put("pi", Math.PI);
-				//errors=0;
-				//precision = 5;
-				//stricted = false;
-				System.out.println("reset *: Таблица переменных и счётчик ошибок установлены в исходное состояние.");
-				break;
-			case TABLE:
-				table.clear();
-				table.put("e", Math.E);
-				table.put("pi", Math.PI);
-				System.out.println("reset: Таблица переменных установлена в исходное состояние.");
-				break;
-			case ERRORS:
-				//errors=0;
-				System.out.println("reset: Счётчик ошибок установлен в исходное состояние.");
-				break;
-			case STRICTED:
-				//stricted = false;
-				System.out.println("reset: Режим stricted установлен в исходное состояние.");
-			default:
-				break;
-		}*/
-		System.out.println("нужно убрать эту заглушку");
-	};
+	// Удаляет переменную
+	void del() throws Exception{
+		getToken();
+		if(currTok.name==Terminals.MUL){
+			table.clear();
+			System.out.println("Все переменные удалены!");
+		}else if(currTok.name!=Terminals.USER_DEFINED_NAME) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
+		
+		if(!table.isEmpty()){
+			if(!table.containsKey(stringValue)){
+				System.out.println("del: Переменной "+stringValue+" нет в таблице переменных!");
+			}else{
+				table.remove(stringValue);
+				System.out.println("del: Переменная "+stringValue+" удалена.");
+			}
+		}
+	}
+	
+	void setname(){
+		
+	}
+	
+	// Установка опций
+	void set(){}
+	
+	// Сброс опций или таблицы переменных
+	void reset(){
+		
+	}
 	
 	void resetTable(){
 		table.clear();
@@ -557,6 +496,15 @@ public class Parser {
 		System.out.println("Текущее состояние:\nПеременных: "+table.size());
 		options.printAll();
 	};
+	
+	// Бросает исключение MyException и увеичивает счётчик ошибок
+	public void error(String string) throws MyException{
+		int errors = options.getInt(ParserOpts.ERRORS);
+		errors++;
+		options.set(ParserOpts.ERRORS, errors);
+		//System.err.println("error: "+string);
+		throw new MyException(string);
+	}
 	
 	public Token getCurrTok() {// Возвращает Название текущего токена для проверок в вызывающем методе main
 		return currTok;

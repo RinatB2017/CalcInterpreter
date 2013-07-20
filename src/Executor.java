@@ -17,12 +17,16 @@ public class Executor {
 		Lexer l = new Lexer();
 	    Buffer b = new Buffer(l,  args, stdin,  o);
 	    Parser p = new Parser(b, o);
+	    
 	    o.set(ParserOpts.ERRORS, 6);
+	    Terminals n = Terminals.TRUE;
+	    //Ts t = new Values(Values.type.NUMBER);
+	    
 	    while(true){
 		    try{
 			    p.exprList();
-			   	if (p.getCurrTok().name==Names.RF) p.error("Неправильный выход из expr_list, из-за лишней RF }");
-			   	if (p.getCurrTok().name==Names.EXIT) break;
+			   	if (p.getCurrTok().name==Terminals.RF) p.error("Неправильный выход из expr_list, из-за лишней RF }");
+			   	if (p.getCurrTok().name==Terminals.EXIT) break;
 		    }catch(MyException m){
 		    	System.err.println("Ошибка на " + b.getLineNum() + " на токене №" + b.getTokNum() + " "+p.getCurrTok() + ":");
 		    	System.err.println(m.getMessage() + "\n");

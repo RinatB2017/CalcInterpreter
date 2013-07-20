@@ -13,10 +13,10 @@ public class Lexer {
 	
 	class TokenMask { // Элемент Регексп-Имя
 		public String regexp;
-		public Names name;
+		public Terminals name;
 		Pattern pattern;
 		
-		public TokenMask(String r, Names n) {
+		public TokenMask(String r, Terminals n) {
 			regexp = r;
 			name = n;
 			pattern = Pattern.compile(regexp); 
@@ -35,47 +35,46 @@ public class Lexer {
 
 		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
-		this.addItem("sin", Names.SIN);
-		this.addItem("cos", Names.COS);
-		this.addItem("[!]{1}", Names.FACTORIAL);
+		this.addItem("sin", Terminals.SIN);
+		this.addItem("cos", Terminals.COS);
+		this.addItem("[!]{1}", Terminals.FACTORIAL);
 		
-		this.addItem("exit", Names.EXIT);
-		this.addItem("quit", Names.EXIT);
-		this.addItem("shutdown", Names.EXIT);
-		this.addItem("print", Names.PRINT);
-		this.addItem("add", Names.ADD);
-		this.addItem("del", Names.DEL);
-		this.addItem("reset", Names.RESET);
-		this.addItem("set", Names.SET);
-		this.addItem("unset", Names.UNSET); 
-		this.addItem("help", Names.HELP);
-		this.addItem("state", Names.STATE);
-		this.addItem("if", Names.IF);
-		this.addItem("else", Names.ELSE);
+		this.addItem("exit", Terminals.EXIT);
+		this.addItem("quit", Terminals.EXIT);
+		this.addItem("shutdown", Terminals.EXIT);
+		this.addItem("print", Terminals.PRINT);
+		this.addItem("add", Terminals.ADD);
+		this.addItem("del", Terminals.DEL);
+		this.addItem("reset", Terminals.RESET);
+		this.addItem("set", Terminals.SET);
+		this.addItem("help", Terminals.HELP);
+		this.addItem("state", Terminals.STATE);
+		this.addItem("if", Terminals.IF);
+		this.addItem("else", Terminals.ELSE);
 		
-		this.addItem("\\s+", Names.SKIPABLE); // пробелы
-		this.addItem("//.*$", Names.SKIPABLE); // комментарии "//" и символы в строке после
-		this.addItem("/\\*", Names.L_COMMENT); // начало многострокового комментария "/*"
-		this.addItem("\\*/", Names.R_COMMENT); // конец многострокового комментария "*/"
+		this.addItem("\\s+", Terminals.SKIPABLE); // пробелы
+		this.addItem("//.*$", Terminals.SKIPABLE); // комментарии "//" и символы в строке после
+		this.addItem("/\\*", Terminals.L_COMMENT); // начало многострокового комментария "/*"
+		this.addItem("\\*/", Terminals.R_COMMENT); // конец многострокового комментария "*/"
 		
-		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Names.NAME);
-		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Names.NUMBER); // Здесь - заэкранированная точка
-		this.addItem("\\+", Names.PLUS);
-		this.addItem("-", Names.MINUS);
-		this.addItem("\\*", Names.MUL);
-		this.addItem("/", Names.DIV);
-		this.addItem("\\^", Names.POW);
-		this.addItem(";", Names.END);
-		this.addItem("=", Names.ASSIGN);
-		this.addItem("\\(", Names.LP);
-		this.addItem("\\)", Names.RP);
-		this.addItem("\\{", Names.LF);
-		this.addItem("\\}", Names.RF);
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Terminals.USER_DEFINED_NAME);
+		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Terminals.NUMBER); // Здесь - заэкранированная точка
+		this.addItem("\\+", Terminals.PLUS);
+		this.addItem("-", Terminals.MINUS);
+		this.addItem("\\*", Terminals.MUL);
+		this.addItem("/", Terminals.DIV);
+		this.addItem("\\^", Terminals.POW);
+		this.addItem(";", Terminals.END);
+		this.addItem("=", Terminals.ASSIGN);
+		this.addItem("\\(", Terminals.LP);
+		this.addItem("\\)", Terminals.RP);
+		this.addItem("\\{", Terminals.LF);
+		this.addItem("\\}", Terminals.RF);
 		
 		//this.addItem("//.+$", Names.SKIPABLE); // пробелы и комментарии
 		//this.addItem("\\s+|//$", Names.SKIPABLE); // пробелы и комментарии
 		
-		this.addItem(".+", Names.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
+		this.addItem(".+", Terminals.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 	}
 	
 	Token Cur=null; // Текущий полученный токен
@@ -117,7 +116,7 @@ public class Lexer {
 
 			} else { // ни с одним регекспом подстрока не совпала либо резко поменялось имя токена NAME -> EXIT, NAME -> IF, ...
 				if(matched){ // если для новой подстроки резко поменялось имя токена NAME -> EXIT
-					if(Cur.name==Names.ILLEGAL_TOKEN){ // случай PRINT"print" -> ILLEGAL_TOKEN"print " 
+					if(Cur.name==Terminals.ILLEGAL_TOKEN){ // случай PRINT"print" -> ILLEGAL_TOKEN"print " 
 						isNeedAddToken = true; // добавляем PRINT
 					}else{ // нормальный случай NAME"i" -> IF"if"
 						Prev=Cur; // Настраиваем ссылку Prev для корректной работы блока if (matched && Cur.name.equals(Prev.name))
@@ -191,7 +190,7 @@ public class Lexer {
 	
 	
 	
-	private void addItem(String regexp, Names name) {
+	private void addItem(String regexp, Terminals name) {
 		masks.add(new TokenMask(regexp, name));
 	}
 
