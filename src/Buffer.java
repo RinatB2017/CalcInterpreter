@@ -1,19 +1,29 @@
-/* Буфер между лексером и парсером.
+import java.io.BufferedReader;
+import java.util.ArrayList;
+
+/**
+ * Буфер между лексером и парсером.
  * Нужен для соединения между собой
  * лексера, обрабатывающего строку и выдающего список токенов
  * и парсера, требующего один токен.
+ * Помимо функций буфера выполняет роль менеджера ввода :)
+ * @author Ник
+ * @see #getToken()
  * */
-
-import java.io.BufferedReader;
-import java.util.ArrayList;
 
 public class Buffer {
 	private ArrayList<Token> tokens; // Массив токенов <название, значение>
 	private Lexer lexer;
 	private String[] args;
 	private Options options = null;
-	
-	// Конструктор
+
+
+	/** Конструктор
+	 * @param lexer ссылка на лексер
+	 * @param args ссылка на массив args[] из main()
+	 * @param stdin ссылка на BufferedReader. stdin==null допустимо, означает не использовать BufferedReader, а читать тоько из args[]
+	 * @param options ссылка на опции
+	 */
 	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, Options options){
 		tokens = new ArrayList<Token>();
 		this.stdin = stdin; // stdin=null используется при тестировании: сначала вызываем Lexer::scan("тестируемая строка"), затем Parser::exprList
@@ -27,10 +37,16 @@ public class Buffer {
 	private int tokNum=0;
 	private String str;
 	private int numAgrs=0;
-	private enum NowProcessed{NOTHING, ARGS, STDIN};
+	private enum NowProcessed{NOTHING, ARGS, STDIN}; /** Откуда сейчас происходит считывание*/
 	private NowProcessed now=NowProcessed.NOTHING;
 	
-	// Главметод, гарантированно возвращает токен (в том числе Tokens.EXIT при невозможности дальнейшего считывания)
+	
+	/** Главный метод, используется парсером для получения очередного токена
+	 * @return Token (в том числе new Token(Terminal.EXIT, "") при невозможности
+	 * дальнейшего считывания)
+	 * @see Lexer#scan(String, ArrayList)
+	 * @see Parser#getToken()
+	 */
 	public Token getToken() throws Exception {
 		// Если все токены из списка уже были получены, либо список пуст 
 		if(tokNum==tokens.size()){
@@ -83,7 +99,8 @@ public class Buffer {
 		return tokens.get(tokNum++);
 	}
 	
-	// Вывод найденных токенов
+	/** Вывод найденных токенов в System.out
+	 */
 	public void printTokens() {
 		System.out.print("lexer at line "+ lineNum+" ");
 		if(!tokens.isEmpty()){
@@ -99,6 +116,9 @@ public class Buffer {
 		//System.out.println();
 	}
 	
+	/** @return строку с номером аргумента из args[],
+	 *  либо с номером строки из BufferedReader
+	 * */
 	public String getLineNum() {
 		switch(now){
 		case ARGS:
@@ -110,6 +130,8 @@ public class Buffer {
 		}
 	}
 	
+	/**
+	 * @return номер токена*/
 	public int getTokNum() {
 		return tokNum-1; // т. к . в getToken() используется ++
 	}

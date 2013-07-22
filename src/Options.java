@@ -1,16 +1,10 @@
-/*
- * Хранит настройки буфера и парсера,
- * предоставляет к ним доступ
- */
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-/*interface Terminals{};
-	enum Terminals implements Terminals {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS};
-	enum Terminals implements Terminals {PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
-*/
+/**
+ * Класс для хранения значения по умолчанию
+ * */
 class Option<T>{
 	T defaultValue;
 	
@@ -19,6 +13,15 @@ class Option<T>{
 	}
 }
 
+
+
+/**
+ * Хранит настройки буфера и парсера,
+ * предоставляет к ним доступ:
+ * получение значения get*();
+ * установка нового значения set*();
+ * сброс значения to default reset*()
+ * */
 
 @SuppressWarnings("rawtypes")
 public class Options {

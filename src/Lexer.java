@@ -1,20 +1,26 @@
-/* Лексер считывает строки из stdin,
- * разбивая на токены в соответствии с грамматикой и помещает токены в ArrayList.
- * Пробельные символы игнорируются,
- * символы, не совпавшие ни с одной маской – добавляются как ILLEGAL_TOKEN.
- * Токены передаются в парсер по одному с каждым вызовом Lexer.getToken()
- */
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Лексер считывает строки, получаемые от буфера,
+ * разбивает на токены в соответствии с грамматикой и
+ * помещает токены в полученный по ссылке ArrayList
+ * Пробельные символы игнорируются,
+ * строки, не совпавшие ни с одной маской – добавляются как ILLEGAL_TOKEN.
+ * @see Lexer#scan(String, ArrayList)
+ * @author Ник
+ */
+
 public class Lexer {
 	
-	class TokenMask { // Элемент Регексп-Имя
-		public String regexp;
-		public Terminal name;
-		Pattern pattern;
+	/**
+	 * Элемент Регексп : Имя
+	 */
+	class TokenMask { 
+		final String regexp;
+		final Terminal name;
+		final Pattern pattern;
 		
 		public TokenMask(String r, Terminal n) {
 			regexp = r;
@@ -28,7 +34,9 @@ public class Lexer {
 
 	private boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
 	
-	// Конструктор, добавляет маски, инициализирует ссылки
+	/**
+	 *  Конструктор лексера, добавляет маски, инициализирует ссылки
+	 */
 	public Lexer() {
 		// Инициализируем
 		masks = new ArrayList<TokenMask>();
@@ -91,7 +99,13 @@ public class Lexer {
 	private Token Cur=null; // Текущий полученный токен
 	
 	
-	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
+	/**
+	 * Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
+	 * 
+	 * @param string Входная строка
+	 * @param tokens Ссылка на ArrayList, в который будут помещены найденные токены
+	 * @throws Exception в случае отсутствия регэкспа на ILLEGAL_TOKEN
+	 */
 	public void scan(final String string, final ArrayList<Token> tokens) throws Exception {
 		tokens.clear();
 				
@@ -204,7 +218,11 @@ public class Lexer {
 	private void addItem(String regexp, Terminal name) {
 		masks.add(new TokenMask(regexp, name));
 	}
-
+	
+	/**
+	 * Выводит все маски - пары Имя токена : Регулярное выражение
+	 * @see Lexer.TokenMask
+	 * */
 	public void printMasks() {
 		System.out.print("[lexer]: ");
 		System.out.println("ALL masks:");

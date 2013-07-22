@@ -1,4 +1,9 @@
-/* Парсер пытается выполнить ArrayList токенов, 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+/**
+ *  Парсер пытается выполнить ArrayList токенов, 
  * которые по одному получает из лексера при вызове Parser.getToken().
  * При ошибке парсер вызывает метод Parser.error(),
  * который генерирует исключение MyException,
@@ -7,12 +12,8 @@
  * Переменные можно создавать вручную и инициализировать, например aabc = 9.3;
  * Если переменная не существует при попытке обращения к ней,
  * то она автоматически создаётся со значением 0.0, см. prim().
+ * @see Parser#getToken()
  * */
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 public class Parser {
 	private Token currTok = null; // текущий обрабатываемый токен, изменяется методом getToken()
 	private Buffer buf = null;
@@ -32,7 +33,10 @@ public class Parser {
 	private String stringValue;
 	private boolean echoPrint=false; // Используется для эхопечати токенов при их чтении методом getToken() при void_func() : print
 	
-	// Получает очередной токен, изменяет number_value и string_value
+	/** 
+	 * Получает очередной токен -> currTok, изменяет numbeValue и strinValue
+	 * @see Buffer#getToken()
+	 */
 	private Terminal getToken() throws Exception{
 		if(echoPrint  &&  currTok.name != Terminal.END)
 			System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
@@ -46,10 +50,12 @@ public class Parser {
 		return currTok.name;
 	}
 	
-	// Главный метод - список выражений - с него начинается парсинг
+	/**
+	 *  Главный метод - список выражений - с него начинается парсинг
+	 */
 	public void exprList() throws Exception{
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была отменена из-за вызова error() -> MyException
-		boolean get=true;//нужно ли считывать токен в самом начале
+		boolean get=true; // нужно ли считывать токен в самом начале
 	    
 		while(true){
 	        if(get) getToken();
@@ -82,7 +88,7 @@ public class Parser {
 	    }
 	}
 
-	// один из вариантов решения проблемы с возвращением разных типов : void, а case NUMBER, TERUE и FALSE записывают соответствующие поля класса + записывают поле класса - индикатор, какой конкретно тип мы возвращаем 
+	// TODO один из вариантов решения проблемы с возвращением разных типов : void, а case NUMBER, TERUE и FALSE записывают соответствующие поля класса + записывают поле класса - индикатор, какой конкретно тип мы возвращаем 
 	// обрабатывает первичное
 	private double prim(boolean get) throws Exception
 	{
@@ -134,6 +140,7 @@ public class Parser {
 	}
 	*/
 	
+	// Функция от аргумента в радианной мере
 	private boolean ofRadian(Terminal name){
 		switch(name){
 		case SIN: case COS:
@@ -190,7 +197,8 @@ public class Parser {
 		return false;
 	}
 	
-	
+	// Сравнивает 2 double с заданной в 
+	// options.getInt(Terminal.PRECISION) точностью
 	boolean doubleCompare(double a, double b){
 		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(Terminal.PRECISION))) return true;
 		return false;
@@ -258,6 +266,7 @@ public class Parser {
 	        }
 	}
 	
+	// факториал
 	private double factorial(boolean get) throws Exception
 	{
 	    double left = prim(get);
@@ -279,6 +288,7 @@ public class Parser {
 	        }
 	}
 	
+	// if-else
 	private boolean if_() throws Exception{
 		getToken();
 		if(currTok.name!=Terminal.LP){ // '('
@@ -477,6 +487,7 @@ public class Parser {
 		}
 	}
 	
+	// Сброс таблицы переменных в исходное состояние 
 	void resetTable(){
 		table.clear();
 		table.put("e", Math.E);
@@ -554,7 +565,8 @@ public class Parser {
 		throw new MyException(string);
 	}
 	
-	public Token getCurrTok() {// Возвращает Название текущего токена для проверок в вызывающем методе main
+	// Возвращает Название текущего токена для проверок в вызывающем методе main
+	public Token getCurrTok() {
 		return currTok;
 	}
 		
