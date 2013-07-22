@@ -148,7 +148,7 @@ public class Parser {
 	}
 	*/
 	
-	double y; // для временного хранения результата func()
+	private double y; // для временного хранения результата func()
 	
 	// функции, возвращающие значение (non-void): sin, cos
 	private boolean func() throws Exception{
@@ -168,7 +168,7 @@ public class Parser {
 					break;
 				default:
 					error("Не хватает обработчика для функции " + funcName.toString());
-			}// "Настоящая" обработка sin и cos
+			}
 			
 			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
 				 // Проверка наличия ')' - её оставил expr()
@@ -251,7 +251,7 @@ public class Parser {
 	        switch(currTok.name)
 	        {
 	        case POW:
-	            left = Math.pow(left, factorial(true));
+	            left = Math.pow(left, power(true));
 	            break; // этот break относится к switch
 	        default:
 	            return left;

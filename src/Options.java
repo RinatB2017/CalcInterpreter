@@ -22,14 +22,14 @@ class Option<T>{
 
 @SuppressWarnings("rawtypes")
 public class Options {
-	HashMap<Terminal, Option> opts = new HashMap<Terminal, Option>(); // Ид : Опция
-	HashMap<Terminal, Object> optsVals = new HashMap<Terminal, Object>(); // Ид : Значение
+	private HashMap<Terminal, Option> opts = new HashMap<Terminal, Option>(); // Ид : Опция
+	private HashMap<Terminal, Object> optsVals = new HashMap<Terminal, Object>(); // Ид : Значение
 	
 	// Конструктор
 	@SuppressWarnings("unchecked")
 	public Options(){
 		this.add(Terminal.ARGS_AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
-		this.add(Terminal.AUTO_END, new Option(false)); // Автодобавление токена END в конце считанной последовательности
+		this.add(Terminal.AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
 		this.add(Terminal.PRINT_TOKENS, new Option(false)); // Вывод найденных токенов для просканированной строки
 		
 		this.add(Terminal.PRECISION, new Option(5)); // Отрицательная степень 10, используемая при сравнении малых значений методом doubleCompare()
@@ -72,14 +72,14 @@ public class Options {
 		default:
 			throw new MyException("неверный тип значения опции"); 
 		}
-		System.out.println("Установлена опция "+id.toString());
+		System.out.println("Установлена опция "+id.toString() +" в " + optsVals.get(id));
 	}
 	
 	// Сброс
 	public void reset(Terminal id){
 		Option getted4getDefault = opts.get(id);
 		optsVals.put(id, getted4getDefault.defaultValue);
-		System.out.println("Сброшена опция "+id.toString());
+		System.out.println("Сброшена опция "+id.toString()+ " в "+getted4getDefault.defaultValue);
 	}
 		
 	public void resetAll(){

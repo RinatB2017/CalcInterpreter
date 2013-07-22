@@ -23,7 +23,7 @@ public class Lexer {
 		}
 	}
 
-	ArrayList<TokenMask> masks; // массив масок токенов <рег_выраж, название>
+	private ArrayList<TokenMask> masks; // массив масок токенов <рег_выраж, название>
 	
 
 	private boolean withinComment=false; // Индикатор нахождения внутри комментария для getToken()
@@ -88,7 +88,7 @@ public class Lexer {
 		this.addItem(".+", Terminal.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 	}
 	
-	Token Cur=null; // Текущий полученный токен
+	private Token Cur=null; // Текущий полученный токен
 	
 	
 	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
