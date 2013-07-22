@@ -10,6 +10,6 @@ public class Token {
 	
 	@Override
 	public String toString() {
-		return "Token [name=" + name.toString() + ", value=" + value + "]";
+		return "Token[name=" + name.toString() + ", value=\"" + value + "\"]";
 	}
 }
