@@ -4,13 +4,17 @@ complex, сравнения: < > == != для использования в if
 полиномы
 matrix/vectors
 
-запись текущего состояния (table, errors, ...) при помощи сериализации
+сохранение и загрузка текущего состояния ("save state filename.ext", "save table filename.ext", "save * filename.ext", 
+ "load filename.ext"
+ // переименовать терминал STATE->INFO, ...)
+ при помощи сериализации
+класс PrintQueue, убрать echoPrint из getToken(),
+ сделать отдельные ПЕЧАТАЕМЫЕ(для печати) нетерминалы->печать при помощи семантических действий
+
 help state, help if, ...
 BigDecimal
 пользовательские функции "my_f(arg1, arg2, arg3)=arg1-arg2/arg3+sin(arg1);"
 ^func_argument(s) nonterminal "(" name (, name)* ")"
-while
-for
-do-while
+while, for, do-while
 sum(i=1; i=n) { }
 mul(i=1; i=n) { }

@@ -14,27 +14,40 @@ if_:
 	IF '(' expr ')' block ELSE block
 	
 expr:
-	term 'expr
-		'expr:
-			'+' term
-			'-' term
-			term
+	expr '+' term
+	expr '-' term
+	term
 
+без левой рекурсии:
+expr:
+	term 'expr
+'expr:
+	'+' term 'expr
+	'-' term 'expr
+	e
+	
 term:
 	power 'term
-		'term:
-			'*' power
-			'/' power
-			power
+'term:
+	'*' power 'term
+	'/' power 'term
+	e
 
 power:
 	factorial '^' power
 	factorial
-	
+
 factorial:
 	factorial '!'
 	prim
 
+без левой рекурсии
+factorial:
+	prim 'factorial
+'factorial:
+	'!' 'factorial
+	e
+	
 prim:
 	NUMBER
 	TRUE
