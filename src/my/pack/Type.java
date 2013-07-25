@@ -1,3 +1,4 @@
+package my.pack;
 
 public class Type {
 	Boolean bv = null;

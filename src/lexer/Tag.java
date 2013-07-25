@@ -1,9 +1,12 @@
-/* Перечисление названий всех возможных терминалов
+package lexer;
+
+/**
+ * Перечисление названий всех возможных терминалов
  * */
 
-public enum Terminal {
-	NUMBER, TRUE, FALSE, 
-	USER_DEFINED_NAME, IF, ELSE,
+public enum Tag {
+	DOUBLE, TRUE, FALSE, 
+	WORD, IF, ELSE,
 	ARGS_AUTO_END, AUTO_END, PRINT_TOKENS,
 	TABLE, PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC,
 	ASSIGN, PLUS, MINUS, MUL, DIV, POW, FACTORIAL,

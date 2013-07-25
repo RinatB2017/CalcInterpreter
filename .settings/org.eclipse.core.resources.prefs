@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/Executor.java=UTF-8
-encoding//src/Lexer.java=UTF-8
+encoding//src/lexer/Lexer.java=UTF-8
+encoding//src/my/pack/Executor.java=UTF-8
 encoding/<project>=UTF-8
 encoding/src=UTF-8

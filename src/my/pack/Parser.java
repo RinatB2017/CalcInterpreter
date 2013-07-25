@@ -1,3 +1,4 @@
+package my.pack;
 /* Парсер пытается выполнить ArrayList токенов, 
  * которые по одному получает из лексера при вызове Parser.getToken().
  * При ошибке парсер вызывает метод Parser.error(),
@@ -12,6 +13,8 @@
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
+import lexer.*;
 
 public class Parser {
 	private Token currTok = null; // текущий обрабатываемый токен, изменяется методом getToken()
@@ -28,21 +31,22 @@ public class Parser {
 	}
 	
 	
-	private double numberValue;
-	private String stringValue;
+	//private double numberValue;
+	//private String stringValue;
 	private boolean echoPrint=false; // Используется для эхопечати токенов при их чтении методом getToken() при void_func() : print
 	
 	// Получает очередной токен, изменяет number_value и string_value
-	private Terminal getToken() throws Exception{
-		if(echoPrint  &&  currTok.name != Terminal.END)
-			System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
+	private Tag getToken() throws Exception{
+		//if(echoPrint  &&  currTok.name != Tag.END)
+		//	System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
 		
 		currTok=buf.getToken();
 		
-		if(currTok.name==Terminal.NUMBER)
+		/*if(currTok.name==Tag.DOUBLE)
 			numberValue= Double.parseDouble(currTok.value);
-		if(currTok.name==Terminal.USER_DEFINED_NAME)
+		if(currTok.name==Tag.WORD)
 			stringValue=currTok.value;
+		*/
 		return currTok.name;
 	}
 	
@@ -64,10 +68,10 @@ public class Parser {
 	        	break;//switch
 	        default:
 				if(voidFunc()){
-					if(currTok.name!=Terminal.END) error("Не верный конец, нужен токен END ;");
+					if(currTok.name!=Tag.END) error("Не верный конец, нужен токен END ;");
 				}else{ // expr
 					// если AUTO_PRINT, то ...
-					if(options.getBoolean(Terminal.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
+					if(options.getBoolean(Tag.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
 						echoPrint=true; // ... включаем эхо-печать в this.getToken() ...
 						double v = expr(false);
 						System.out.println("= " + v + '\n');
@@ -75,7 +79,7 @@ public class Parser {
 					}else{
 						expr(false);
 					}
-					if (currTok.name!=Terminal.END) error("Не верный конец, нужен токен END ;");
+					if (currTok.name!=Tag.END) error("Не верный конец, нужен токен END ;");
 				}
 	        }//switch
 	        table.put("ans", lastResult);
@@ -89,23 +93,23 @@ public class Parser {
 		if(get) getToken();
 
 	    switch (currTok.name){
-	    case NUMBER:{ // константа с плавающей точкой
-			double v = numberValue;
+	    case DOUBLE:{ // константа с плавающей точкой
+			final double v = ((DoubleT) currTok).value;
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case USER_DEFINED_NAME:
+	    case WORD:
 	    {
-			String name = new String(stringValue); // нужно, ибо expr() может затереть stringValue 
+			final String name = ((WordT) currTok).value; // нужно, ибо expr() может затереть stringValue 
 			
 			if(!table.containsKey(name))
-				if(options.getBoolean(Terminal.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
+				if(options.getBoolean(Tag.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else{
 					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
 					if(!echoPrint) System.out.println("Создана переменная "+name);
 				}
 			double v=table.get(name);
-	        if (getToken()==Terminal.ASSIGN){
+	        if (getToken()==Tag.ASSIGN){
 	        	v = expr(true);
 	        	table.put(name, v);}
 	        return v;
@@ -115,7 +119,7 @@ public class Parser {
 	    	}
 	    case LP:{
 	        double e = expr(true);
-	        if (currTok.name!=Terminal.RP) error("требуется )");
+	        if (currTok.name!=Tag.RP) error("требуется )");
 	        getToken(); // пропустить ')' //получить следующий токен ...
 	        return e;
 	    	}
@@ -134,7 +138,7 @@ public class Parser {
 	}
 	*/
 	
-	private boolean ofRadian(Terminal name){
+	private boolean ofRadian(Tag name){
 		switch(name){
 		case SIN: case COS:
 			return true;
@@ -153,10 +157,10 @@ public class Parser {
 	// функции, возвращающие значение (non-void): sin, cos
 	private boolean func() throws Exception{
 		if(ofRadian(currTok.name)){
-			Terminal funcName = currTok.name; // Запоминаем для дальнейшего использования
-			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
+			Tag funcName = currTok.name; // Запоминаем для дальнейшего использования
+			if(!options.getBoolean(Tag.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
-				if(currTok.name!=Terminal.LP) error("Ожидается (");
+				if(currTok.name!=Tag.LP) error("Ожидается (");
 			}
 			
 			switch(funcName){
@@ -170,9 +174,9 @@ public class Parser {
 					error("Не хватает обработчика для функции " + funcName.toString());
 			}
 			
-			if(!options.getBoolean(Terminal.GREEDY_FUNC)){
+			if(!options.getBoolean(Tag.GREEDY_FUNC)){
 				 // Проверка наличия ')' - её оставил expr()
-				if(currTok.name!=Terminal.RP) error("Ожидается )");
+				if(currTok.name!=Tag.RP) error("Ожидается )");
 				getToken(); // считываем токен, следующий за ')'
 			} // если Нежадные, то в currTok останется токен, на котором "запнулся" expr
 			// Таким образом достигается единообразие оставленного в currTok токена для не- и жадного режимов
@@ -192,7 +196,7 @@ public class Parser {
 	
 	
 	boolean doubleCompare(double a, double b){
-		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(Terminal.PRECISION))) return true;
+		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(Tag.PRECISION))) return true;
 		return false;
 	}
 
@@ -281,28 +285,28 @@ public class Parser {
 	
 	private boolean if_() throws Exception{
 		getToken();
-		if(currTok.name!=Terminal.LP){ // '('
+		if(currTok.name!=Tag.LP){ // '('
 			error("Ожидается LP (");
 
 		}
 		double condition = expr(true);
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его анализируем
-		if(currTok.name!=Terminal.RP) { // ')'
+		if(currTok.name!=Tag.RP) { // ')'
 			error("Ожидается RP )");
 		}
 		if(!doubleCompare(condition, 0)){	// если condition==true
 			block();
-			if(currTok.name==Terminal.EXIT) return false; // возвращаем false, чтобы функиии, вызвавшие if_() увидели EXIT
+			if(currTok.name==Tag.EXIT) return false; // возвращаем false, чтобы функиии, вызвавшие if_() увидели EXIT
 		}else{				// если condition==false
 			skipBlock();	// пропусить true brach {}
 		}
 		
 		getToken(); //считываем очередной токен
 
-		if(currTok.name==Terminal.ELSE){
+		if(currTok.name==Tag.ELSE){
 			if(doubleCompare(condition, 0)){
 				block();
-				if(currTok.name==Terminal.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
+				if(currTok.name==Tag.EXIT) return false; // возвращаем false, чтобы функимии, вызвавшие if_() увидели EXIT
 			}else{
 				skipBlock();	// пропусить false brach {}
 			}
@@ -316,13 +320,13 @@ public class Parser {
 	// Внимание: после вызова всегда нужно проверять currTok.name==Names.EXIT, как - см. в if_()
 	private void block() throws Exception{
 		getToken();
-		if(currTok.name!=Terminal.LF){ // '{'
+		if(currTok.name!=Tag.LF){ // '{'
 			error("Ожидается LF {");
 			//return;
 		}
 		exprList();
-		if(currTok.name==Terminal.EXIT) return;
-		if(currTok.name!=Terminal.RF){
+		if(currTok.name==Tag.EXIT) return;
+		if(currTok.name!=Tag.RF){
 			error("block() Ожидается RF }"); // '}'
 			//return;
 		}
@@ -331,13 +335,13 @@ public class Parser {
 	// Пропуск блока {}
 	private boolean skipBlock() throws Exception{
 		int num = 0;
-		Terminal ch;
+		Tag ch;
 		
 		do{
 			ch=getToken();
-			if(num==0 && ch!=Terminal.LF) error("Ожидается {");
-			if(ch==Terminal.LF) num++;
-			if(ch==Terminal.RF) num--;
+			if(num==0 && ch!=Tag.LF) error("Ожидается {");
+			if(ch==Tag.LF) num++;
+			if(ch==Tag.RF) num--;
 			if(num==0) return true;
 		}while(num>0);
 		error("Забыли токен токен LF {");
@@ -384,7 +388,7 @@ public class Parser {
 	// Выводит значение выражения expr либо всю таблицу переменных
 	private void print() throws Exception{
 		getToken();
-		if(currTok.name==Terminal.END){ // a. если нет expression, то выводим все переменные
+		if(currTok.name==Tag.END){ // a. если нет expression, то выводим все переменные
 			if(table.isEmpty()){
 				System.out.println("table is empty!");
 			}else{
@@ -406,12 +410,12 @@ public class Parser {
 	// Добавляет переменную
 	private void add() throws Exception{
 		getToken();
-		if(currTok.name==Terminal.USER_DEFINED_NAME){
-			String varName = new String(stringValue); // ибо stringValue может затереться при вызове expr()
+		if(currTok.name==Tag.WORD){
+			final String varName = ((WordT) currTok).value; // нужно, ибо expr() может затереть stringValue 
 			getToken();
-			if(currTok.name==Terminal.ASSIGN){
+			if(currTok.name==Tag.ASSIGN){
 				table.put(varName, expr(true)); // expr() оставляет токен в currTok.name ...
-			}else if(currTok.name==Terminal.END){
+			}else if(currTok.name==Tag.END){
 				table.put(varName, 0.0);
 			}
 			System.out.println("Создана переменная "+varName);
@@ -421,22 +425,24 @@ public class Parser {
 	// Удаляет переменную
 	private void del() throws Exception{
 		getToken();
-		if(currTok.name==Terminal.MUL){
+		if(currTok.name==Tag.MUL){
 			table.clear();
 			System.out.println("Все переменные удалены!");
-		}else if(currTok.name!=Terminal.USER_DEFINED_NAME) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
+		}else if(currTok.name!=Tag.WORD) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
+		
+		final String name = ((WordT) currTok).value;
 		
 		if(!table.isEmpty()){
-			if(!table.containsKey(stringValue)){
-				System.out.println("del: Переменной "+stringValue+" нет в таблице переменных!");
+			if(!table.containsKey(name)){
+				System.out.println("del: Переменной "+name+" нет в таблице переменных!");
 			}else{
-				table.remove(stringValue);
-				System.out.println("del: Переменная "+stringValue+" удалена.");
+				table.remove(name);
+				System.out.println("del: Переменная "+name+" удалена.");
 			}
 		}
 	}
 	
-	private boolean setname(Terminal name){
+	private boolean setname(Tag name){
 		switch(name){
 		case ARGS_AUTO_END: case AUTO_END: case PRINT_TOKENS:
 		case PRECISION: case ERRORS: case STRICTED: case AUTO_PRINT: case GREEDY_FUNC:
@@ -449,13 +455,27 @@ public class Parser {
 	private void set() throws Exception{
 		getToken();
 		if(!setname(currTok.name)) error("set: неверная опция");
-		Terminal what = currTok.name;
+		Tag what = currTok.name;
 		
 		getToken();
-		if(currTok.name!=Terminal.ASSIGN) error("set: ожидается =");
+		if(currTok.name!=Tag.ASSIGN) error("set: ожидается =");
 		
 		getToken();
-		options.set(what, currTok); // Поскольку мы отправили Текущий токен ... expr не пройдёт!
+				
+		switch(currTok.name){
+		case TRUE:
+			options.set(what, true); // Поскольку мы отправили Текущий токен ... expr не пройдёт!
+			break;
+		case FALSE: // для будущей поддержки типов
+			options.set(what, false); // Поскольку мы отправили Текущий токен ... expr не пройдёт!
+			break;
+		case DOUBLE:
+			//set(id, Integer.parseInt(value.value));
+			options.set(what, ((DoubleT) currTok).value); // Поскольку мы отправили Текущий токен ... expr не пройдёт!
+			break;
+		default:
+			throw new MyException("неверный тип значения опции"); 
+		}
 	}
 	
 	// Сброс опций или таблицы переменных
@@ -547,9 +567,9 @@ public class Parser {
 	
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException{
-		int errors = options.getInt(Terminal.ERRORS);
+		int errors = options.getInt(Tag.ERRORS);
 		errors++;
-		options.set(Terminal.ERRORS, errors);
+		options.set(Tag.ERRORS, errors);
 		//System.err.println("error: "+string);
 		throw new MyException(string);
 	}
@@ -562,7 +582,7 @@ public class Parser {
 	
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {
-		return options.getInt(Terminal.ERRORS);
+		return options.getInt(Tag.ERRORS);
 	}
 
 }

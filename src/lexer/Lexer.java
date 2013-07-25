@@ -1,4 +1,6 @@
-/* Лексер считывает строки из stdin,
+package lexer;
+/**
+ *  Лексер считывает строки из stdin,
  * разбивая на токены в соответствии с грамматикой и помещает токены в ArrayList.
  * Пробельные символы игнорируются,
  * символы, не совпавшие ни с одной маской – добавляются как ILLEGAL_TOKEN.
@@ -9,14 +11,30 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Хранит текущую и предыдущую считанные лексемы(строки)
+ * с информацией о тэге name (может изменяться при увеличении value)
+ * @author nik
+ *
+ */
+class TaggedLexeme{
+	public final Tag name;
+	public final String value; // TODO Stringbuilder
+	
+	public TaggedLexeme(Tag name, String value) {
+		this.value = value;
+		this.name = name;
+	}
+}
+
 public class Lexer {
 	
 	class TokenMask { // Элемент Регексп-Имя
 		public String regexp;
-		public Terminal name;
+		public Tag name;
 		Pattern pattern;
 		
-		public TokenMask(String r, Terminal n) {
+		public TokenMask(String r, Tag n) {
 			regexp = r;
 			name = n;
 			pattern = Pattern.compile(regexp); 
@@ -35,60 +53,60 @@ public class Lexer {
 
 		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
-		this.addItem("sin", Terminal.SIN);
-		this.addItem("cos", Terminal.COS);
-		this.addItem("!", Terminal.FACTORIAL);
+		this.addItem("sin", Tag.SIN);
+		this.addItem("cos", Tag.COS);
+		this.addItem("!", Tag.FACTORIAL);
 		
-		this.addItem("true", Terminal.TRUE);
-		this.addItem("false", Terminal.FALSE);
+		this.addItem("true", Tag.TRUE);
+		this.addItem("false", Tag.FALSE);
 		
-		this.addItem("exit", Terminal.EXIT);
-		this.addItem("quit", Terminal.EXIT);
-		this.addItem("shutdown", Terminal.EXIT);
-		this.addItem("print", Terminal.PRINT);
-		this.addItem("add", Terminal.ADD);
-		this.addItem("del", Terminal.DEL);
-		this.addItem("reset", Terminal.RESET);
-		this.addItem("set", Terminal.SET);
-		this.addItem("help", Terminal.HELP);
-		this.addItem("state", Terminal.STATE);
-		this.addItem("if", Terminal.IF);
-		this.addItem("else", Terminal.ELSE);
+		this.addItem("exit", Tag.EXIT);
+		this.addItem("quit", Tag.EXIT);
+		this.addItem("shutdown", Tag.EXIT);
+		this.addItem("print", Tag.PRINT);
+		this.addItem("add", Tag.ADD);
+		this.addItem("del", Tag.DEL);
+		this.addItem("reset", Tag.RESET);
+		this.addItem("set", Tag.SET);
+		this.addItem("help", Tag.HELP);
+		this.addItem("state", Tag.STATE);
+		this.addItem("if", Tag.IF);
+		this.addItem("else", Tag.ELSE);
 		
-		this.addItem("\\s+", Terminal.SKIPABLE); // пробелы
-		this.addItem("//.*$", Terminal.SKIPABLE); // комментарии "//" и символы в строке после
-		this.addItem("/\\*", Terminal.L_COMMENT); // начало многострокового комментария "/*"
-		this.addItem("\\*/", Terminal.R_COMMENT); // конец многострокового комментария "*/"
+		this.addItem("\\s+", Tag.SKIPABLE); // пробелы
+		this.addItem("//.*$", Tag.SKIPABLE); // комментарии "//" и символы в строке после
+		this.addItem("/\\*", Tag.L_COMMENT); // начало многострокового комментария "/*"
+		this.addItem("\\*/", Tag.R_COMMENT); // конец многострокового комментария "*/"
 		
-		this.addItem("args_auto_end", Terminal. ARGS_AUTO_END);
-		this.addItem("auto_end", Terminal. AUTO_END);
-		this.addItem("print_tokens", Terminal. PRINT_TOKENS);
+		this.addItem("args_auto_end", Tag. ARGS_AUTO_END);
+		this.addItem("auto_end", Tag. AUTO_END);
+		this.addItem("print_tokens", Tag. PRINT_TOKENS);
 		
-		this.addItem("var_table", Terminal.TABLE);
-		this.addItem("precision", Terminal. PRECISION);
-		this.addItem("errors", Terminal. ERRORS);
-		this.addItem("stricted", Terminal. STRICTED);
-		this.addItem("auto_print", Terminal. AUTO_PRINT);
-		this.addItem("greedy_func", Terminal. GREEDY_FUNC);
+		this.addItem("var_table", Tag.TABLE);
+		this.addItem("precision", Tag. PRECISION);
+		this.addItem("errors", Tag. ERRORS);
+		this.addItem("stricted", Tag. STRICTED);
+		this.addItem("auto_print", Tag. AUTO_PRINT);
+		this.addItem("greedy_func", Tag. GREEDY_FUNC);
 		
-		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Terminal.USER_DEFINED_NAME);
-		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Terminal.NUMBER); // Здесь - заэкранированная точка
-		this.addItem("\\+", Terminal.PLUS);
-		this.addItem("-", Terminal.MINUS);
-		this.addItem("\\*", Terminal.MUL);
-		this.addItem("/", Terminal.DIV);
-		this.addItem("\\^", Terminal.POW);
-		this.addItem(";", Terminal.END);
-		this.addItem("=", Terminal.ASSIGN);
-		this.addItem("\\(", Terminal.LP);
-		this.addItem("\\)", Terminal.RP);
-		this.addItem("\\{", Terminal.LF);
-		this.addItem("\\}", Terminal.RF);
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.WORD);
+		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь - заэкранированная точка
+		this.addItem("\\+", Tag.PLUS);
+		this.addItem("-", Tag.MINUS);
+		this.addItem("\\*", Tag.MUL);
+		this.addItem("/", Tag.DIV);
+		this.addItem("\\^", Tag.POW);
+		this.addItem(";", Tag.END);
+		this.addItem("=", Tag.ASSIGN);
+		this.addItem("\\(", Tag.LP);
+		this.addItem("\\)", Tag.RP);
+		this.addItem("\\{", Tag.LF);
+		this.addItem("\\}", Tag.RF);
 				
-		this.addItem(".+", Terminal.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
+		this.addItem(".+", Tag.ILLEGAL_TOKEN); // Должен добавляться в самом конце, чтобы не перехватывал валидные токены
 	}
 	
-	private Token Cur=null; // Текущий полученный токен
+	private TaggedLexeme Cur=null; // Текущий полученный токен
 	
 	
 	// Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
@@ -102,7 +120,7 @@ public class Lexer {
 		// Выделяем подстроку
 		int start = 0; // индекс первого символа, который войдёт в подстроку
 		int end = 1; // индекс первого символа за концом подстроки, который не войдёт в подстроку
-		Token Prev = null; // Предыдущий токен 
+		TaggedLexeme Prev = null; // Предыдущий токен 
 		boolean prevMatched=false;
 		
 		for (boolean isContinue=true; isContinue; ) { // Наращиваем подстроки посимвольно
@@ -127,7 +145,7 @@ public class Lexer {
 
 			} else { // ни с одним регекспом подстрока не совпала либо резко поменялось имя токена NAME -> EXIT, NAME -> IF, ...
 				if(matched){ // если для новой подстроки резко поменялось имя токена NAME -> EXIT
-					if(Cur.name==Terminal.ILLEGAL_TOKEN){ // случай PRINT"print" -> ILLEGAL_TOKEN"print " 
+					if(Cur.name==Tag.ILLEGAL_TOKEN){ // случай PRINT"print" -> ILLEGAL_TOKEN"print " 
 						isNeedAddToken = true; // добавляем PRINT
 					}else{ // нормальный случай NAME"i" -> IF"if"
 						Prev=Cur; // Настраиваем ссылку Prev для корректной работы блока if (matched && Cur.name.equals(Prev.name))
@@ -160,7 +178,23 @@ public class Lexer {
 						break;
 					default:
 						if(!withinComment){
-							tokens.add(new Token(Prev.name, Prev.value));
+							switch(Cur.name){
+							//case INTEGER: // TODO UNCOMMENT
+							//	break;
+							case DOUBLE:
+								tokens.add(new DoubleT(Prev.name, Double.parseDouble(Prev.value)));
+								break;
+							//case BOOLEAN: // TODO UNCOMMENT
+							//	break;
+							case WORD:
+								tokens.add(new WordT(Prev.name, Prev.value));
+								break;
+							default: // TODO ПОДУМАТЬ
+								tokens.add(new Token(Prev.name));
+								break;
+								
+							}
+							
 						}
 						break;
 				}
@@ -186,7 +220,7 @@ public class Lexer {
 			if (myMatcher.matches()) {
 				// Эта ссылка должна быть полем класса, а не аргументом метода, для того чтобы ниженаписанное присвоение было видно в scan() 
 				// http://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
-				Cur = new Token(tm.name, substr); 
+				Cur = new TaggedLexeme(tm.name, substr); 
 				
 				//System.out.println("" + Cur.name + " " + Cur.value+"\n");
 				return true;
@@ -201,7 +235,7 @@ public class Lexer {
 	
 	
 	
-	private void addItem(String regexp, Terminal name) {
+	private void addItem(String regexp, Tag name) {
 		masks.add(new TokenMask(regexp, name));
 	}
 

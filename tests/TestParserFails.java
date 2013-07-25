@@ -1,5 +1,12 @@
 import org.junit.*;
+
 import junit.framework.Assert;
+import lexer.Lexer;
+import lexer.Tag;
+import my.pack.Buffer;
+import my.pack.MyException;
+import my.pack.Options;
+import my.pack.Parser;
 
 
 public class TestParserFails extends Assert{
@@ -11,8 +18,8 @@ public class TestParserFails extends Assert{
 	public void setUp() throws MyException {
 		l = new Lexer();
 		Options o = new Options();
-		o.set(Terminal.AUTO_END, true);
-		o.set(Terminal.GREEDY_FUNC, true);
+		o.set(Tag.AUTO_END, true);
+		o.set(Tag.GREEDY_FUNC, true);
 		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens : true, false
 		b = new Buffer(l,  null, null,  o);
 		// Старый конструктор Parser: опции autoPrint, greedyFunc : true, true
@@ -67,6 +74,6 @@ public class TestParserFails extends Assert{
 		b.setArgs(new String[] {"if(1+-9){sin(-pi/4);}}"});
 		p.exprList();
 		
-		if (p.getCurrTok().name==Terminal.RF) p.error("Неправильный выход из expr_list, возможно лишняя RF }");
+		if (p.getCurrTok().name==Tag.RF) p.error("Неправильный выход из expr_list, возможно лишняя RF }");
 	}
 }

@@ -1,3 +1,4 @@
+package my.pack;
 /* Буфер между лексером и парсером.
  * Нужен для соединения между собой
  * лексера, обрабатывающего строку и выдающего список токенов
@@ -6,6 +7,10 @@
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
+
+import lexer.Lexer;
+import lexer.Tag;
+import lexer.Token;
 
 public class Buffer {
 	private ArrayList<Token> tokens; // Массив токенов <название, значение>
@@ -50,11 +55,11 @@ public class Buffer {
 					break;
 				case STDIN:
 					str = stdin.readLine(); // Считываем строку..., null когда строки закончились
-					if(str==null) return new Token(Terminal.EXIT, "");
+					if(str==null) return new Token(Tag.EXIT);
 					lineNum++;
 					break;
 				case NOTHING: 
-					return new Token(Terminal.EXIT, "");
+					return new Token(Tag.EXIT);
 				}
 				
 				if(!str.isEmpty()) {
@@ -63,16 +68,16 @@ public class Buffer {
 					// autoending :)
 					switch(now){
 					case ARGS:
-						if(options.getBoolean(Terminal.ARGS_AUTO_END)) tokens.add(new Token(Terminal.END, ";")); // Автодобавление токена END
+						if(options.getBoolean(Tag.ARGS_AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
 						break;
 					case STDIN:
-						if(options.getBoolean(Terminal.AUTO_END)) tokens.add(new Token(Terminal.END, ";")); // Автодобавление токена END
+						if(options.getBoolean(Tag.AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
 						break;
 					default:
 						break;
 					}
 					
-					if(options.getBoolean(Terminal.PRINT_TOKENS)) printTokens();
+					if(options.getBoolean(Tag.PRINT_TOKENS)) printTokens();
 				}
 				
 				if(numAgrs<args.length) numAgrs++;
