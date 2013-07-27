@@ -178,7 +178,7 @@ public class Lexer {
 						break;
 					default:
 						if(!withinComment){
-							switch(Cur.name){
+							switch(Prev.name){
 							//case INTEGER: // TODO UNCOMMENT
 							//	break;
 							case DOUBLE:
