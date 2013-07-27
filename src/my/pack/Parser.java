@@ -47,6 +47,7 @@ public class Parser {
 		if(currTok.name==Tag.WORD)
 			stringValue=currTok.value;
 		*/
+		System.err.println(currTok);
 		return currTok.name;
 	}
 	
@@ -71,7 +72,7 @@ public class Parser {
 					if(currTok.name!=Tag.END) error("Не верный конец, нужен токен END ;");
 				}else{ // expr
 					// если AUTO_PRINT, то ...
-					if(options.getBoolean(Tag.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
+					if(options.getBoolean(OptId.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
 						echoPrint=true; // ... включаем эхо-печать в this.getToken() ...
 						double v = expr(false);
 						System.out.println("= " + v + '\n');
@@ -103,7 +104,7 @@ public class Parser {
 			final String name = ((WordT) currTok).value; // нужно, ибо expr() может затереть stringValue 
 			
 			if(!table.containsKey(name))
-				if(options.getBoolean(Tag.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
+				if(options.getBoolean(OptId.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else{
 					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
 					if(!echoPrint) System.out.println("Создана переменная "+name);
@@ -158,7 +159,7 @@ public class Parser {
 	private boolean func() throws Exception{
 		if(ofRadian(currTok.name)){
 			Tag funcName = currTok.name; // Запоминаем для дальнейшего использования
-			if(!options.getBoolean(Tag.GREEDY_FUNC)){
+			if(!options.getBoolean(OptId.GREEDY_FUNC)){
 				getToken(); // Проверка наличия (
 				if(currTok.name!=Tag.LP) error("Ожидается (");
 			}
@@ -174,7 +175,7 @@ public class Parser {
 					error("Не хватает обработчика для функции " + funcName.toString());
 			}
 			
-			if(!options.getBoolean(Tag.GREEDY_FUNC)){
+			if(!options.getBoolean(OptId.GREEDY_FUNC)){
 				 // Проверка наличия ')' - её оставил expr()
 				if(currTok.name!=Tag.RP) error("Ожидается )");
 				getToken(); // считываем токен, следующий за ')'
@@ -196,7 +197,7 @@ public class Parser {
 	
 	
 	boolean doubleCompare(double a, double b){
-		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(Tag.PRECISION))) return true;
+		if (Math.abs(a-b) < 1.0/Math.pow(10, options.getInt(OptId.PRECISION))) return true;
 		return false;
 	}
 
@@ -567,9 +568,9 @@ public class Parser {
 	
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException{
-		int errors = options.getInt(Tag.ERRORS);
+		int errors = options.getInt(OptId.ERRORS);
 		errors++;
-		options.set(Tag.ERRORS, errors);
+		options.set(OptId.ERRORS, errors);
 		//System.err.println("error: "+string);
 		throw new MyException(string);
 	}
@@ -582,7 +583,7 @@ public class Parser {
 	
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {
-		return options.getInt(Tag.ERRORS);
+		return options.getInt(OptId.ERRORS);
 	}
 
 }

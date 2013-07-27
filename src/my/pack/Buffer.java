@@ -68,16 +68,16 @@ public class Buffer {
 					// autoending :)
 					switch(now){
 					case ARGS:
-						if(options.getBoolean(Tag.ARGS_AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
+						if(options.getBoolean(OptId.ARGS_AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
 						break;
 					case STDIN:
-						if(options.getBoolean(Tag.AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
+						if(options.getBoolean(OptId.AUTO_END)) tokens.add(new Token(Tag.END)); // Автодобавление токена END
 						break;
 					default:
 						break;
 					}
 					
-					if(options.getBoolean(Tag.PRINT_TOKENS)) printTokens();
+					if(options.getBoolean(OptId.PRINT_TOKENS)) printTokens();
 				}
 				
 				if(numAgrs<args.length) numAgrs++;
