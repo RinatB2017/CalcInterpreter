@@ -13,20 +13,20 @@ public class Executor {
 	public static void main(String[] args) throws Exception {
     	System.out.println("Добро пожаловать в интерпретатор.\n");
     	
-    	BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));	
-		Options o = new Options();
+    	BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+    	OutputSystem out=new OutputSystem();
+		Options o = new Options(out);
 		Lexer l = new Lexer();
-	    Buffer b = new Buffer(l,  args, stdin,  o);
-	    Parser p = new Parser(b, o);
-	    	    
+	    Buffer b = new Buffer(l,  args, stdin,  o, out);
+	    Parser p = new Parser(b, o, out);
+	    
 	    while(true){
 		    try{
-			    p.exprList();
-			   	if (p.getCurrTok().name==Terminal.RF) p.error("Неправильный выход из expr_list, из-за лишней RF }");
+			    p.program();
 			   	if (p.getCurrTok().name==Terminal.EXIT) break;
 		    }catch(MyException m){
 		    	System.err.println("Ошибка на " + b.getLineNum() + " на токене №" + b.getTokNum() + " "+p.getCurrTok() + ":");
-		    	System.err.println(m.getMessage() + "\n");
+		    	System.err.println(m.getMessage());
 		    	continue;
 		    }catch(Exception e){
 		    	System.err.println("Критическая ошибка на "+b.getLineNum()+", продолжение работы невозможно.");

@@ -14,7 +14,6 @@ class Option<T>{
 }
 
 
-
 /**
  * Хранит настройки буфера и парсера,
  * предоставляет к ним доступ:
@@ -27,10 +26,12 @@ class Option<T>{
 public class Options {
 	private HashMap<Terminal, Option> opts = new HashMap<Terminal, Option>(); // Ид : Опция
 	private HashMap<Terminal, Object> optsVals = new HashMap<Terminal, Object>(); // Ид : Значение
-	
+	private OutputSystem output;
 	// Конструктор
 	@SuppressWarnings("unchecked")
-	public Options(){
+	public Options(OutputSystem out){
+		this.output = out;
+		
 		this.add(Terminal.ARGS_AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
 		this.add(Terminal.AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
 		this.add(Terminal.PRINT_TOKENS, new Option(false)); // Вывод найденных токенов для просканированной строки
@@ -75,14 +76,14 @@ public class Options {
 		default:
 			throw new MyException("неверный тип значения опции"); 
 		}
-		System.out.println("Установлена опция "+id.toString() +" в " + optsVals.get(id));
+		output.addln("Установлена опция "+id.toString() +" в " + optsVals.get(id));
 	}
 	
 	// Сброс
 	public void reset(Terminal id){
 		Option getted4getDefault = opts.get(id);
 		optsVals.put(id, getted4getDefault.defaultValue);
-		System.out.println("Сброшена опция "+id.toString()+ " в "+getted4getDefault.defaultValue);
+		output.addln("Сброшена опция "+id.toString()+ " в "+getted4getDefault.defaultValue);
 	}
 		
 	public void resetAll(){
@@ -99,7 +100,7 @@ public class Options {
 		Iterator<Entry<Terminal, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()){
 			Entry<Terminal, Object> li = it.next();
-		    System.out.println(""+li.getKey() + " " + li.getValue());
+			output.addln(""+li.getKey() + " " + li.getValue());
 		}
 	}
 	

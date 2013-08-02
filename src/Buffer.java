@@ -16,20 +16,22 @@ public class Buffer {
 	private Lexer lexer;
 	private String[] args;
 	private Options options = null;
-
+	private OutputSystem output;
 
 	/** Конструктор
 	 * @param lexer ссылка на лексер
 	 * @param args ссылка на массив args[] из main()
 	 * @param stdin ссылка на BufferedReader. stdin==null допустимо, означает не использовать BufferedReader, а читать тоько из args[]
 	 * @param options ссылка на опции
+	 * @param out 
 	 */
-	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, Options options){
+	public Buffer(Lexer lexer, String[] args, BufferedReader stdin, Options options, OutputSystem out){
 		tokens = new ArrayList<Token>();
 		this.stdin = stdin; // stdin=null используется при тестировании: сначала вызываем Lexer::scan("тестируемая строка"), затем Parser::exprList
 		this.lexer=lexer;
 		this.args=args;
 		this.options=options;
+		this.output = out;
 	}
 	
 	private long lineNum = 0;
@@ -102,14 +104,14 @@ public class Buffer {
 	/** Вывод найденных токенов в System.out
 	 */
 	public void printTokens() {
-		System.out.print("lexer at line "+ lineNum+" ");
+		output.add("lexer at line "+ lineNum+" ");
 		if(!tokens.isEmpty()){
-			System.out.println("\""+str+"\" found next tokens:");
+			output.addln("\""+str+"\" found next tokens:");
 			//System.out.println("<name> <value>\n");
 			for (int i =0; i < tokens.size(); i++) {
 				Token t = tokens.get(i);
 				//System.out.println(""+i+ " " + t.name + " " + t.value);
-				System.out.println(t);
+				output.addln(t.toString());
 			}
 		}else
 			System.out.println("Nothing found for \""+ str+"\".");
