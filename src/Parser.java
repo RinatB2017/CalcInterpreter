@@ -19,6 +19,7 @@ public class Parser {
 	private Buffer buf = null;
 	private Options options = null;
 	private HashMap<String, Double> table; // Таблица переменных
+	private OutputSystem output=new OutputSystem();
 		
 	//Конструктор
 	public Parser(Buffer buf, Options options){
@@ -39,7 +40,7 @@ public class Parser {
 	 */
 	private Terminal getToken() throws Exception{
 		if(echoPrint  &&  currTok.name != Terminal.END)
-			System.out.print(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
+			output.add(currTok.value+' '); // Печать предыдущего считанного токена, т. к. в exprList() токен уже считан до включения флага echoPrint
 		
 		currTok=buf.getToken();
 		
@@ -76,7 +77,7 @@ public class Parser {
 					if(options.getBoolean(Terminal.AUTO_PRINT)) { // TODO исправить глюк autoprint из-за lexerAutoEnd=false : сделать очередь сообщений
 						echoPrint=true; // ... включаем эхо-печать в this.getToken() ...
 						double v = expr(false);
-						System.out.println("= " + v + '\n');
+						output.add("= " + v + '\n');
 						echoPrint=false; // ... а теперь выключаем
 					}else{
 						expr(false);
@@ -85,6 +86,7 @@ public class Parser {
 				}
 	        }//switch
 	        table.put("ans", lastResult);
+	        output.flush();
 	    }
 	}
 
