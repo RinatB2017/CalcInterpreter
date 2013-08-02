@@ -313,6 +313,8 @@ public class Parser {
 		}else{				// если condition==false
 			skipBlock();	// пропусить true brach {}
 		}
+
+		// Левая факторизация, ага
 		
 		getToken(); //считываем очередной токен
 

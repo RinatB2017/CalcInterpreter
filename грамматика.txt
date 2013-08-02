@@ -1,60 +1,51 @@
-program:
-	expr_list* EXIT
+Различные тела продукции записываются
+либо через символ |, либо с новой строки.
+Вместо некоторых терминалов (MUL, DIV, LP, ...) для наглядности
+записаны соответствующие им лексемы, заключённые в '':
+'*', '/', '(', ...
 
-expr_list:
-	expr END
-	void_func END
+Скобки без обрамляющих '' используются для применения
+квантификаторов (как в Perl, Java) к продукциям.
+
+Тела продукций expr, term, ... записаны в правой рекурсии.
+
+program:
+	( EXIT | ';' | intsr )*
+
+intsr:
 	if_
+	expr ';'
+	void_func ';'
 
 block:
-	'{' expt_list '}'
+	'{'	( ';' | instr )* '}'
 	
 if_:
 	IF '(' expr ')' block
 	IF '(' expr ')' block ELSE block
 	
 expr:
-	expr '+' term
-	expr '-' term
+	term '+' expr
+	term '-' expr
 	term
-
-без левой рекурсии:
-expr:
-	term 'expr
-'expr:
-	'+' term 'expr
-	'-' term 'expr
-	e
 	
 term:
-	power 'term
-'term:
-	'*' power 'term
-	'/' power 'term
-	e
+	power '*' power
+	power '/' power
+	power
 
 power:
 	factorial '^' power
 	factorial
 
 factorial:
-	factorial '!'
-	prim
-
-без левой рекурсии
-factorial:
-	prim 'factorial
-'factorial:
-	'!' 'factorial
-	e
+	prim ( '!' )*
 	
 prim:
 	NUMBER
-	TRUE
-	FALSE
 	USER_DEFINED_NAME
 	USER_DEFINED_NAME '=' expr
-	-prim
+	'-' prim
 	'(' expr ')'
 	func
 
@@ -77,7 +68,6 @@ void_func:
 	del
 	reset
 	set
-	unset
 	help
 	state
 	
@@ -87,14 +77,14 @@ print:
 
 add:
 	USER_DEFINED_NAME
-	USER_DEFINED_NAME = expr
+	USER_DEFINED_NAME '=' expr
 	
 del:
-	DEL *
+	DEL '*'
 	DEL USER_DEFINED_NAME
 	
 reset:
-	RESET *
+	RESET '*'
 	RESET setname
 	RESET TABLE
 	
@@ -102,8 +92,8 @@ set:
 	SET setname '=' currTok
 	
 setname:
-	ARGS_AUTO_END, AUTO_END, PRINT_TOKENS
-	PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC
+	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS
+	| PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
 	
 help:
 	HELP
