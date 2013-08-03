@@ -61,7 +61,7 @@ if(0){}else{}
 //
 //copy
 
-if(0-1) { if(1){del ddddd; exit;}}
+if(0-1) { if(1){del ddddd; /*exit;*/}}
 
 del *;
 add weweCrewed;

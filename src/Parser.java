@@ -114,7 +114,7 @@ public class Parser {
 				if(options.getBoolean(Terminal.STRICTED)) error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else{
 					table.put(name, 0.0); // Если в table нет переменной, то добавляем её со зачением 0.0
-					output.addln("Создана переменная "+name);
+					output.addln("Создана переменная "+name+" со значением "+table.get(name));
 				}
 			double v=table.get(name);
 	        if (getToken()==Terminal.ASSIGN){
@@ -429,13 +429,14 @@ public class Parser {
 		getToken();
 		if(currTok.name==Terminal.USER_DEFINED_NAME){
 			String varName = new String(stringValue); // ибо stringValue может затереться при вызове expr()
+			output.add("Создана переменная "+varName);
 			getToken();
 			if(currTok.name==Terminal.ASSIGN){
 				table.put(varName, expr(true)); // expr() оставляет токен в currTok.name ...
 			}else if(currTok.name==Terminal.END){
 				table.put(varName, 0.0);
 			}
-			output.addln("Создана переменная "+varName);
+			output.addln(" со значением "+table.get(varName));
 		}else error("add: ожидается имя переменной");
 	}
 	
