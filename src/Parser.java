@@ -64,8 +64,6 @@ public class Parser {
 	      
 	        switch(currTok.name){
 	        case EXIT: return;
-	        case END: continue;
-
 	        default:
 				output.clear();
 				get=instr();
@@ -79,6 +77,8 @@ public class Parser {
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была отменена из-за вызова error() -> MyException
 		
 	    switch(currTok.name){
+	    case END:
+	    	break;
 	    case IF: 
 	    	return(if_());
 	    default:
@@ -262,16 +262,13 @@ public class Parser {
 	// Степень a^b
 	private double power(boolean get) throws Exception{
 	    double left = factorial(get);
-	    for(;;)
-	        // ``вечно''
-	        switch(currTok.name)
-	        {
-	        case POW:
-	            left = Math.pow(left, power(true));
-	            break; // этот break относится к switch
-	        default:
-	            return left;
-	        }
+	    switch(currTok.name)
+	    {
+	    case POW:
+	    	left = Math.pow(left, power(true));
+	    default:
+	    	return left;
+	    }
 	}
 	
 	// факториал
@@ -344,7 +341,6 @@ public class Parser {
 			
 			switch(currTok.name){
 			case RF: return; // '}'
-			case END: continue;
 			default:
 			    get=true;
 				get=instr();

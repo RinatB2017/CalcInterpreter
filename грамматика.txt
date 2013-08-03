@@ -1,102 +1,81 @@
-﻿Различные тела продукции записываются
-либо через символ |, либо с новой строки.
+﻿http://ru.wikipedia.org/wiki/Расширенная_форма_Бэкуса_—_Наура
+Терминалы записаны большими буквами, нетерминалы - маленькими.
 Вместо некоторых терминалов (MUL, DIV, LP, ...) для наглядности
 записаны соответствующие им лексемы, заключённые в '':
 '*', '/', '(', ...
+Начиная с символов '//' - и до конца строки - комметарий
 
-Скобки без обрамляющих '' используются для применения
-квантификаторов (как в Perl, Java) к продукциям.
+program = 
+	{ instr } EXIT
 
-Тела продукций expr, term, ... записаны в правой рекурсии.
+instr = 
+		';'
+	|	if_
+	|	void_func ';'
+	|	expr ';'
 
-program:
-	( EXIT | ';' | intsr )*
-
-intsr:
-	if_
-	expr ';'
-	void_func ';'
-
-block:
-	'{'	( ';' | instr )* '}'
+block =
+	'{'	{ instr } '}'
 	
-if_:
-	IF '(' expr ')' block
-	IF '(' expr ')' block ELSE block
+if_ =
+	IF '(' expr ')' block [ ELSE block ]
 	
-expr:
-	term '+' expr
-	term '-' expr
-	term
+expr =
+	term { ( '+' | '(+)' | '-' ) term }
 	
-term:
-	power '*' power
-	power '/' power
-	power
+term =
+	power { ( '*' | '/' ) power }
 
-power:
-	factorial '^' power
-	factorial
+power =
+	factorial [ '^' power ]
 
-factorial:
-	prim ( '!' )*
+factorial =
+	prim { '!' }
 	
-prim:
-	NUMBER
-	USER_DEFINED_NAME
-	USER_DEFINED_NAME '=' expr
-	'-' prim
-	'(' expr ')'
-	func
+prim =
+		NUMBER
+	|	USER_DEFINED_NAME [ '=' expr ]
+	|	'-' prim
+	|	'(' expr ')'
+	|	func
 
-func:
+func =
 	of_radian '(' expr ')'
-	returns_radian '(' expr ')'
-	LOG '(' expr ')'
 
-of_radian:
-	SIN
-	COS
+of_radian =
+		SIN
+	|	COS
 
-returns_radian:
-	ARCSIN
-	ARCCOS
+void_func =
+		print
+	|	add
+	|	del
+	|	reset
+	|	set
+	|	help
+	|	state
+	
+print =
+	PRINT [ expr ]
 
-void_func:
-	print
-	add
-	del
-	reset
-	set
-	help
-	state
+add =
+	USER_DEFINED_NAME [ '=' expr ]
 	
-print:
-	PRINT
-	PRINT expr
-
-add:
-	USER_DEFINED_NAME
-	USER_DEFINED_NAME '=' expr
+del =
+	DEL ( '*' | USER_DEFINED_NAME )
 	
-del:
-	DEL '*'
-	DEL USER_DEFINED_NAME
+reset =
+	RESET ( '*' | TABLE | setname )
 	
-reset:
-	RESET '*'
-	RESET setname
-	RESET TABLE
-	
-set:
+set =
 	SET setname '=' currTok
 	
-setname:
-	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS
-	| PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
+setname =
+	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS |
+	PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
 	
-help:
+help =
 	HELP
 	
-state:
+state =
 	STATE

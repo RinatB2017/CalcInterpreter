@@ -85,4 +85,11 @@ public class TestParserNonGreedy extends Assert{
 		p.program();
 		assertEquals(65.0, p.lastResult);
 	}
+	
+	@Test
+	public void testRightAssociatePower() throws Exception {
+		b.setArgs(new String[] {"2^3^4"});
+		p.program();
+		assertEquals(Math.pow(2, Math.pow(3, 4)), p.lastResult);
+	}
 }

@@ -56,7 +56,7 @@ public class TestParserFails extends Assert{
 		p.program();
 	}
 	
-	@Ignore // Ложный тест врного выражения, которое не бросит исключения
+	@Ignore // Ложный тест верного выражения, которое не бросит исключения
 	@Test (expected=MyException.class)
 	public void checkExtraRFIgrore() throws Exception {
 		b.setArgs(new String[] {"sin(-pi/2)"});
@@ -69,5 +69,11 @@ public class TestParserFails extends Assert{
 		p.program();
 		
 		if (p.getCurrTok().name==Terminal.RF) p.error("Неправильный выход из expr_list, возможно лишняя RF }");
+	}
+	
+	@Test (expected=MyException.class)
+	public void checkEarlyExit() throws Exception {
+		b.setArgs(new String[] {"aaa=2^3^4; bb=( 2 ^ 3 ) ^ 4; if(a-b){}else{print 2; exit;} print 3"});
+		p.program();
 	}
 }

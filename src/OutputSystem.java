@@ -68,5 +68,6 @@ public class OutputSystem {
 
 	public void clear() {
 		buffer.clear();
+		builder.setLength(0);
 	}
 }
