@@ -14,11 +14,11 @@ instr =
 	|	void_func ';'
 	|	expr ';'
 
-block =
-	'{'	{ instr } '}'
-	
 if_ =
 	IF '(' expr ')' block [ ELSE block ]
+	
+block =
+	'{'	{ instr } '}'
 	
 expr =
 	term { ( '+' | '(+)' | '-' ) term }
