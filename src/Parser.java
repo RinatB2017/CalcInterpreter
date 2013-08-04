@@ -114,212 +114,6 @@ public class Parser {
 		return true;
 	}
 
-	// обрабатывает первичное
-	private double prim(boolean get) throws Exception {
-		if (get)
-			getToken();
-
-		switch (currTok.name) {
-		case NUMBER: { // константа с плавающей точкой
-			double v = numberValue;
-			getToken();// получить следующий токен ...
-			return v;
-		}
-		case USER_DEFINED_NAME: {
-			String name = new String(stringValue); // нужно, ибо expr() может
-													// затереть stringValue
-
-			if (!table.containsKey(name))
-				if (options.getBoolean(Tag.STRICTED))
-					error("Запрещено автоматическое создание переменных в stricted-режиме");
-				else {
-					table.put(name, 0.0); // Если в table нет переменной, то
-											// добавляем её со зачением 0.0
-					output.addln("Создана переменная " + name
-							+ " со значением " + table.get(name));
-				}
-			double v = table.get(name);
-			if (getToken() == Tag.ASSIGN) {
-				v = expr(true);
-				table.put(name, v);
-				output.addln("Значение переменой " + name + " изменено на " + v);
-			}
-			return v;
-		}
-		case MINUS: { // унарный минус
-			return -prim(true);
-		}
-		case LP: {
-			double e = expr(true);
-			match(Tag.RP);
-			getToken(); // пропустить ')' //получить следующий токен ...
-			return e;
-		}
-		default: {
-			if (func())
-				return y;
-
-			error("требуется первичное_выражение (нетерминал prim)");
-			return 0;
-		}
-		}
-	}
-
-	/*
-	 * private boolean trig(Terminal name){ return ofRadian(name) ||
-	 * returnsRadian(name); }
-	 */
-
-	// Функция от аргумента в радианной мере
-	private boolean ofRadian(Tag name) {
-		switch (name) {
-		case SIN:
-		case COS:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	/*
-	 * private boolean returnsRadian(Terminal name){ return false; // TODO это
-	 * заглушка }
-	 */
-
-	private double y; // для временного хранения результата func()
-
-	// функции, возвращающие значение (non-void): sin, cos
-	private boolean func() throws Exception {
-		if (ofRadian(currTok.name)) {
-			Tag funcName = currTok.name; // Запоминаем для дальнейшего
-												// использования
-			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
-				getToken();
-				match(Tag.LP); // Проверка наличия (
-			}
-
-			switch (funcName) {
-			case SIN:
-				y = Math.sin(expr(true)); // следующий токен END для
-											// prim()<-term()<-expr()<-expr_list()
-											// получен в этом вызове expr()
-				break;
-			case COS:
-				y = Math.cos(expr(true)); // следующий токен END для
-											// prim()<-term()<-expr()<-expr_list()
-											// получен в этом вызове expr()
-				break;
-			default:
-				error("Не хватает обработчика для функции "
-						+ funcName.toString());
-			}
-
-			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
-				match(Tag.RP);// Проверка наличия ')' - её оставил expr()
-				getToken(); // считываем токен, следующий за ')'
-			} // если Нежадные, то в currTok останется токен, на котором
-				// "запнулся" expr
-				// Таким образом достигается единообразие оставленного в currTok
-				// токена для не- и жадного режимов
-
-			// Округление до привычных значений
-			y = (doubleCompare(y, 0)) ? 0 : y;
-			y = (doubleCompare(y, 0.5)) ? 0.5 : y;
-			y = (doubleCompare(y, -0.5)) ? -0.5 : y;
-			y = (doubleCompare(y, 1)) ? 1 : y;
-			y = (doubleCompare(y, -1)) ? -1 : y;
-
-			return true;
-		}
-
-		return false;
-	}
-
-	// Сравнивает 2 double с заданной в
-	// options.getInt(Terminal.PRECISION) точностью
-	boolean doubleCompare(double a, double b) {
-		if (Math.abs(a - b) < 1.0 / Math.pow(10,
-				options.getInt(Tag.PRECISION)))
-			return true;
-		return false;
-	}
-
-	// умножает и делит
-	private double term(boolean get) throws Exception {
-		double left = power(get);
-		for (;;)
-			switch (currTok.name) {
-			case MUL:
-				// случай '*'
-				left *= power(true);
-				break; // этот break относится к switch
-			case DIV:
-				// случай '/'
-				double d = power(true);
-				if (d != 0) {
-					left /= d;
-					break; // этот break относится к switch
-				}
-				error("деление на 0");
-			default:
-				return left;
-			}
-	}
-
-	// складывает и вычитает
-	private double expr(boolean get) throws Exception {
-		double left = term(get);
-		for (;;)
-			// ``вечно''
-			switch (currTok.name) {
-			case PLUS:
-				// случай '+'
-				left += term(true);
-				break; // этот break относится к switch
-			case MINUS:
-				// случай '-'
-				left -= term(true);
-				break; // этот break относится к switch
-			default:
-				lastResult = left;
-				return left;
-			}
-	}
-
-	// Степень a^b
-	private double power(boolean get) throws Exception {
-		double left = factorial(get);
-		switch (currTok.name) {
-		case POW:
-			left = Math.pow(left, power(true));
-		default:
-			return left;
-		}
-	}
-
-	// факториал
-	private double factorial(boolean get) throws Exception {
-		double left = prim(get);
-		for (;;)
-			// ``вечно''
-			switch (currTok.name) {
-			case FACTORIAL:
-				if (left < 0)
-					error("Факториал отрицательного числа не определён!");
-				int t = (int) Math.rint(left); // TODO сделать невозможным
-												// взятие факториала от 4.5,
-												// 4.8, 4.1, ...
-				left = 1.0;
-				while (t != 0) {
-					left *= t--;
-				}
-				getToken(); // для следующих
-				break;
-			default:
-				return left;
-			}
-	}
-
 	// if-else
 	private boolean if_() throws Exception {
 		getToken();
@@ -336,8 +130,6 @@ public class Parser {
 			skipBlock(); // пропусить true brach {}
 		}
 
-		// Левая факторизация, ага
-
 		getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
@@ -347,7 +139,7 @@ public class Parser {
 				skipBlock(); // пропусить false brach {}
 			}
 		} else { // если после if { expr_list } идёт не else
-			return false; // тогда в следующией итерации цикла expr_list мы
+			return false; // тогда в следующией итерации цикла в program() мы
 							// просмотрим уже считанный выше токен, а не будем
 							// считывать новый
 		}
@@ -356,6 +148,7 @@ public class Parser {
 
 	// { expr_list }
 	private void block() throws Exception {
+		// TODO boolean fbrackets = true; после того как уберу skipBlock()
 		getToken();
 		match(Tag.LF); // '{'
 
@@ -376,7 +169,7 @@ public class Parser {
 		error("block() Ожидается RF }");
 	}
 
-	// Пропуск блока {}
+	// TODO будет убрано после создания интерпретатора
 	private boolean skipBlock() throws Exception {
 		int num = 0;
 		Tag ch;
@@ -395,7 +188,7 @@ public class Parser {
 		error("Забыли токен токен LF {");
 		return false;// Ошибка
 	}
-
+	
 	// Функции, не возвращающие значение (void): print, add, del, reset, help,
 	// state
 	private boolean voidFunc() throws Exception {
@@ -502,22 +295,6 @@ public class Parser {
 		}
 	}
 
-	private boolean setname(Tag name) {
-		switch (name) {
-		case ARGS_AUTO_END:
-		case AUTO_END:
-		case PRINT_TOKENS:
-		case PRECISION:
-		case ERRORS:
-		case STRICTED:
-		case AUTO_PRINT:
-		case GREEDY_FUNC:
-			return true;
-		default:
-			return false;
-		}
-	}
-
 	// Установка опций
 	private void set() throws Exception {
 		getToken();
@@ -553,6 +330,22 @@ public class Parser {
 		}
 	}
 
+	private boolean setname(Tag name) {
+		switch (name) {
+		case ARGS_AUTO_END:
+		case AUTO_END:
+		case PRINT_TOKENS:
+		case PRECISION:
+		case ERRORS:
+		case STRICTED:
+		case AUTO_PRINT:
+		case GREEDY_FUNC:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 	// Сброс таблицы переменных в исходное состояние
 	void resetTable() {
 		table.clear();
@@ -594,6 +387,202 @@ public class Parser {
 		output.addln("Текущее состояние:\nПеременных " + table.size());
 		options.printAll();
 	};
+
+	// складывает и вычитает
+	private double expr(boolean get) throws Exception {
+		double left = term(get);
+		for (;;)
+			// ``вечно''
+			switch (currTok.name) {
+			case PLUS:
+				// случай '+'
+				left += term(true);
+				break; // этот break относится к switch
+			case MINUS:
+				// случай '-'
+				left -= term(true);
+				break; // этот break относится к switch
+			default:
+				lastResult = left;
+				return left;
+			}
+	}
+	
+	// умножает и делит
+	private double term(boolean get) throws Exception {
+		double left = power(get);
+		for (;;)
+			switch (currTok.name) {
+			case MUL:
+				// случай '*'
+				left *= power(true);
+				break; // этот break относится к switch
+			case DIV:
+				// случай '/'
+				double d = power(true);
+				if (d != 0) {
+					left /= d;
+					break; // этот break относится к switch
+				}
+				error("деление на 0");
+			default:
+				return left;
+			}
+	}
+
+	// Степень a^b
+	private double power(boolean get) throws Exception {
+		double left = factorial(get);
+		switch (currTok.name) {
+		case POW:
+			left = Math.pow(left, power(true));
+		default:
+			return left;
+		}
+	}
+
+	// факториал
+	private double factorial(boolean get) throws Exception {
+		double left = prim(get);
+		for (;;)
+			// ``вечно''
+			switch (currTok.name) {
+			case FACTORIAL:
+				if (left < 0)
+					error("Факториал отрицательного числа не определён!");
+				int t = (int) Math.rint(left); // TODO сделать невозможным
+												// взятие факториала от 4.5,
+												// 4.8, 4.1, ...
+				left = 1.0;
+				while (t != 0) {
+					left *= t--;
+				}
+				getToken(); // для следующих
+				break;
+			default:
+				return left;
+			}
+	}
+
+	// обрабатывает первичное
+	private double prim(boolean get) throws Exception {
+		if (get)
+			getToken();
+
+		switch (currTok.name) {
+		case NUMBER: { // константа с плавающей точкой
+			double v = numberValue;
+			getToken();// получить следующий токен ...
+			return v;
+		}
+		case USER_DEFINED_NAME: {
+			String name = new String(stringValue); // нужно, ибо expr() может
+													// затереть stringValue
+
+			if (!table.containsKey(name))
+				if (options.getBoolean(Tag.STRICTED))
+					error("Запрещено автоматическое создание переменных в stricted-режиме");
+				else {
+					table.put(name, 0.0); // Если в table нет переменной, то
+											// добавляем её со зачением 0.0
+					output.addln("Создана переменная " + name
+							+ " со значением " + table.get(name));
+				}
+			double v = table.get(name);
+			if (getToken() == Tag.ASSIGN) {
+				v = expr(true);
+				table.put(name, v);
+				output.addln("Значение переменой " + name + " изменено на " + v);
+			}
+			return v;
+		}
+		case MINUS: { // унарный минус
+			return -prim(true);
+		}
+		case LP: {
+			double e = expr(true);
+			match(Tag.RP); // ')'
+			getToken(); // получить следующий токен ...
+			return e;
+		}
+		default: {
+			if (func())
+				return y;
+
+			error("требуется первичное_выражение (нетерминал prim)");
+			return 0;
+		}
+		}
+	}
+
+	private double y; // для временного хранения результата func()
+
+	// функции, возвращающие значение (non-void): sin, cos
+	private boolean func() throws Exception {
+		if (ofRadian(currTok.name)) {
+			Tag funcName = currTok.name; // Запоминаем для дальнейшего
+												// использования
+			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
+				getToken();
+				match(Tag.LP); // Проверка наличия (
+			}
+
+			switch (funcName) {
+			case SIN:
+				y = Math.sin(expr(true)); // следующий токен END для
+											// prim()<-term()<-expr()<-expr_list()
+											// получен в этом вызове expr()
+				break;
+			case COS:
+				y = Math.cos(expr(true)); // следующий токен END для
+											// prim()<-term()<-expr()<-expr_list()
+											// получен в этом вызове expr()
+				break;
+			default:
+				error("Не хватает обработчика для функции "
+						+ funcName.toString());
+			}
+
+			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
+				match(Tag.RP);// Проверка наличия ')' - её оставил expr()
+				getToken(); // считываем токен, следующий за ')'
+			} // если Нежадные, то в currTok останется токен, на котором
+				// "запнулся" expr
+				// Таким образом достигается единообразие оставленного в currTok
+				// токена для не- и жадного режимов
+
+			// Округление до привычных значений
+			y = (doubleCompare(y, 0)) ? 0 : y;
+			y = (doubleCompare(y, 0.5)) ? 0.5 : y;
+			y = (doubleCompare(y, -0.5)) ? -0.5 : y;
+			y = (doubleCompare(y, 1)) ? 1 : y;
+			y = (doubleCompare(y, -1)) ? -1 : y;
+
+			return true;
+		}
+
+		return false;
+	}
+	
+	// Функция от аргумента в радианной мере
+	private boolean ofRadian(Tag name) {
+		switch (name) {
+		case SIN:
+		case COS:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	// Сравнивает 2 double с заданной в
+	// options.getInt(Terminal.PRECISION) точностью
+	boolean doubleCompare(double a, double b) {
+		if (Math.abs(a - b) < 1.0 / Math.pow(10,
+				options.getInt(Tag.PRECISION)))
+			return true;
+		return false;
+	}
 
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException {

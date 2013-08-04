@@ -19,6 +19,40 @@ if_ =
 	
 block =
 	'{'	{ instr } '}'
+
+void_func =
+		print
+	|	add
+	|	del
+	|	reset
+	|	set
+	|	help
+	|	state
+	
+print =
+	PRINT [ expr ]
+
+add =
+	USER_DEFINED_NAME [ '=' expr ]
+	
+del =
+	DEL ( '*' | USER_DEFINED_NAME )
+	
+set =
+	SET setname '=' currTok
+	
+reset =
+	RESET ( '*' | TABLE | setname )
+		
+setname =
+	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS |
+	PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
+	
+help =
+	HELP
+	
+state =
+	STATE
 	
 expr =
 	term { ( '+' | '(+)' | '-' ) term }
@@ -45,37 +79,3 @@ func =
 of_radian =
 		SIN
 	|	COS
-
-void_func =
-		print
-	|	add
-	|	del
-	|	reset
-	|	set
-	|	help
-	|	state
-	
-print =
-	PRINT [ expr ]
-
-add =
-	USER_DEFINED_NAME [ '=' expr ]
-	
-del =
-	DEL ( '*' | USER_DEFINED_NAME )
-	
-reset =
-	RESET ( '*' | TABLE | setname )
-	
-set =
-	SET setname '=' currTok
-	
-setname =
-	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS |
-	PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
-	
-help =
-	HELP
-	
-state =
-	STATE
