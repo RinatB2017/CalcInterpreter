@@ -589,6 +589,7 @@ public class Parser {
 		int errors = options.getInt(Tag.ERRORS);
 		errors++;
 		options.set(Tag.ERRORS, errors);
+		output.flush();
 		throw new MyException(string);
 	}
 
