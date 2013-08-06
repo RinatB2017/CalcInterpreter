@@ -57,8 +57,8 @@ public class Lexer {
 		this.addItem("cos", Tag.COS);
 		this.addItem("!", Tag.FACTORIAL);
 		
-		this.addItem("true", Tag.TRUE);
-		this.addItem("false", Tag.FALSE);
+		this.addItem("true", Tag.BOOLEAN);
+		this.addItem("false", Tag.BOOLEAN);
 		
 		this.addItem("exit", Tag.EXIT);
 		this.addItem("quit", Tag.EXIT);
@@ -89,7 +89,8 @@ public class Lexer {
 		this.addItem("auto_print", Tag. AUTO_PRINT);
 		this.addItem("greedy_func", Tag. GREEDY_FUNC);
 		
-		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.WORD);
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.NAME);
+		this.addItem("[0-9]+[0-9]*", Tag.INTEGER);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь - заэкранированная точка
 		this.addItem("\\+", Tag.PLUS);
 		this.addItem("-", Tag.MINUS);
@@ -179,17 +180,19 @@ public class Lexer {
 					default:
 						if(!withinComment){
 							switch(Prev.name){
-							//case INTEGER: // TODO UNCOMMENT
-							//	break;
+							case INTEGER:
+								tokens.add(new IntegerT(Prev.name, Integer.parseInt(Prev.value)));
+								break;
 							case DOUBLE:
 								tokens.add(new DoubleT(Prev.name, Double.parseDouble(Prev.value)));
 								break;
-							//case BOOLEAN: // TODO UNCOMMENT
-							//	break;
-							case WORD:
+							case BOOLEAN:
+								tokens.add(new BooleanT(Prev.name, Boolean.parseBoolean(Prev.value)));
+								break;
+							case NAME:
 								tokens.add(new WordT(Prev.name, Prev.value));
 								break;
-							default: // TODO ПОДУМАТЬ
+							default:
 								tokens.add(new Token(Prev.name));
 								break;
 								

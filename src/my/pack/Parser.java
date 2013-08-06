@@ -98,7 +98,7 @@ public class Parser {
 	        getToken();//получить следующий токен ...
 	        return v;
 	    	}
-	    case WORD:
+	    case NAME:
 	    {
 			final String name = ((WordT) currTok).value; // нужно, ибо expr() может затереть stringValue 
 			
@@ -410,7 +410,7 @@ public class Parser {
 	// Добавляет переменную
 	private void add() throws Exception{
 		getToken();
-		if(currTok.name==Tag.WORD){
+		if(currTok.name==Tag.NAME){
 			final String varName = ((WordT) currTok).value; // нужно, ибо expr() может затереть stringValue 
 			getToken();
 			if(currTok.name==Tag.ASSIGN){
@@ -428,7 +428,7 @@ public class Parser {
 		if(currTok.name==Tag.MUL){
 			table.clear();
 			System.out.println("Все переменные удалены!");
-		}else if(currTok.name!=Tag.WORD) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
+		}else if(currTok.name!=Tag.NAME) error("После del ожидается токен имя_переменной NAME либо токен MUL *");
 		
 		final String name = ((WordT) currTok).value;
 		

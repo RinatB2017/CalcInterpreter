@@ -1,10 +1,10 @@
 package lexer;
 
 public class BooleanT extends Token{
-
-	public BooleanT(Tag n) {
+	final public boolean value;
+	public BooleanT(Tag n, boolean value) {
 		super(n);
-		// TODO Auto-generated constructor stub
+		this.value = value;
 	}
 	
 
