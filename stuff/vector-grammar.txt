@@ -1,0 +1,14 @@
+prim:
+	NUMBER
+	TRUE
+	FALSE
+	USER_DEFINED_NAME
+	USER_DEFINED_NAME '=' expr
+	-prim
+	'(' expr ')'
+	'(' expr vector_body ')'
+	func
+	
+vector_body:
+	',' expr vector_body
+	e

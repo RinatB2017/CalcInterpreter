@@ -53,13 +53,23 @@ public class Lexer {
 
 		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks() возвращает истину на первом совпадении
+		this.addItem("sin", Tag.SIN);
+		this.addItem("cos", Tag.COS);
 		this.addItem("!", Tag.FACTORIAL);
 		
 		this.addItem("true", Tag.BOOLEAN);
+		this.addItem("false", Tag.BOOLEAN);
 		
 		this.addItem("exit", Tag.EXIT);
 		this.addItem("quit", Tag.EXIT);
 		this.addItem("shutdown", Tag.EXIT);
+		this.addItem("print", Tag.PRINT);
+		this.addItem("add", Tag.ADD);
+		this.addItem("del", Tag.DEL);
+		this.addItem("reset", Tag.RESET);
+		this.addItem("set", Tag.SET);
+		this.addItem("help", Tag.HELP);
+		this.addItem("state", Tag.STATE);
 		this.addItem("if", Tag.IF);
 		this.addItem("else", Tag.ELSE);
 		
@@ -68,10 +78,24 @@ public class Lexer {
 		this.addItem("/\\*", Tag.L_COMMENT); // начало многострокового комментария "/*"
 		this.addItem("\\*/", Tag.R_COMMENT); // конец многострокового комментария "*/"
 		
-		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.WORD);
+		this.addItem("args_auto_end", Tag. ARGS_AUTO_END);
+		this.addItem("auto_end", Tag. AUTO_END);
+		this.addItem("print_tokens", Tag. PRINT_TOKENS);
+		
+		this.addItem("var_table", Tag.TABLE);
+		this.addItem("precision", Tag. PRECISION);
+		this.addItem("errors", Tag. ERRORS);
+		this.addItem("stricted", Tag. STRICTED);
+		this.addItem("auto_print", Tag. AUTO_PRINT);
+		this.addItem("greedy_func", Tag. GREEDY_FUNC);
+		
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.NAME);
+		this.addItem("[0-9]+[0-9]*", Tag.INTEGER);
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь - заэкранированная точка
-		this.addItem("\\+", Tag.PLUSMINUS);
-		this.addItem("\\*", Tag.MULDIV);
+		this.addItem("\\+", Tag.PLUS);
+		this.addItem("-", Tag.MINUS);
+		this.addItem("\\*", Tag.MUL);
+		this.addItem("/", Tag.DIV);
 		this.addItem("\\^", Tag.POW);
 		this.addItem(";", Tag.END);
 		this.addItem("=", Tag.ASSIGN);
@@ -155,19 +179,20 @@ public class Lexer {
 						break;
 					default:
 						if(!withinComment){
-							switch(Cur.name){
-							//case INTEGER: // TODO UNCOMMENT
-							//	break;
+							switch(Prev.name){
+							case INTEGER:
+								tokens.add(new IntegerT(Prev.name, Integer.parseInt(Prev.value)));
+								break;
 							case DOUBLE:
 								tokens.add(new DoubleT(Prev.name, Double.parseDouble(Prev.value)));
 								break;
 							case BOOLEAN:
-								tokens.add(new BooleanT(Prev.name, Prev.value));
+								tokens.add(new BooleanT(Prev.name, Boolean.parseBoolean(Prev.value)));
 								break;
-							case WORD:
+							case NAME:
 								tokens.add(new WordT(Prev.name, Prev.value));
 								break;
-							default: // TODO ПОДУМАТЬ
+							default:
 								tokens.add(new Token(Prev.name));
 								break;
 								

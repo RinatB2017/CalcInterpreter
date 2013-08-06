@@ -1,0 +1,37 @@
+program	-> block | stmt
+block	-> { decls stmts }
+decls	-> decls decl | e
+decl	-> type id ;
+type	-> type [ num ] | basic
+stmts	-> stmts stmt | e
+
+stmt	-> loc = bool ; // автосоздание м. работать отсюда
+		|  bool
+		|  if ( bool ) stmt
+		|  if ( bool ) stmt else stmt
+		|  while ( bool ) stmt
+		|  do stmt while ( bool ) ;
+		|  break ;
+		|  block
+		|  sys_equation
+
+Ёто:
+if(true) x-y===7, x+y===8;
+
+sys_equation ->
+	equation { ',' equation } ';'
+	
+equation ->
+	bool '===' bool // проверка типов и значений отсечЄт ненуравнени€, например 2===6, true===true
+
+ѕ–» –”»“№ mod2 (+), мои ф-ии, voidfunc и векторы, проценты и факториал, степень
+loc			-> loc [ bool ] | id
+bool		-> bool || join | join
+join		-> join && equality | equality
+equality	-> equality == rel | equality != rel | rel
+rel			-> expr < expr | expr <= expr | expr >= expr |
+				expr > expr | expr
+expr		-> expr + term | expr - term | expr (+) term | term
+term		-> term * unary | term / unary | unary
+unary		-> ! unary | - unary | factor
+factor		-> ( bool ) | loc | num | real | true | false

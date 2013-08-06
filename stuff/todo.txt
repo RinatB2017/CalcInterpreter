@@ -1,0 +1,12 @@
+сделать необязательные скобки в block
+stricted==on by default подумать
+добавить complex
+
+сделать тесты для файла
+
+сохранение и загрузка текущего состояния ("save state filename.ext", "save table filename.ext", "save * filename.ext", 
+ "load filename.ext" при помощи сериализации
+ // переименовать терминал STATE->INFO, ...)
+
+help state, help if, ...
+BigDecimal

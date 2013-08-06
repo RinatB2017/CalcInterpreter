@@ -15,6 +15,9 @@ import lexer.Token;
 	enum Terminals implements Terminals {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS};
 	enum Terminals implements Terminals {PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
 */
+
+enum OptId {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS, PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC};
+
 class Option<T>{
 	T defaultValue;
 	
@@ -26,31 +29,31 @@ class Option<T>{
 
 @SuppressWarnings("rawtypes")
 public class Options {
-	private HashMap<Tag, Option> opts = new HashMap<Tag, Option>(); // Ид : Опция
-	private HashMap<Tag, Object> optsVals = new HashMap<Tag, Object>(); // Ид : Значение
+	private HashMap<OptId, Option> opts = new HashMap<OptId, Option>(); // Ид : Опция
+	private HashMap<OptId, Object> optsVals = new HashMap<OptId, Object>(); // Ид : Значение
 	
 	// Конструктор
 	@SuppressWarnings("unchecked")
 	public Options(){
-		this.add(Tag.ARGS_AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
-		this.add(Tag.AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
-		this.add(Tag.PRINT_TOKENS, new Option(true)); // Вывод найденных токенов для просканированной строки
+		this.add(OptId.ARGS_AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
+		this.add(OptId.AUTO_END, new Option(true)); // Автодобавление токена END в конце считанной последовательности
+		this.add(OptId.PRINT_TOKENS, new Option(true)); // Вывод найденных токенов для просканированной строки
 		
-		this.add(Tag.PRECISION, new Option(5)); // Отрицательная степень 10, используемая при сравнении малых значений методом doubleCompare()
-		this.add(Tag.ERRORS, new Option(0)); // Счётчик возникших ошибок
-		this.add(Tag.STRICTED, new Option(false)); // Запрет автосоздания переменных
-		this.add(Tag.AUTO_PRINT, new Option(true)); // Автоматический вывод значений выражений
-		this.add(Tag.GREEDY_FUNC, new Option(false)); // Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
+		this.add(OptId.PRECISION, new Option(5)); // Отрицательная степень 10, используемая при сравнении малых значений методом doubleCompare()
+		this.add(OptId.ERRORS, new Option(0)); // Счётчик возникших ошибок
+		this.add(OptId.STRICTED, new Option(false)); // Запрет автосоздания переменных
+		this.add(OptId.AUTO_PRINT, new Option(true)); // Автоматический вывод значений выражений
+		this.add(OptId.GREEDY_FUNC, new Option(false)); // Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
 	}
 		
 	// Добавление опций
-	private void add(Tag id, Option o){
+	private void add(OptId id, Option o){
 		opts.put(id, o);
 		optsVals.put(id, o.defaultValue);
 	}
 	
 	// Перезапись значений. Object должен совпадать с типом <T>@Option
-	public void set(Tag id, Object o) throws MyException{
+	public void set(OptId id, Object o) throws MyException{
 		if(o.getClass()!=optsVals.get(id).getClass()){ // проверка типа
 			//System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
 			throw new MyException("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
@@ -84,16 +87,16 @@ public class Options {
 	}*/
 	
 	// Сброс
-	public void reset(Tag id){
+	public void reset(OptId id){
 		Option getted4getDefault = opts.get(id);
 		optsVals.put(id, getted4getDefault.defaultValue);
 		System.out.println("Сброшена опция "+id.toString()+ " в "+getted4getDefault.defaultValue);
 	}
 		
 	public void resetAll(){
-		Iterator<Entry<Tag, Object>> it = optsVals.entrySet().iterator();
+		Iterator<Entry<OptId, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()){
-			Entry<Tag, Object> li = it.next();
+			Entry<OptId, Object> li = it.next();
 		    //System.out.println(""+li.getKey() + " " + li.getValue());
 			reset(li.getKey());
 		}
@@ -101,23 +104,23 @@ public class Options {
 	
 	// Вывод Ид : Значение
 	public void printAll(){
-		Iterator<Entry<Tag, Object>> it = optsVals.entrySet().iterator();
+		Iterator<Entry<OptId, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()){
-			Entry<Tag, Object> li = it.next();
+			Entry<OptId, Object> li = it.next();
 		    System.out.println(""+li.getKey() + " " + li.getValue());
 		}
 	}
 	
 	// Получение значения
-	public int getInt(Tag id){
+	public int getInt(OptId id){
 		return (int) optsVals.get(id);
 	}
 	
-	public double getDouble(Tag id){
+	public double getDouble(OptId id){
 		return (double) optsVals.get(id);
 	}
 	
-	public boolean getBoolean(Tag id){
+	public boolean getBoolean(OptId id){
 		return (boolean) optsVals.get(id);
 	}
 }

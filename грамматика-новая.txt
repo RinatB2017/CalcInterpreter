@@ -1,0 +1,148 @@
+﻿http://ru.wikipedia.org/wiki/Расширенная_форма_Бэкуса_—_Наура
+Терминалы записаны большими буквами, нетерминалы - маленькими.
+Вместо некоторых терминалов (MUL, DIV, LP, ...) для наглядности
+записаны соответствующие им лексемы, заключённые в '':
+'*', '/', '(', ...
+Начиная с символов '//' - и до конца строки - комметарий
+
+В stricted-режимер для строки aa^2 + b^3 - log(x-1)
+интерпретатор построит и вернёт тип polynom.
+Тип vector используется для задания векторов, матриц, ...
+Типы vector и polynom обрабатываются одними ф-ями,
+однако тип polynom введён для того, чтобы отличаться от vector,
+polynom используется для решения уравнений.
+Вместе с polynom операторы '>', '<', '==', ... используются для задания уравнений.
+Вместе с vector - по своему прямому назначению - для сравнения векторов
+
+program = 
+	{ instr } EXIT
+
+instr = 
+		';'
+	|	if_
+	|	do_
+	|	while_
+	|	void_func ';'
+	|	sys_equations
+
+block = 
+		'{'	{ instr } '}'
+	|	instr // ';' не нужен из-за if(1){if(2){}}
+	
+if_ =
+	'if' '(' bool ')' block  [ 'else' block ]
+
+while_ =
+	'while' '(' bool ')' block
+	
+do_ =
+	'do' block 'while' '(' bool ')' ';' 
+
+// За счёт проверки типов 
+sys_equations =
+	bool { ',' bool } ';'
+	
+bool =
+	rel { ( '==' | '!=' ) rel }
+
+rel	=
+	expr { ( '<' | '<=' | '>=' | '>' ) expr }
+	
+expr =
+	term { ( '+' | '(+)' | '-' ) term }
+	
+term =
+	persent { ( '*' | '/' ) persent }
+	
+// 100+100+2^3% == 216
+persent =
+	power [ '%' ]
+
+// 3!^2 == 36, 2^3^4 = 2^(3^4)
+power =
+	factorial [ '^' power ]
+
+factorial =
+	prim { '!' }
+	
+prim =
+		NUM
+	|	DOUBLE
+	|	BOOLEAN
+	|	vector // (1, 2, 3) или одновектор (4-1), что без вопросов приводится к int
+	|	'.' NAME
+	|	NAME right
+	|	'-' prim
+	|	predefined_func
+	
+right =
+		'=' bool // a=8-9*7, a = (1, 2, 3)
+	|	'(' func_подст ')' // a(e, 99), int(87.6), vector(a^2+b^3+log(c-5), ...
+	|	{ '[' expr ']' } // a[7-5][1] или a проверка типов допустит только int
+// Функция-приведение vector(a^2+b^3+log(c-5) используется для того, чтобы сравнить полиномы, т. к. два полинома, разделённые знаком (не)равенства образуют уравнение
+	
+vector =
+	'(' func_подст ')' [ postfix_func ]
+	
+func_args =
+	NAME { ',' NAME }
+
+func_подст =
+	bool { ',' bool }
+
+predefined_func =
+		of_radian '(' expr ')'
+	|	returns_radian '(' expr ')'
+	|	dimensionless '(' expr ')' // безразмерные ф-ии, например LOG
+
+// Безразмерные ф-ии
+dimensionless =
+		D // дифференциал
+	|	INTEGRATE // интеграл
+	|	LOG
+
+of_radian =
+		SIN
+	|	COS
+
+returns_radian =
+		ARCSIN
+	|	ARCCOS
+
+void_func =
+		print
+	|	add
+	|	del
+	|	reset
+	|	set
+	|	help
+	|	state
+	
+print =
+	PRINT [ bool ]
+
+add =
+		ADD NAME [ '=' bool] // для обычных переменных или полиномов-векторов, получающихся из многочленов, эта переменная может присваивать значение любого примитивного типа.
+	|	ADD NAME '(' func_args ')' '=' expr // определение ф-ии, например tg(x) = sin(x) '/' cos(x).
+		В интерпретаторе для избежания получения значения x используем НОВОЕ ОКРУЖЕНИЕ, содержащее ссылки на подставляемую переменную.
+		Если нужно получить значение x:
+		tg(x) = sin(x) '/' cos(.x)
+	
+del =
+	DEL ( '*' | NAME )
+	
+reset =
+	RESET ( '*' | TABLE | setname )
+	
+set =
+	SET setname '=' currTok
+	
+setname =
+	ARGS_AUTO_END | AUTO_END | PRINT_TOKENS |
+	PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
+	
+help =
+	HELP
+	
+state =
+	STATE
