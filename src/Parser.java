@@ -30,8 +30,8 @@ public class Parser {
 		this.output = output;
 	}
 
-	private double numberValue;
-	private String stringValue;
+//////////////////////////////////////////////////////////private double numberValue;
+//////////////////////////////////////////////////////////private String stringValue;
 	private boolean echoPrint = false; // Используется для эхопечати токенов при
 										// их чтении методом getToken() при
 										// void_func() : print
