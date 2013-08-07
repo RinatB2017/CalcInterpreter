@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 сделать необязательными скобки в block
 сделать Interpretator
 сделать тесты для файла
@@ -5,5 +6,17 @@
  "load filename.ext" при помощи сериализации
  // переименовать терминал STATE->INFO, ...)
  
+=======
+сделать необязательные скобки в block
+stricted==on by default подумать
+добавить complex
+
+сделать тесты для файла
+
+сохранение и загрузка текущего состояния ("save state filename.ext", "save table filename.ext", "save * filename.ext", 
+ "load filename.ext" при помощи сериализации
+ // переименовать терминал STATE->INFO, ...)
+
+>>>>>>> refs/heads/Types
 help state, help if, ...
 BigDecimal

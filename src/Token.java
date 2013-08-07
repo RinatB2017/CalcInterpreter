@@ -1,28 +1,15 @@
-/**
- * Класс токен, представляющий собой пару Имя : Значение
- * 
- * @author Ник
- */
+
+// Пара Имя-Значение
 public class Token {
-	/**
-	 * */
-	public final Tag name; // Запрет изменения поля после того как оно
-								// будет установлено
-	public final String value;
+	public Tag name;
 
-	/**
-	 * @param n
-	 *            Терминал / Имя токена / etc...
-	 * @param v
-	 *            Строковая лексема / Значение
-	 */
-	public Token(Tag n, String v) {
+	public Token(Tag n) {
 		name = n;
-		value = v;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Token[name=" + name.toString() + ", value=\"" + value + "\"]";
+		//return "Token[name=" + name.toString() + ", value=\"" + value + "\"]";
+		return "Token[name=" + name.toString()+ "]";
 	}
 }

@@ -92,11 +92,11 @@ public class Buffer {
 					str = stdin.readLine(); // Считываем строку..., null когда
 											// строки закончились
 					if (str == null)
-						return new Token(Tag.EXIT, "");
+						return new Token(Tag.EXIT);
 					lineNum++;
 					break;
 				case NOTHING:
-					return new Token(Tag.EXIT, "");
+					return new Token(Tag.EXIT);
 				}
 
 				if (!str.isEmpty()) {
@@ -105,14 +105,14 @@ public class Buffer {
 					// autoending :)
 					switch (now) {
 					case ARGS:
-						if (options.getBoolean(Tag.ARGS_AUTO_END))
-							tokens.add(new Token(Tag.END, ";")); // Автодобавление
+						if (options.getBoolean(Id.ARGS_AUTO_END))
+							tokens.add(new Token(Tag.END)); // Автодобавление
 																		// токена
 																		// END
 						break;
 					case STDIN:
-						if (options.getBoolean(Tag.AUTO_END))
-							tokens.add(new Token(Tag.END, ";")); // Автодобавление
+						if (options.getBoolean(Id.AUTO_END))
+							tokens.add(new Token(Tag.END)); // Автодобавление
 																		// токена
 																		// END
 						break;
@@ -120,7 +120,7 @@ public class Buffer {
 						break;
 					}
 
-					if (options.getBoolean(Tag.PRINT_TOKENS))
+					if (options.getBoolean(Id.PRINT_TOKENS))
 						printTokens();
 				}
 

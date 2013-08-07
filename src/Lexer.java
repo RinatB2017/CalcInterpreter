@@ -12,6 +12,16 @@ import java.util.regex.Pattern;
  * @author Ник
  */
 
+class TaggedLexeme {
+	public final Tag name;
+	public final String value; // TODO Stringbuilder
+
+	public TaggedLexeme(Tag name, String value) {
+		this.value = value;
+		this.name = name;
+	}
+}
+
 public class Lexer {
 
 	/**
@@ -45,12 +55,10 @@ public class Lexer {
 		// Заполняем регулярки
 		// строчные терминалы должны быть первыми, т. к. isMatchWithMasks()
 		// возвращает истину на первом совпадении
-		this.addItem("sin", Tag.SIN);
-		this.addItem("cos", Tag.COS);
 		this.addItem("!", Tag.FACTORIAL);
 
-		this.addItem("true", Tag.TRUE);
-		this.addItem("false", Tag.FALSE);
+		this.addItem("true", Tag.BOOLEAN);
+		this.addItem("false", Tag.BOOLEAN);
 
 		this.addItem("exit", Tag.EXIT);
 		this.addItem("quit", Tag.EXIT);
@@ -73,22 +81,13 @@ public class Lexer {
 		this.addItem("\\*/", Tag.R_COMMENT); // конец многострокового
 													// комментария "*/"
 
-		this.addItem("args_auto_end", Tag.ARGS_AUTO_END);
-		this.addItem("auto_end", Tag.AUTO_END);
-		this.addItem("print_tokens", Tag.PRINT_TOKENS);
 
-		this.addItem("var_table", Tag.TABLE);
-		this.addItem("precision", Tag.PRECISION);
-		this.addItem("errors", Tag.ERRORS);
-		this.addItem("stricted", Tag.STRICTED);
-		this.addItem("auto_print", Tag.AUTO_PRINT);
-		this.addItem("greedy_func", Tag.GREEDY_FUNC);
-
-		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.USER_DEFINED_NAME);
-		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.NUMBER); // Здесь
-																		// -
-																		// заэкранированная
+		this.addItem("[A-Za-z_]+[A-Za-z_0-9]*", Tag.NAME);
+		this.addItem("[0-9]+[0-9]*", Tag.INTEGER);
+		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь
+																		// - заэкранированная
 																		// точка
+
 		this.addItem("\\+", Tag.PLUS);
 		this.addItem("-", Tag.MINUS);
 		this.addItem("\\*", Tag.MUL);
@@ -107,7 +106,7 @@ public class Lexer {
 													// токены
 	}
 
-	private Token Cur = null; // Текущий полученный токен
+	private TaggedLexeme Cur = null; // Текущий полученный токен
 
 	/**
 	 * Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
@@ -131,7 +130,7 @@ public class Lexer {
 		int start = 0; // индекс первого символа, который войдёт в подстроку
 		int end = 1; // индекс первого символа за концом подстроки, который не
 						// войдёт в подстроку
-		Token Prev = null; // Предыдущий токен
+		TaggedLexeme Prev = null; // Предыдущий токен
 		boolean prevMatched = false;
 
 		for (boolean isContinue = true; isContinue;) { // Наращиваем подстроки
@@ -219,7 +218,28 @@ public class Lexer {
 					break;
 				default:
 					if (!withinComment) {
-						tokens.add(new Token(Prev.name, Prev.value));
+						switch (Prev.name) {
+						case INTEGER:
+							tokens.add(new IntegerT(Prev.name, Integer
+									.parseInt(Prev.value)));
+							break;
+						case DOUBLE:
+							tokens.add(new DoubleT(Prev.name, Double
+									.parseDouble(Prev.value)));
+							break;
+						case BOOLEAN:
+							tokens.add(new BooleanT(Prev.name, Boolean
+									.parseBoolean(Prev.value)));
+							break;
+						case NAME:
+							tokens.add(new WordT(Prev.name, Prev.value));
+							break;
+						default:
+							tokens.add(new Token(Prev.name));
+							break;
+
+						}
+
 					}
 					break;
 				}
@@ -250,7 +270,7 @@ public class Lexer {
 				// Эта ссылка должна быть полем класса, а не аргументом метода,
 				// для того чтобы ниженаписанное присвоение было видно в scan()
 				// http://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
-				Cur = new Token(tm.name, substr);
+				Cur = new TaggedLexeme(tm.name, substr);
 
 				// System.out.println("" + Cur.name + " " + Cur.value+"\n");
 				return true;

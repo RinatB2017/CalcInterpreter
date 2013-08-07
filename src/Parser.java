@@ -30,8 +30,9 @@ public class Parser {
 		this.output = output;
 	}
 
-//////////////////////////////////////////////////////////private double numberValue;
-//////////////////////////////////////////////////////////private String stringValue;
+	/*private double numberValue;
+	private String stringValue;
+	*/
 	private boolean echoPrint = false; // Используется для эхопечати токенов при
 										// их чтении методом getToken() при
 										// void_func() : print
@@ -43,17 +44,18 @@ public class Parser {
 	 */
 	private Tag getToken() throws Exception {
 		if (echoPrint && currTok.name != Tag.END)
-			output.append(currTok.value + ' '); // Печать предыдущего считанного
+			output.append(currTok.toString() + ' '); // Печать предыдущего считанного
 												// токена, т. к. в exprList()
 												// токен уже считан до включения
 												// флага echoPrint
 
 		currTok = buf.getToken();
 
-		if (currTok.name == Tag.NUMBER)
+		/*if (currTok.name == Tag.INTEGER)
 			numberValue = Double.parseDouble(currTok.value);
-		if (currTok.name == Tag.USER_DEFINED_NAME)
+		if (currTok.name == Tag.NAME)
 			stringValue = currTok.value;
+		*/
 		return currTok.name;
 	}
 
@@ -100,11 +102,11 @@ public class Parser {
 			if (voidFunc()) {
 			} else { // expr или любой другой символ, который будет оставлен в
 						// currTok
-				if (options.getBoolean(Tag.AUTO_PRINT))
+				if (options.getBoolean(Id.AUTO_PRINT))
 					echoPrint = true; // ... включаем эхо-печать в
 										// this.getToken() ...
 				double v = expr(false);
-				if (options.getBoolean(Tag.AUTO_PRINT))
+				if (options.getBoolean(Id.AUTO_PRINT))
 					output.finishAppend("= " + v);
 				echoPrint = false; // ... а теперь выключаем
 			}
@@ -260,8 +262,8 @@ public class Parser {
 	// Добавляет переменную
 	private void add() throws Exception {
 		getToken();
-		match(Tag.USER_DEFINED_NAME);
-		String varName = new String(stringValue); // ибо stringValue может
+		match(Tag.NAME);
+		String varName = new String(((WordT)currTok).value); // ибо stringValue может
 													// затереться при вызове
 													// expr()
 		output.add("Создана переменная " + varName);
@@ -277,13 +279,14 @@ public class Parser {
 
 	// Удаляет переменную
 	private void del() throws Exception {
+		
 		getToken();
 		if (currTok.name == Tag.MUL) {
 			table.clear();
 			output.addln("Все переменные удалены!");
 		} else
-			match(Tag.USER_DEFINED_NAME);
-
+			match(Tag.NAME);
+		String stringValue = new String(((WordT)currTok).value);
 		if (!table.isEmpty()) {
 			if (!table.containsKey(stringValue)) {
 				output.addln("del: Переменной " + stringValue
@@ -374,7 +377,7 @@ public class Parser {
 				+ "\tterm\n" + "\n" + "term:\n" + "\tterm / pow\n"
 				+ "\tterm * pow\n" + "\tpow\n" + "\n" + "pow:\n"
 				+ "\tpow ^ prim\n" + "\tprim\n" + "\n" + "prim:\n"
-				+ "\tNUMBER\n" + "\tNAME\n" + "\tNAME = expr\n" + "\t-prim\n"
+				+ "\tINTEGER\n" + "\tNAME\n" + "\tNAME = expr\n" + "\t-prim\n"
 				+ "\t(expr)\n" + "\tfunc\n" + "\n" + "func:\n" + "\tsin expr\n"
 				+ "\tcos expr\n" + "\n" + "void_func:\n" + "\tprint\n"
 				+ "\tadd\n" + "\tdel\n" + "\treset\n" + "\tset\n" + "\tunset\n"
@@ -470,17 +473,17 @@ public class Parser {
 			getToken();
 
 		switch (currTok.name) {
-		case NUMBER: { // константа с плавающей точкой
-			double v = numberValue;
+		case INTEGER: { // константа с плавающей точкой
+			double v = ((IntegerT)currTok).value;
 			getToken();// получить следующий токен ...
 			return v;
 		}
-		case USER_DEFINED_NAME: {
-			String name = new String(stringValue); // нужно, ибо expr() может
+		case NAME: {
+			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
 			if (!table.containsKey(name))
-				if (options.getBoolean(Tag.STRICTED))
+				if (options.getBoolean(Id.STRICTED))
 					error("Запрещено автоматическое создание переменных в stricted-режиме");
 				else {
 					table.put(name, 0.0); // Если в table нет переменной, то
@@ -522,7 +525,7 @@ public class Parser {
 		if (ofRadian(currTok.name)) {
 			Tag funcName = currTok.name; // Запоминаем для дальнейшего
 												// использования
-			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
+			if (!options.getBoolean(Id.GREEDY_FUNC)) {
 				getToken();
 				match(Tag.LP); // Проверка наличия (
 			}
@@ -543,7 +546,7 @@ public class Parser {
 						+ funcName.toString());
 			}
 
-			if (!options.getBoolean(Tag.GREEDY_FUNC)) {
+			if (!options.getBoolean(Id.GREEDY_FUNC)) {
 				match(Tag.RP);// Проверка наличия ')' - её оставил expr()
 				getToken(); // считываем токен, следующий за ')'
 			} // если Нежадные, то в currTok останется токен, на котором
@@ -579,16 +582,16 @@ public class Parser {
 	// options.getInt(Terminal.PRECISION) точностью
 	boolean doubleCompare(double a, double b) {
 		if (Math.abs(a - b) < 1.0 / Math.pow(10,
-				options.getInt(Tag.PRECISION)))
+				options.getInt(Id.PRECISION)))
 			return true;
 		return false;
 	}
 
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException {
-		int errors = options.getInt(Tag.ERRORS);
+		int errors = options.getInt(Id.ERRORS);
 		errors++;
-		options.set(Tag.ERRORS, errors);
+		options.set(Id.ERRORS, errors);
 		output.flush();
 		throw new MyException(string);
 	}
@@ -602,7 +605,7 @@ public class Parser {
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {
-		return options.getInt(Tag.ERRORS);
+		return options.getInt(Id.ERRORS);
 	}
 
 }
