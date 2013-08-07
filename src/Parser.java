@@ -301,9 +301,9 @@ public class Parser {
 	// Установка опций
 	private void set() throws Exception {
 		getToken();
-		if (!setname(currTok.name))
+		if (setname(currTok)==null)
 			error("set: неверная опция");
-		Tag what = currTok.name;
+		Id what = setname(currTok);
 
 		getToken();
 		match(Tag.ASSIGN);
@@ -322,20 +322,30 @@ public class Parser {
 			resetTable();
 			output.addln("Всё сброшено.");
 			break;
-		case TABLE:
-			resetTable();
-			output.addln("Таблица переменных сброшена.");
+		case NAME:
+			if(((WordT)currTok).value.equals("table")){
+				resetTable();
+				output.addln("Таблица переменных сброшена.");
+			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));
 			break;
 		default:
-			if (!setname(currTok.name))
+			if (setname(currTok)==null)
 				error("reset: неверная опция");
-			options.reset(currTok.name);
+			options.reset(setname(currTok));
 		}
 	}
 
-	private boolean setname(Tag name) {
-		switch (name) {
-		case ARGS_AUTO_END:
+	Id setname(Token t) {
+		for(Id i: Id.values()){
+			System.out.println("trying "+i.toString());
+			if(((WordT)t).value.toLowerCase().equals(i.toString().toLowerCase())){
+				System.out.println("match on "+i.toString());
+				return i;
+			}
+		}
+		return null;
+		
+		/*case ARGS_AUTO_END:
 		case AUTO_END:
 		case PRINT_TOKENS:
 		case PRECISION:
@@ -346,7 +356,7 @@ public class Parser {
 			return true;
 		default:
 			return false;
-		}
+		*/
 	}
 	
 	// Сброс таблицы переменных в исходное состояние

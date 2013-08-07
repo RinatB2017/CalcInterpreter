@@ -235,7 +235,7 @@ public class Lexer {
 							tokens.add(new WordT(Prev.name, Prev.value));
 							break;
 						default:
-							tokens.add(new Token(Prev.name));
+							tokens.add(new Token(Prev.name, Prev.value));
 							break;
 
 						}

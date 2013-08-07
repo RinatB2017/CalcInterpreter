@@ -19,7 +19,7 @@ public class Executor {
 		Lexer l = new Lexer();
 		Buffer b = new Buffer(l, args, stdin, o, output);
 		Parser p = new Parser(b, o, output);
-
+		
 		while (true) {
 			try {
 				p.program();
