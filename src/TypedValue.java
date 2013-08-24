@@ -1,4 +1,5 @@
 
+
 public class TypedValue {
 	private Object o;
 	
@@ -19,4 +20,8 @@ public class TypedValue {
 		return (String) o;
 	}
 	
+	@Override
+	public String toString(){
+		
+	}
 }

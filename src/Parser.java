@@ -18,12 +18,13 @@ public class Parser {
 									// методом getToken()
 	private Buffer buf = null;
 	private Options options = null;
-	private HashMap<String, Double> table; // Таблица переменных
+	private HashMap<String, TypedValue> table; // Таблица переменных
 	private OutputSystem output;
+	private Interpreter interpreter;
 
 	// Конструктор
 	public Parser(Buffer buf, Options options, OutputSystem output) {
-		table = new HashMap<String, Double>();
+		table = new HashMap<String, TypedValue>();
 		resetTable();
 		this.buf = buf;
 		this.options = options;
@@ -105,7 +106,7 @@ public class Parser {
 				if (options.getBoolean(Id.AUTO_PRINT))
 					echoPrint = true; // ... включаем эхо-печать в
 										// this.getToken() ...
-				double v = expr(false);
+				TypedValue v = expr(false);
 				if (options.getBoolean(Id.AUTO_PRINT))
 					output.finishAppend("= " + v);
 				echoPrint = false; // ... а теперь выключаем
@@ -121,7 +122,7 @@ public class Parser {
 		getToken();
 		match(Tag.LP); // '('
 
-		double condition = expr(true);
+		TypedValue condition = expr(true);
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его
 		// анализируем
 		match(Tag.RP); // ')'
@@ -243,17 +244,16 @@ public class Parser {
 				output.addln("table is empty!");
 			} else {
 				output.addln("[table]");
-				Iterator<Entry<String, Double>> it = table.entrySet()
-						.iterator();
+				Iterator<Entry<String, TypedValue>> it = table.entrySet().iterator();
 				while (it.hasNext()) {
-					Entry<String, Double> li = it.next();
+					Entry<String, TypedValue> li = it.next();
 					output.addln("" + li.getKey() + " " + li.getValue());
 				}
 				output.addln("[/table]");
 			}
 		} else { // b. выводим значение expression
 			echoPrint = true;
-			double v = expr(false); // expr() оставляет токен в currTok.name ...
+			TypedValue v = expr(false); // expr() оставляет токен в currTok.name ...
 			output.finishAppend("= " + v);
 			echoPrint = false;
 		}
@@ -272,7 +272,7 @@ public class Parser {
 			table.put(varName, expr(true)); // expr() оставляет токен в
 											// currTok.name ...
 		} else if (currTok.name == Tag.END) {
-			table.put(varName, 0.0);
+			table.put(varName, new TypedValue(0));
 		}
 		output.addln(" со значением " + table.get(varName));
 	}
@@ -362,9 +362,9 @@ public class Parser {
 	// Сброс таблицы переменных в исходное состояние
 	void resetTable() {
 		table.clear();
-		table.put("e", Math.E);
-		table.put("pi", Math.PI);
-		table.put("ans", lastResult);
+		table.put("e", new TypedValue(Math.E));
+		table.put("pi", new TypedValue(Math.PI));
+		table.put("ans", new TypedValue(lastResult));
 	}
 
 	// Помощь по грамматике
@@ -402,50 +402,50 @@ public class Parser {
 	};
 
 	// складывает и вычитает
-	private double expr(boolean get) throws Exception {
-		double left = term(get);
-		for (;;)
-			// ``вечно''
-			switch (currTok.name) {
+	private TypedValue expr(boolean get) throws Exception {
+		TypedValue left = term(get);
+		TypedValue right;
+		Tag sign;
+		for (;;){	// ``вечно''
+			switch (sign = currTok.name) {
 			case PLUS:
-				// случай '+'
-				left += term(true);
-				break; // этот break относится к switch
 			case MINUS:
-				// случай '-'
-				left -= term(true);
+				// случаи '+' и '-'
+				right = term(true); // left += -= term(true);
 				break; // этот break относится к switch
 			default:
 				lastResult = left;
 				return left;
 			}
+			
+			left = interpreter.expr(left, sign, right);
+		}
 	}
 	
 	// умножает и делит
-	private double term(boolean get) throws Exception {
-		double left = power(get);
-		for (;;)
-			switch (currTok.name) {
+	private TypedValue term(boolean get) throws Exception {
+		TypedValue left = prim(get);
+		TypedValue right;
+		Tag sign;
+		for (;;){
+			switch (sign = currTok.name) {
 			case MUL:
-				// случай '*'
-				left *= power(true);
-				break; // этот break относится к switch
 			case DIV:
-				// случай '/'
-				double d = power(true);
-				if (d != 0) {
-					left /= d;
-					break; // этот break относится к switch
-				}
-				error("деление на 0");
+				// случай '*' '/'
+				right = prim(true);//left *= power(true);
+				break; // этот break относится к switch
 			default:
 				return left;
 			}
+			
+			left = interpreter.term(left, sign, right);
+		}
 	}
 
+	/*
 	// Степень a^b
-	private double power(boolean get) throws Exception {
-		double left = factorial(get);
+	private TypedValue power(boolean get) throws Exception {
+		TypedValue left = factorial(get);
 		switch (currTok.name) {
 		case POW:
 			left = Math.pow(left, power(true));
@@ -476,15 +476,16 @@ public class Parser {
 				return left;
 			}
 	}
-
+	 */
+	
 	// обрабатывает первичное
-	private double prim(boolean get) throws Exception {
+	private TypedValue prim(boolean get) throws Exception {
 		if (get)
 			getToken();
 
 		switch (currTok.name) {
 		case INTEGER: { // константа с плавающей точкой
-			double v = ((IntegerT)currTok).value;
+			TypedValue v = ((IntegerT)currTok).value;
 			getToken();// получить следующий токен ...
 			return v;
 		}
@@ -492,16 +493,7 @@ public class Parser {
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			if (!table.containsKey(name))
-				if (options.getBoolean(Id.STRICTED))
-					error("Запрещено автоматическое создание переменных в stricted-режиме");
-				else {
-					table.put(name, 0.0); // Если в table нет переменной, то
-											// добавляем её со зачением 0.0
-					output.addln("Создана переменная " + name
-							+ " со значением " + table.get(name));
-				}
-			double v = table.get(name);
+			TypedValue v = table.get(name);
 			if (getToken() == Tag.ASSIGN) {
 				v = expr(true);
 				table.put(name, v);
@@ -611,7 +603,7 @@ public class Parser {
 		return currTok;
 	}
 
-	public double lastResult = Double.NaN;
+	public TypedValue lastResult = new TypedValue(Double.NaN);
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {

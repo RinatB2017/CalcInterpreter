@@ -14,5 +14,5 @@ public enum Tag {
 	END,
 	EXIT, 
 	PRINT, ADD, DEL, RESET, SET, HELP, STATE,	
-	ILLEGAL_TOKEN;
+	ILLEGAL_TOKEN, SIN, COS;
 }

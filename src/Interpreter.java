@@ -39,10 +39,10 @@ public class Interpreter {
 |	help
 |	state*/
 	}
-	public TypedValue expr(){
+	public TypedValue expr(TypedValue left, Tag sign, TypedValue right){
 		return null;
 	}
-	public TypedValue term(){
+	public TypedValue term(TypedValue left, Tag sign, TypedValue right){
 		return null;
 	}
 	public TypedValue power(){
