@@ -1,6 +1,7 @@
 
 public class Interpreter {
 	public boolean isNeedExecute = true;
+	public boolean skip=false;
 	
 	/*public void print(){
 		

@@ -12,8 +12,8 @@ public class TestParserFails extends Assert {
 		OutputSystem out = new OutputSystem();
 		l = new Lexer();
 		Options o = new Options(out);
-		o.set(Tag.AUTO_END, true);
-		o.set(Tag.GREEDY_FUNC, true);
+		o.set(Id.AUTO_END, true);
+		o.set(Id.GREEDY_FUNC, true);
 		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens :
 		// true, false
 		b = new Buffer(l, null, null, o, out);

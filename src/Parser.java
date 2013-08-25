@@ -117,6 +117,8 @@ public class Parser {
 		return true;
 	}
 
+	private boolean alreadySkipping=false;
+	
 	// if-else
 	private boolean if_() throws Exception {
 		getToken();
@@ -126,27 +128,33 @@ public class Parser {
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его
 		// анализируем
 		match(Tag.RP); // ')'
-
-		if (!doubleCompare(condition, 0)) { // если condition==true
+		
+		if(condition.getBool()) // если condition==true
 			block();
-		} else { // если condition==false
-			skipBlock(); // пропусить true brach {}
-		}
+		else if(interpreter.skip==false)
+			skipBlock(); // защита от рекурсии, в результате которой может выключиться interpreter.skip  
+		else block(); // если interpreter.skip==true, то не заходим в skipBlock(), чтобы не выключить interpreter.skip 
 
 		getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
-			if (doubleCompare(condition, 0)) {
+			if(!condition.getBool()) // если condition==false
 				block();
-			} else {
-				skipBlock(); // пропусить false brach {}
-			}
+			else if(interpreter.skip==false) // защита от рекурсии, в результате которой может выключиться interpreter.skip 
+				skipBlock();
+			else block(); // если interpreter.skip==true, то не заходим в skipBlock(), чтобы не выключить interpreter.skip 
 		} else { // если после if { expr_list } идёт не else
 			return false; // тогда в следующией итерации цикла в program() мы
 							// просмотрим уже считанный выше токен, а не будем
 							// считывать новый
 		}
 		return true;
+	}
+
+	private void skipBlock() throws Exception {
+		interpreter.skip=true;
+		block();
+		interpreter.skip=false;
 	}
 
 	// { expr_list }
@@ -172,25 +180,6 @@ public class Parser {
 		error("block() Ожидается RF }");
 	}
 
-	// TODO будет убрано после создания интерпретатора
-	private boolean skipBlock() throws Exception {
-		int num = 0;
-		Tag ch;
-
-		do {
-			ch = getToken();
-			if (num == 0 && ch != Tag.LF)
-				error("Ожидается {");
-			if (ch == Tag.LF)
-				num++;
-			if (ch == Tag.RF)
-				num--;
-			if (num == 0)
-				return true;
-		} while (num > 0);
-		error("Забыли токен токен LF {");
-		return false;// Ошибка
-	}
 	
 	// Функции, не возвращающие значение (void): print, add, del, reset, help,
 	// state
@@ -485,7 +474,12 @@ public class Parser {
 
 		switch (currTok.name) {
 		case INTEGER: { // константа с плавающей точкой
-			TypedValue v = ((IntegerT)currTok).value;
+			TypedValue v = new TypedValue(((IntegerT)currTok).value);
+			getToken();// получить следующий токен ...
+			return v;
+		}
+		case DOUBLE: { // константа с плавающей точкой
+			TypedValue v = new TypedValue(((DoubleT)currTok).value);
 			getToken();// получить следующий токен ...
 			return v;
 		}
@@ -502,20 +496,20 @@ public class Parser {
 			return v;
 		}
 		case MINUS: { // унарный минус
-			return -prim(true);
+			return prim(true).negative();
 		}
 		case LP: {
-			double e = expr(true);
+			TypedValue e = expr(true);
 			match(Tag.RP); // ')'
 			getToken(); // получить следующий токен ...
 			return e;
 		}
 		default: {
-			if (func())
-				return y;
+			if(func())
+				return new TypedValue(y);
 
 			error("требуется первичное_выражение (нетерминал prim)");
-			return 0;
+			return null;
 		}
 		}
 	}
@@ -534,12 +528,12 @@ public class Parser {
 
 			switch (funcName) {
 			case SIN:
-				y = Math.sin(expr(true)); // следующий токен END для
+				y = (Math.sin(expr(true).getDouble())); // следующий токен END для
 											// prim()<-term()<-expr()<-expr_list()
 											// получен в этом вызове expr()
 				break;
 			case COS:
-				y = Math.cos(expr(true)); // следующий токен END для
+				y = (Math.cos(expr(true).getDouble())); // следующий токен END для
 											// prim()<-term()<-expr()<-expr_list()
 											// получен в этом вызове expr()
 				break;

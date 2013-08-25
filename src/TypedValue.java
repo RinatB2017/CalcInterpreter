@@ -22,6 +22,11 @@ public class TypedValue {
 	
 	@Override
 	public String toString(){
-		
+		return null;
+	}
+
+	public TypedValue negative() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
