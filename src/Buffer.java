@@ -1,6 +1,10 @@
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
+import lexer.Lexer;
+import lexer.Tag;
+import lexer.Token;
+
 /**
  * Буфер между лексером и парсером. Нужен для соединения между собой лексера,
  * обрабатывающего строку и выдающего список токенов и парсера, требующего один

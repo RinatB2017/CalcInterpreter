@@ -1,6 +1,9 @@
 
 import org.junit.*;
+
 import junit.framework.Assert;
+import lexer.Lexer;
+import lexer.Tag;
 
 public class TestParserFails extends Assert {
 	static Lexer l;

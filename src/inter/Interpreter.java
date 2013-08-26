@@ -1,3 +1,6 @@
+package inter;
+import lexer.Tag;
+
 
 public class Interpreter {
 	public boolean isNeedExecute = true;
@@ -40,12 +43,26 @@ public class Interpreter {
 |	help
 |	state*/
 	}
-	public TypedValue expr(TypedValue left, Tag sign, TypedValue right){
-		return null;
+	public TypedValue plus(TypedValue left, TypedValue right) throws Exception{
+		if(skip) return left;
+		return left.plus(right);
 	}
-	public TypedValue term(TypedValue left, Tag sign, TypedValue right){
-		return null;
+	
+	public TypedValue minus(TypedValue left, TypedValue right) throws Exception{
+		if(skip) return left;
+		return left.minus(right);
 	}
+	
+	public TypedValue mul(TypedValue left, TypedValue right) throws Exception{
+		if(skip) return left;
+		return left.mul(right);
+	}
+	
+	public TypedValue div(TypedValue left, TypedValue right) throws Exception{
+		if(skip) return left;
+		return left.div(right);
+	}
+	
 	public TypedValue power(){
 		return null;
 	}

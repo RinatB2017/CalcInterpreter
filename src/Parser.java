@@ -1,5 +1,15 @@
+import inter.Interpreter;
+import inter.TypedValue;
+import inter.Types;
+
 import java.util.*;
 import java.util.Map.Entry;
+
+import lexer.DoubleT;
+import lexer.IntegerT;
+import lexer.Tag;
+import lexer.Token;
+import lexer.WordT;
 
 /**
  * Парсер пытается выполнить ArrayList токенов, которые по одному получает из
@@ -29,6 +39,7 @@ public class Parser {
 		this.buf = buf;
 		this.options = options;
 		this.output = output;
+		interpreter = new Interpreter();
 	}
 
 	/*private double numberValue;
@@ -117,8 +128,6 @@ public class Parser {
 		return true;
 	}
 
-	private boolean alreadySkipping=false;
-	
 	// if-else
 	private boolean if_() throws Exception {
 		getToken();
@@ -129,7 +138,7 @@ public class Parser {
 		// анализируем
 		match(Tag.RP); // ')'
 		
-		if(condition.getBool()) // если condition==true
+		if(condition.getBoolean()) // если condition==true
 			block();
 		else if(interpreter.skip==false)
 			skipBlock(); // защита от рекурсии, в результате которой может выключиться interpreter.skip  
@@ -138,7 +147,7 @@ public class Parser {
 		getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
-			if(!condition.getBool()) // если condition==false
+			if(!condition.getBoolean()) // если condition==false
 				block();
 			else if(interpreter.skip==false) // защита от рекурсии, в результате которой может выключиться interpreter.skip 
 				skipBlock();
@@ -353,7 +362,7 @@ public class Parser {
 		table.clear();
 		table.put("e", new TypedValue(Math.E));
 		table.put("pi", new TypedValue(Math.PI));
-		table.put("ans", new TypedValue(lastResult));
+		table.put("ans", lastResult);
 	}
 
 	// Помощь по грамматике
@@ -393,41 +402,37 @@ public class Parser {
 	// складывает и вычитает
 	private TypedValue expr(boolean get) throws Exception {
 		TypedValue left = term(get);
-		TypedValue right;
-		Tag sign;
 		for (;;){	// ``вечно''
-			switch (sign = currTok.name) {
+			switch (currTok.name) {
 			case PLUS:
+				left = interpreter.plus(left, term(true));
+				break;
 			case MINUS:
-				// случаи '+' и '-'
-				right = term(true); // left += -= term(true);
+				left = interpreter.minus(left, term(true));
 				break; // этот break относится к switch
 			default:
 				lastResult = left;
 				return left;
 			}
-			
-			left = interpreter.expr(left, sign, right);
 		}
 	}
 	
 	// умножает и делит
 	private TypedValue term(boolean get) throws Exception {
 		TypedValue left = prim(get);
-		TypedValue right;
-		Tag sign;
+
 		for (;;){
-			switch (sign = currTok.name) {
+			switch (currTok.name) {
 			case MUL:
+				left = interpreter.mul(left, term(true));
+				break;
 			case DIV:
-				// случай '*' '/'
-				right = prim(true);//left *= power(true);
+				left = interpreter.div(left, term(true));
+				//right = prim(true);//left *= power(true);
 				break; // этот break относится к switch
 			default:
 				return left;
 			}
-			
-			left = interpreter.term(left, sign, right);
 		}
 	}
 
@@ -474,7 +479,7 @@ public class Parser {
 
 		switch (currTok.name) {
 		case INTEGER: { // константа с плавающей точкой
-			TypedValue v = new TypedValue(((IntegerT)currTok).value);
+			TypedValue v = new TypedValue(((IntegerT)currTok).value); // TODO MEGAPLAN: попробовать заменить привидение на ф-ю
 			getToken();// получить следующий токен ...
 			return v;
 		}
@@ -597,7 +602,7 @@ public class Parser {
 		return currTok;
 	}
 
-	public TypedValue lastResult = new TypedValue(Double.NaN);
+	public TypedValue lastResult = new TypedValue(0);
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {

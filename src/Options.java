@@ -2,6 +2,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import lexer.BooleanT;
+import lexer.IntegerT;
+import lexer.Token;
+
 /**
  * Класс для хранения значения по умолчанию
  * */

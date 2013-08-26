@@ -8,6 +8,9 @@
 
 import java.io.*;
 
+import lexer.Lexer;
+import lexer.Tag;
+
 public class Executor {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Добро пожаловать в интерпретатор.\n");

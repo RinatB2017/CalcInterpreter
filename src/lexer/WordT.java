@@ -1,3 +1,5 @@
+package lexer;
+
 
 
 public class WordT extends Token{

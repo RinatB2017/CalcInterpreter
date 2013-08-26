@@ -1,6 +1,8 @@
 
 import org.junit.*;
+
 import junit.framework.Assert;
+import lexer.Lexer;
 
 public class TestParserNonGreedy extends Assert {
 	static Lexer l;

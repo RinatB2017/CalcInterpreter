@@ -1,3 +1,6 @@
+package lexer;
+
+import inter.*;
 
 // Пара Имя-Значение
 public class Token {
@@ -19,4 +22,10 @@ public class Token {
 		//return "Token[name=" + name.toString() + ", value=\"" + value + "\"]";
 		return string;
 	}
+	
+	public static TypedValue createTypedValue(){
+		return null;
+	}
+	
+	public String value;
 }
