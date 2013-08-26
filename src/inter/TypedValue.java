@@ -6,6 +6,7 @@ public class TypedValue {
 	private double d;
 	private boolean b;
 	private String s;
+	private MathVector v;
 	public Types type;
 	
 	public TypedValue(int o){
