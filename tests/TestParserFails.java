@@ -1,9 +1,16 @@
 
+import options.OptId;
+import options.Options;
+
 import org.junit.*;
 
 import junit.framework.Assert;
 import lexer.Lexer;
 import lexer.Tag;
+import main.Buffer;
+import main.MyException;
+import main.OutputSystem;
+import main.Parser;
 
 public class TestParserFails extends Assert {
 	static Lexer l;
@@ -15,8 +22,8 @@ public class TestParserFails extends Assert {
 		OutputSystem out = new OutputSystem();
 		l = new Lexer();
 		Options o = new Options(out);
-		o.set(Id.AUTO_END, true);
-		o.set(Id.GREEDY_FUNC, true);
+		o.set(OptId.AUTO_END, true);
+		o.set(OptId.GREEDY_FUNC, true);
 		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens :
 		// true, false
 		b = new Buffer(l, null, null, o, out);

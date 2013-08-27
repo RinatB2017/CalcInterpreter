@@ -1,3 +1,4 @@
+package main;
 /*
  * Начало: Лексер-Java:			lab-2-tokens-2013-03-30--03-08.zip
  * Начало: Парсер&Лексер-C++: 	calculatorsStroustroup-2013-04-29--16-54.zip
@@ -8,6 +9,7 @@
 
 import java.io.*;
 
+import options.Options;
 import lexer.Lexer;
 import lexer.Tag;
 

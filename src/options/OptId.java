@@ -1,0 +1,5 @@
+package options;
+
+public enum OptId {
+	ARGS_AUTO_END, AUTO_END, PRINT_TOKENS, PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC
+}

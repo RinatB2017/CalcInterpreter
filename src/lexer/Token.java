@@ -1,6 +1,6 @@
 package lexer;
 
-import inter.*;
+import interpretator.*;
 
 // Пара Имя-Значение
 public class Token {

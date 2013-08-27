@@ -1,15 +1,14 @@
-import inter.Interpreter;
-import inter.TypedValue;
-import inter.Types;
+package main;
+import interpretator.Interpreter;
+import interpretator.TypedValue;
+import interpretator.Types;
 
 import java.util.*;
 import java.util.Map.Entry;
 
-import lexer.DoubleT;
-import lexer.IntegerT;
-import lexer.Tag;
-import lexer.Token;
-import lexer.WordT;
+import options.OptId;
+import options.Options;
+import lexer.*;
 
 /**
  * Парсер пытается выполнить ArrayList токенов, которые по одному получает из
@@ -28,18 +27,14 @@ public class Parser {
 									// методом getToken()
 	private Buffer buf = null;
 	private Options options = null;
-	private HashMap<String, TypedValue> table; // Таблица переменных
-	private OutputSystem output;
 	private Interpreter interpreter;
 
 	// Конструктор
 	public Parser(Buffer buf, Options options, OutputSystem output) {
-		table = new HashMap<String, TypedValue>();
-		resetTable();
 		this.buf = buf;
 		this.options = options;
-		this.output = output;
-		interpreter = new Interpreter();
+		interpreter = new Interpreter(output);
+		resetTable();
 	}
 
 	/*private double numberValue;
@@ -55,8 +50,8 @@ public class Parser {
 	 * @see Buffer#getToken()
 	 */
 	private Tag getToken() throws Exception {
-		if (echoPrint && currTok.name != Tag.END)
-			output.append(currTok.toString() + ' '); // Печать предыдущего считанного
+		if (echoPrint && currTok.name != Tag.END && !interpreter.skip)
+			interpreter.output.append(currTok.toString() + ' '); // Печать предыдущего считанного
 												// токена, т. к. в exprList()
 												// токен уже считан до включения
 												// флага echoPrint
@@ -93,10 +88,10 @@ public class Parser {
 			case EXIT:
 				return;
 			default:
-				output.clear();
+				interpreter.output.clear();
 				get = instr();
-				table.put("ans", lastResult);
-				output.flush();
+				interpreter.table.put("ans", lastResult);
+				interpreter.output.flush();
 			}
 		}
 	}
@@ -114,12 +109,12 @@ public class Parser {
 			if (voidFunc()) {
 			} else { // expr или любой другой символ, который будет оставлен в
 						// currTok
-				if (options.getBoolean(Id.AUTO_PRINT))
+				if (options.getBoolean(OptId.AUTO_PRINT))
 					echoPrint = true; // ... включаем эхо-печать в
 										// this.getToken() ...
 				TypedValue v = expr(false);
-				if (options.getBoolean(Id.AUTO_PRINT))
-					output.finishAppend("= " + v);
+				if (options.getBoolean(OptId.AUTO_PRINT) && !interpreter.skip)
+					interpreter.output.finishAppend("= " + v);
 				echoPrint = false; // ... а теперь выключаем
 			}
 			match(Tag.END);
@@ -138,7 +133,7 @@ public class Parser {
 		// анализируем
 		match(Tag.RP); // ')'
 		
-		if(condition.getBoolean()) // если condition==true
+		if(condition.getBoolean()) // если condition==true 
 			block();
 		else if(interpreter.skip==false)
 			skipBlock(); // защита от рекурсии, в результате которой может выключиться interpreter.skip  
@@ -238,21 +233,11 @@ public class Parser {
 		getToken();
 		if (currTok.name == Tag.END) { // a. если нет expression, то
 											// выводим все переменные
-			if (table.isEmpty()) {
-				output.addln("table is empty!");
-			} else {
-				output.addln("[table]");
-				Iterator<Entry<String, TypedValue>> it = table.entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<String, TypedValue> li = it.next();
-					output.addln("" + li.getKey() + " " + li.getValue());
-				}
-				output.addln("[/table]");
-			}
+			interpreter.printAll();
 		} else { // b. выводим значение expression
 			echoPrint = true;
 			TypedValue v = expr(false); // expr() оставляет токен в currTok.name ...
-			output.finishAppend("= " + v);
+			interpreter.print(v);
 			echoPrint = false;
 		}
 	}
@@ -264,15 +249,15 @@ public class Parser {
 		String varName = new String(((WordT)currTok).value); // ибо stringValue может
 													// затереться при вызове
 													// expr()
-		output.add("Создана переменная " + varName);
+		interpreter.output.add("Создана переменная " + varName);
 		getToken();
 		if (currTok.name == Tag.ASSIGN) {
-			table.put(varName, expr(true)); // expr() оставляет токен в
+			interpreter.table.put(varName, expr(true)); // expr() оставляет токен в
 											// currTok.name ...
 		} else if (currTok.name == Tag.END) {
-			table.put(varName, new TypedValue(0));
+			interpreter.table.put(varName, new TypedValue(0));
 		}
-		output.addln(" со значением " + table.get(varName));
+		interpreter.output.addln(" со значением " + interpreter.table.get(varName));
 	}
 
 	// Удаляет переменную
@@ -280,18 +265,18 @@ public class Parser {
 		
 		getToken();
 		if (currTok.name == Tag.MUL) {
-			table.clear();
-			output.addln("Все переменные удалены!");
+			interpreter.table.clear();
+			interpreter.output.addln("Все переменные удалены!");
 		} else
 			match(Tag.NAME);
 		String stringValue = new String(((WordT)currTok).value);
-		if (!table.isEmpty()) {
-			if (!table.containsKey(stringValue)) {
-				output.addln("del: Переменной " + stringValue
+		if (!interpreter.table.isEmpty()) {
+			if (!interpreter.table.containsKey(stringValue)) {
+				interpreter.output.addln("del: Переменной " + stringValue
 						+ " нет в таблице переменных!");
 			} else {
-				table.remove(stringValue);
-				output.addln("del: Переменная " + stringValue + " удалена.");
+				interpreter.table.remove(stringValue);
+				interpreter.output.addln("del: Переменная " + stringValue + " удалена.");
 			}
 		}
 	}
@@ -301,7 +286,7 @@ public class Parser {
 		getToken();
 		if (setname(currTok)==null)
 			error("set: неверная опция");
-		Id what = setname(currTok);
+		OptId what = setname(currTok);
 
 		getToken();
 		match(Tag.ASSIGN);
@@ -318,13 +303,13 @@ public class Parser {
 		case MUL:
 			options.resetAll();
 			resetTable();
-			output.addln("Всё сброшено.");
+			interpreter.output.addln("Всё сброшено.");
 			break;
 		case NAME:
-			if(((WordT)currTok).value.equals("table")){
+			if(((WordT)currTok).value.equals("interpreter.table")){
 				resetTable();
-				output.addln("Таблица переменных сброшена.");
-			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));
+				interpreter.output.addln("Таблица переменных сброшена.");
+			}else error("должен быть токен "+new WordT(Tag.NAME, "interpreter.table"));
 			break;
 		default:
 			if (setname(currTok)==null)
@@ -333,11 +318,11 @@ public class Parser {
 		}
 	}
 
-	Id setname(Token t) {
-		for(Id i: Id.values()){
-			System.out.println("trying "+i.toString());
+	OptId setname(Token t) {
+		for(OptId i: OptId.values()){
+			//System.out.println("trying "+i.toString());
 			if(((WordT)t).value.toLowerCase().equals(i.toString().toLowerCase())){
-				System.out.println("match on "+i.toString());
+				//System.out.println("match on "+i.toString());
 				return i;
 			}
 		}
@@ -359,15 +344,15 @@ public class Parser {
 	
 	// Сброс таблицы переменных в исходное состояние
 	void resetTable() {
-		table.clear();
-		table.put("e", new TypedValue(Math.E));
-		table.put("pi", new TypedValue(Math.PI));
-		table.put("ans", lastResult);
+		interpreter.table.clear();
+		interpreter.table.put("e", new TypedValue(Math.E));
+		interpreter.table.put("pi", new TypedValue(Math.PI));
+		interpreter.table.put("ans", lastResult);
 	}
 
 	// Помощь по грамматике
 	void help() {
-		output.addln("Грамматика(не актуальная):\n"
+		interpreter.output.addln("Грамматика(не актуальная):\n"
 				+ "program:\n"
 				+ "\texpr_list* EXIT\n"
 				+ "\n"
@@ -395,7 +380,7 @@ public class Parser {
 
 	// Выводит информацию о текущем состоянии
 	void state() {
-		output.addln("Текущее состояние:\nПеременных " + table.size());
+		interpreter.output.addln("Текущее состояние:\nПеременных " + interpreter.table.size());
 		options.printAll();
 	};
 
@@ -411,7 +396,7 @@ public class Parser {
 				left = interpreter.minus(left, term(true));
 				break; // этот break относится к switch
 			default:
-				lastResult = left;
+				if(left!=null) lastResult = left;
 				return left;
 			}
 		}
@@ -478,8 +463,8 @@ public class Parser {
 			getToken();
 
 		switch (currTok.name) {
-		case INTEGER: { // константа с плавающей точкой
-			TypedValue v = new TypedValue(((IntegerT)currTok).value); // TODO MEGAPLAN: попробовать заменить привидение на ф-ю
+		case INTEGER: { // целочисленная константа
+			TypedValue v = new TypedValue(((IntegerT)currTok).value);
 			getToken();// получить следующий токен ...
 			return v;
 		}
@@ -488,15 +473,20 @@ public class Parser {
 			getToken();// получить следующий токен ...
 			return v;
 		}
+		case BOOLEAN: { // булева константа
+			TypedValue v = new TypedValue(((BooleanT)currTok).value);
+			getToken();// получить следующий токен ...
+			return v;
+		}
 		case NAME: {
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			TypedValue v = table.get(name);
+			TypedValue v = interpreter.table.get(name);
 			if (getToken() == Tag.ASSIGN) {
 				v = expr(true);
-				table.put(name, v);
-				output.addln("Значение переменой " + name + " изменено на " + v);
+				interpreter.table.put(name, v);
+				interpreter.output.addln("Значение переменой " + name + " изменено на " + v);
 			}
 			return v;
 		}
@@ -526,7 +516,7 @@ public class Parser {
 		if (ofRadian(currTok.name)) {
 			Tag funcName = currTok.name; // Запоминаем для дальнейшего
 												// использования
-			if (!options.getBoolean(Id.GREEDY_FUNC)) {
+			if (!options.getBoolean(OptId.GREEDY_FUNC)) {
 				getToken();
 				match(Tag.LP); // Проверка наличия (
 			}
@@ -547,7 +537,7 @@ public class Parser {
 						+ funcName.toString());
 			}
 
-			if (!options.getBoolean(Id.GREEDY_FUNC)) {
+			if (!options.getBoolean(OptId.GREEDY_FUNC)) {
 				match(Tag.RP);// Проверка наличия ')' - её оставил expr()
 				getToken(); // считываем токен, следующий за ')'
 			} // если Нежадные, то в currTok останется токен, на котором
@@ -583,17 +573,17 @@ public class Parser {
 	// options.getInt(Terminal.PRECISION) точностью
 	boolean doubleCompare(double a, double b) {
 		if (Math.abs(a - b) < 1.0 / Math.pow(10,
-				options.getInt(Id.PRECISION)))
+				options.getInt(OptId.PRECISION)))
 			return true;
 		return false;
 	}
 
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException {
-		int errors = options.getInt(Id.ERRORS);
+		int errors = options.getInt(OptId.ERRORS);
 		errors++;
-		options.set(Id.ERRORS, errors);
-		output.flush();
+		options.set(OptId.ERRORS, errors);
+		interpreter.output.flush();
 		throw new MyException(string);
 	}
 
@@ -606,7 +596,7 @@ public class Parser {
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {
-		return options.getInt(Id.ERRORS);
+		return options.getInt(OptId.ERRORS);
 	}
 
 }

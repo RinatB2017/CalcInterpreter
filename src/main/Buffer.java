@@ -1,6 +1,9 @@
+package main;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
+import options.OptId;
+import options.Options;
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
@@ -109,13 +112,13 @@ public class Buffer {
 					// autoending :)
 					switch (now) {
 					case ARGS:
-						if (options.getBoolean(Id.ARGS_AUTO_END))
+						if (options.getBoolean(OptId.ARGS_AUTO_END))
 							tokens.add(new Token(Tag.END)); // Автодобавление
 																		// токена
 																		// END
 						break;
 					case STDIN:
-						if (options.getBoolean(Id.AUTO_END))
+						if (options.getBoolean(OptId.AUTO_END))
 							tokens.add(new Token(Tag.END)); // Автодобавление
 																		// токена
 																		// END
@@ -124,13 +127,14 @@ public class Buffer {
 						break;
 					}
 
-					if (options.getBoolean(Id.PRINT_TOKENS))
+					if (options.getBoolean(OptId.PRINT_TOKENS)) // TODO выяснить почему не работает
 						printTokens();
 				}
 
 				if (numAgrs < args.length)
 					numAgrs++;
 			} while (tokens.isEmpty());
+
 		}
 
 		// Возвращаем очередной токен

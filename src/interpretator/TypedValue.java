@@ -1,4 +1,4 @@
-package inter;
+package interpretator;
 
 
 public class TypedValue {
@@ -17,6 +17,11 @@ public class TypedValue {
 	public TypedValue(double e) {
 		this.d=e;
 		this.type=Types.DOUBLE;
+	}
+
+	public TypedValue(boolean b) {
+		this.b=b;
+		this.type=Types.BOOLEAN;
 	}
 
 	public int getInt(){

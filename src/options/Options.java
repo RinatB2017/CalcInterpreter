@@ -1,3 +1,4 @@
+package options;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -5,6 +6,8 @@ import java.util.Map.Entry;
 import lexer.BooleanT;
 import lexer.IntegerT;
 import lexer.Token;
+import main.MyException;
+import main.OutputSystem;
 
 /**
  * Класс для хранения значения по умолчанию
@@ -17,8 +20,6 @@ class Option<T> {
 	}
 }
 
-enum Id {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS, PRECISION, ERRORS, STRICTED, AUTO_PRINT, GREEDY_FUNC}
-
 /**
  * Хранит настройки буфера и парсера, предоставляет к ним доступ: получение
  * значения get*(); установка нового значения set*(); сброс значения to default
@@ -27,10 +28,10 @@ enum Id {ARGS_AUTO_END, AUTO_END, PRINT_TOKENS, PRECISION, ERRORS, STRICTED, AUT
 
 @SuppressWarnings("rawtypes")
 public class Options {
-	private HashMap<Id, Option> opts = new HashMap<Id, Option>(); // Ид
+	private HashMap<OptId, Option> opts = new HashMap<OptId, Option>(); // Ид
 																				// :
 																				// Опция
-	private HashMap<Id, Object> optsVals = new HashMap<Id, Object>(); // Ид
+	private HashMap<OptId, Object> optsVals = new HashMap<OptId, Object>(); // Ид
 																					// :
 																					// Значение
 	private OutputSystem output;
@@ -40,30 +41,30 @@ public class Options {
 	public Options(OutputSystem out) {
 		this.output = out;
 
-		this.add(Id.ARGS_AUTO_END, new Option(true)); // Автодобавление
+		this.add(OptId.ARGS_AUTO_END, new Option(true)); // Автодобавление
 															// токена END в
 															// конце считанной
 															// последовательности
-		this.add(Id.AUTO_END, new Option(true)); // Автодобавление токена
+		this.add(OptId.AUTO_END, new Option(true)); // Автодобавление токена
 														// END в конце считанной
 														// последовательности
-		this.add(Id.PRINT_TOKENS, new Option(false)); // Вывод найденных
+		this.add(OptId.PRINT_TOKENS, new Option(false)); // Вывод найденных
 															// токенов для
 															// просканированной
 															// строки
 
-		this.add(Id.PRECISION, new Option(5)); // Отрицательная степень
+		this.add(OptId.PRECISION, new Option(5)); // Отрицательная степень
 														// 10, используемая при
 														// сравнении малых
 														// значений методом
 														// doubleCompare()
-		this.add(Id.ERRORS, new Option(0)); // Счётчик возникших ошибок
-		this.add(Id.STRICTED, new Option(false)); // Запрет автосоздания
+		this.add(OptId.ERRORS, new Option(0)); // Счётчик возникших ошибок
+		this.add(OptId.STRICTED, new Option(false)); // Запрет автосоздания
 														// переменных
-		this.add(Id.AUTO_PRINT, new Option(true)); // Автоматический вывод
+		this.add(OptId.AUTO_PRINT, new Option(true)); // Автоматический вывод
 															// значений
 															// выражений
-		this.add(Id.GREEDY_FUNC, new Option(false)); // Жадные функции:
+		this.add(OptId.GREEDY_FUNC, new Option(false)); // Жадные функции:
 															// скобки не
 															// обязательны, всё,
 															// что написано
@@ -76,13 +77,13 @@ public class Options {
 	}
 
 	// Добавление опций
-	private void add(Id id, Option o) {
+	private void add(OptId id, Option o) {
 		opts.put(id, o);
 		optsVals.put(id, o.defaultValue);
 	}
 
 	// Перезапись значений. Object должен совпадать с типом <T>@Option
-	public void set(Id id, Object o) throws MyException {
+	public void set(OptId id, Object o) throws MyException {
 		if (o.getClass() != optsVals.get(id).getClass()) { // проверка типа
 			// System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
 			throw new MyException("Неверный класс " + o.getClass()
@@ -95,8 +96,8 @@ public class Options {
 	// Перезапись значений для Parser.set()
 	// Когда 2-й параметр Token, вызывается эта перегруженная функция, т. к.
 	// Token точнее чем Object
-	public void set(Id what, Token value) throws MyException {
-		Id id = what;
+	public void set(OptId what, Token value) throws MyException {
+		OptId id = what;
 		switch (value.name) {
 		case BOOLEAN:
 			set(id, ((BooleanT) value).value ? true : false);
@@ -112,7 +113,7 @@ public class Options {
 	}
 
 	// Сброс
-	public void reset(Id id) {
+	public void reset(OptId id) {
 		Option getted4getDefault = opts.get(id);
 		optsVals.put(id, getted4getDefault.defaultValue);
 		output.addln("Сброшена опция " + id.toString() + " в "
@@ -120,9 +121,9 @@ public class Options {
 	}
 
 	public void resetAll() {
-		Iterator<Entry<Id, Object>> it = optsVals.entrySet().iterator();
+		Iterator<Entry<OptId, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()) {
-			Entry<Id, Object> li = it.next();
+			Entry<OptId, Object> li = it.next();
 			// System.out.println(""+li.getKey() + " " + li.getValue());
 			reset(li.getKey());
 		}
@@ -130,23 +131,23 @@ public class Options {
 
 	// Вывод Ид : Значение
 	public void printAll() {
-		Iterator<Entry<Id, Object>> it = optsVals.entrySet().iterator();
+		Iterator<Entry<OptId, Object>> it = optsVals.entrySet().iterator();
 		while (it.hasNext()) {
-			Entry<Id, Object> li = it.next();
+			Entry<OptId, Object> li = it.next();
 			output.addln("" + li.getKey() + " " + li.getValue());
 		}
 	}
 
 	// Получение значения
-	public int getInt(Id id) {
+	public int getInt(OptId id) {
 		return (int) optsVals.get(id);
 	}
 
-	public double getDouble(Id id) {
+	public double getDouble(OptId id) {
 		return (double) optsVals.get(id);
 	}
 
-	public boolean getBoolean(Id id) {
+	public boolean getBoolean(OptId id) {
 		return (boolean) optsVals.get(id);
 	}
 }

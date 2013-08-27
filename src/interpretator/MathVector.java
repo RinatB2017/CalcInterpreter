@@ -1,4 +1,4 @@
-package inter;
+package interpretator;
 
 import java.util.ArrayList;
 
