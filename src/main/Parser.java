@@ -28,6 +28,8 @@ public class Parser {
 	private Buffer buf = null;
 	private Options options = null;
 	private Interpreter interpreter;
+	
+	public TypedValue lastResult = new TypedValue(0);
 
 	// Конструктор
 	public Parser(Buffer buf, Options options, OutputSystem output) {
@@ -132,21 +134,13 @@ public class Parser {
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его
 		// анализируем
 		match(Tag.RP); // ')'
-		
-		if(condition.getBoolean()) // если condition==true 
-			block();
-		else if(interpreter.skip==false)
-			skipBlock(); // защита от рекурсии, в результате которой может выключиться interpreter.skip  
-		else block(); // если interpreter.skip==true, то не заходим в skipBlock(), чтобы не выключить interpreter.skip 
-
+		// если condition==true
+		block(condition.getBoolean());
 		getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
-			if(!condition.getBoolean()) // если condition==false
-				block();
-			else if(interpreter.skip==false) // защита от рекурсии, в результате которой может выключиться interpreter.skip 
-				skipBlock();
-			else block(); // если interpreter.skip==true, то не заходим в skipBlock(), чтобы не выключить interpreter.skip 
+			// если condition==false
+			block(!condition.getBoolean());
 		} else { // если после if { expr_list } идёт не else
 			return false; // тогда в следующией итерации цикла в program() мы
 							// просмотрим уже считанный выше токен, а не будем
@@ -155,14 +149,11 @@ public class Parser {
 		return true;
 	}
 
-	private void skipBlock() throws Exception {
-		interpreter.skip=true;
-		block();
-		interpreter.skip=false;
-	}
-
 	// { expr_list }
-	private void block() throws Exception {
+	private void block(boolean condition) throws Exception {
+		if(!condition) interpreter.skip=true;
+		interpreter.incrDepth();
+		
 		// TODO boolean fbrackets = true; после того как уберу skipBlock()
 		getToken();
 		match(Tag.LF); // '{'
@@ -174,6 +165,7 @@ public class Parser {
 
 			switch (currTok.name) {
 			case RF:
+				interpreter.decrDepth();
 				return; // '}'
 			default:
 				get = true;
@@ -396,7 +388,7 @@ public class Parser {
 				left = interpreter.minus(left, term(true));
 				break; // этот break относится к switch
 			default:
-				if(left!=null) lastResult = left;
+				if(!interpreter.skip) lastResult = left;
 				return left;
 			}
 		}
@@ -591,8 +583,6 @@ public class Parser {
 	public Token getCurrTok() {
 		return currTok;
 	}
-
-	public TypedValue lastResult = new TypedValue(0);
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
 	public int getErrors() {

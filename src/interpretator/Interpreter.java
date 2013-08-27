@@ -10,7 +10,7 @@ public class Interpreter {
 	
 	public OutputSystem output;
 	public HashMap<String, TypedValue> table; // Таблица переменных
-	
+		
 	// Конструктор
 	public Interpreter(OutputSystem output) {
 		table = new HashMap<String, TypedValue>();

@@ -57,4 +57,18 @@ public class TestParserInterpreter extends Assert {
 		p.program();
 		assertEquals(0, p.lastResult.getInt());
 	}
+	
+	@Test
+	public void testIfFalseElse() throws Exception {
+		b.setArgs(new String[] { "if(false){ if(true){2-3;} 2-3;} else {-9;};" });
+		p.program();
+		assertEquals(-9, p.lastResult.getInt());
+	}
+	
+	@Test
+	public void testIfTrueElse() throws Exception {
+		b.setArgs(new String[] { "if(true){ if(true){2-3;} 10;} else {-9;};" });
+		p.program();
+		assertEquals(10, p.lastResult.getInt());
+	}
 }
