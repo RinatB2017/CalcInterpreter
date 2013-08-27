@@ -27,5 +27,5 @@ public class Token {
 		return null;
 	}
 	
-	public String value;
+	//public String value;
 }

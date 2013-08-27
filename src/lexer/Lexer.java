@@ -13,16 +13,6 @@ import java.util.regex.Pattern;
  * @author Ник
  */
 
-class TaggedLexeme {
-	public final Tag name;
-	public final String value; // TODO Stringbuilder
-
-	public TaggedLexeme(Tag name, String value) {
-		this.value = value;
-		this.name = name;
-	}
-}
-
 public class Lexer {
 
 	/**
@@ -107,7 +97,7 @@ public class Lexer {
 													// токены
 	}
 
-	private TaggedLexeme Cur = null; // Текущий полученный токен
+	private Token Cur = null; // Текущий полученный токен
 
 	/**
 	 * Сканирует строку, перезаписывает массив токенов tokens найдеными токенами
@@ -131,7 +121,7 @@ public class Lexer {
 		int start = 0; // индекс первого символа, который войдёт в подстроку
 		int end = 1; // индекс первого символа за концом подстроки, который не
 						// войдёт в подстроку
-		TaggedLexeme Prev = null; // Предыдущий токен
+		Token Prev = null; // Предыдущий токен
 		boolean prevMatched = false;
 
 		for (boolean isContinue = true; isContinue;) { // Наращиваем подстроки
@@ -222,21 +212,21 @@ public class Lexer {
 						switch (Prev.name) {
 						case INTEGER:
 							tokens.add(new IntegerT(Prev.name, Integer
-									.parseInt(Prev.value)));
+									.parseInt(Prev.string)));
 							break;
 						case DOUBLE:
 							tokens.add(new DoubleT(Prev.name, Double
-									.parseDouble(Prev.value)));
+									.parseDouble(Prev.string)));
 							break;
 						case BOOLEAN:
 							tokens.add(new BooleanT(Prev.name, Boolean
-									.parseBoolean(Prev.value)));
+									.parseBoolean(Prev.string)));
 							break;
 						case NAME:
-							tokens.add(new WordT(Prev.name, Prev.value));
+							tokens.add(new WordT(Prev.name, Prev.string));
 							break;
 						default:
-							tokens.add(new Token(Prev.name, Prev.value));
+							tokens.add(new Token(Prev.name, Prev.string));
 							break;
 
 						}
@@ -247,7 +237,7 @@ public class Lexer {
 				isNeedAddToken = false;
 				prevMatched = false;
 
-				start = start + Prev.value.length();
+				start = start + Prev.string.length();
 				Prev = null;
 
 				if (start >= string.length())
@@ -271,7 +261,7 @@ public class Lexer {
 				// Эта ссылка должна быть полем класса, а не аргументом метода,
 				// для того чтобы ниженаписанное присвоение было видно в scan()
 				// http://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
-				Cur = new TaggedLexeme(tm.name, substr);
+				Cur = new Token(tm.name, substr);
 
 				// System.out.println("" + Cur.name + " " + Cur.value+"\n");
 				return true;
