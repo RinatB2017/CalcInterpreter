@@ -1,7 +1,6 @@
 package interpretator;
 
 import java.util.*;
-
 import types.TypedValue;
 import main.OutputSystem;
 
@@ -14,7 +13,7 @@ public class Interpreter {
 	public HashMap<String, TypedValue> table; // Таблица переменных
 		
 	// Конструктор
-	public Interpreter(OutputSystem output) {
+	public Interpreter(OutputSystem output ) {
 		table = new HashMap<String, TypedValue>();
 		this.output = output;
 	}
@@ -31,77 +30,29 @@ public class Interpreter {
 		if(depth==0) skip=false;
 	}
 	
-	public void printAll(){
-		/*
-		if (table.isEmpty()) {
-			output.addln("table is empty!");
-		} else {
-			output.addln("[table]");
-			Iterator<Entry<String, TypedValue>> it = table.entrySet().iterator();
-			while (it.hasNext()) {
-				Entry<String, TypedValue> li = it.next();
-				output.addln("" + li.getKey() + " " + li.getValue());
-			}
-			output.addln("[/table]");
-		}
-		*/
-	}
-	
-	public void print(TypedValue v){
-		//output.finishAppend("= " + v);
-	}
-	/*public void add(){
+	/**
+	 * Выполняет действие и возвращает результат.
+	 * @param n Входной объект, реализующий интерфейс Returnable
+	 * @return Вычисленный результат, либо null когда установлен фолаг skip
+	 * @throws Exception
+	 */
+	public TypedValue exec(Returnable n) throws Exception{
+		if(skip)
+			return null;
 		
+		return n.execute();
 	}
-	public void del(){
+	
+	/**
+	 * Выполняет действие без возврата результата.
+	 * @param n Входной объект, реализующий интерфейс Voidable
+	 * @throws Exception
+	 */
+	public void exec(Voidable n) throws Exception{
+		if(skip)
+			return;
 		
-	}
-	public void reset(){
-		
-	}/
-	//public void set(){
-		/*
-		setname =
-				ARGS_AUTO_END | AUTO_END | PRINT_TOKENS |
-				PRECISION | ERRORS | STRICTED | AUTO_PRINT | GREEDY_FUNC
-		*/
-		
-	//}
-	/*public void help(){
-		
-	}
-	public void state(){
-		
-	}*/
-	
-	
-	public TypedValue plus(TypedValue left, TypedValue right) throws Exception{
-		if(skip) return null;
-		return left.plus(right);
+		n.execute();
 	}
 	
-	public TypedValue minus(TypedValue left, TypedValue right) throws Exception{
-		if(skip) return null;
-		return left.minus(right);
-	}
-	
-	public TypedValue mul(TypedValue left, TypedValue right) throws Exception{
-		if(skip) return null;
-		return left.mul(right);
-	}
-	
-	public TypedValue div(TypedValue left, TypedValue right) throws Exception{
-		if(skip) return null;
-		return left.div(right);
-	}
-	
-	public TypedValue power(){
-		return null;
-	}
-	public TypedValue factorial(){
-		return null;
-	}
-	public TypedValue of_radian(){
-		return null;
-	}
 }

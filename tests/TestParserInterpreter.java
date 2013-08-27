@@ -37,6 +37,14 @@ public class TestParserInterpreter extends Assert {
 	}
 
 	
+	
+	@Test
+	public void test2plus2mul2() throws Exception {
+		b.setArgs(new String[] { "2+2*2;" });
+		p.program();
+		assertEquals(6, p.lastResult.getInt());
+	}
+	
 	@Test
 	public void testIfFalse() throws Exception {
 		b.setArgs(new String[] { "if(false){2-3;}4;" });

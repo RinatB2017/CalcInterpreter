@@ -1,5 +1,6 @@
 package main;
-import interpretator.*;
+import interpretator.Interpreter;
+
 import options.*;
 import types.TypedValue;
 import lexer.*;
@@ -21,7 +22,7 @@ public class Parser {
 									// методом getToken()
 	private Buffer buf = null;
 	private Options options = null;
-	private Interpreter inter;
+	private Interpreter interpreter;
 	
 	public TypedValue lastResult = new TypedValue(0);
 
@@ -29,7 +30,7 @@ public class Parser {
 	public Parser(Buffer buf, Options options, OutputSystem output) {
 		this.buf = buf;
 		this.options = options;
-		inter = new Interpreter(output);
+		interpreter = new Interpreter(output);
 		resetTable();
 	}
 
@@ -46,8 +47,8 @@ public class Parser {
 	 * @see Buffer#getToken()
 	 */
 	private Tag getToken() throws Exception {
-		if (echoPrint && currTok.name != Tag.END && !inter.skip)
-			inter.output.append(currTok.toString() + ' '); // Печать предыдущего считанного
+		if (echoPrint && currTok.name != Tag.END && !interpreter.skip)
+			interpreter.output.append(currTok.toString() + ' '); // Печать предыдущего считанного
 												// токена, т. к. в exprList()
 												// токен уже считан до включения
 												// флага echoPrint
@@ -84,10 +85,10 @@ public class Parser {
 			case EXIT:
 				return;
 			default:
-				inter.output.clear();
+				interpreter.output.clear();
 				get = instr();
-				inter.table.put("ans", lastResult);
-				inter.output.flush();
+				interpreter.table.put("ans", lastResult);
+				interpreter.output.flush();
 			}
 		}
 	}
@@ -109,8 +110,8 @@ public class Parser {
 					echoPrint = true; // ... включаем эхо-печать в
 										// this.getToken() ...
 				TypedValue v = expr(false);
-				if (options.getBoolean(OptId.AUTO_PRINT) && !inter.skip)
-					inter.output.finishAppend("= " + v);
+				if (options.getBoolean(OptId.AUTO_PRINT) && !interpreter.skip)
+					interpreter.output.finishAppend("= " + v);
 				echoPrint = false; // ... а теперь выключаем
 			}
 			match(Tag.END);
@@ -144,8 +145,8 @@ public class Parser {
 
 	// { expr_list }
 	private void block(boolean condition) throws Exception {
-		if(!condition) inter.skip=true;
-		inter.incrDepth();
+		if(!condition) interpreter.skip=true;
+		interpreter.incrDepth();
 		
 		// TODO boolean fbrackets = true; после того как уберу skipBlock()
 		getToken();
@@ -158,7 +159,7 @@ public class Parser {
 
 			switch (currTok.name) {
 			case RF:
-				inter.decrDepth();
+				interpreter.decrDepth();
 				return; // '}'
 			default:
 				get = true;
@@ -218,11 +219,11 @@ public class Parser {
 		getToken();
 		if (currTok.name == Tag.END) { // a. если нет expression, то
 											// выводим все переменные
-			inter.exec(new Print(null, inter));
+			interpreter.printAll();
 		} else { // b. выводим значение expression
 			echoPrint = true;
 			TypedValue v = expr(false); // expr() оставляет токен в currTok.name ...
-			inter.exec(new Print(v, inter));
+			interpreter.print(v);
 			echoPrint = false;
 		}
 	}
@@ -234,15 +235,15 @@ public class Parser {
 		String varName = new String(((WordT)currTok).value); // ибо stringValue может
 													// затереться при вызове
 													// expr()
-		inter.output.add("Создана переменная " + varName);
+		interpreter.output.add("Создана переменная " + varName);
 		getToken();
 		if (currTok.name == Tag.ASSIGN) {
-			inter.table.put(varName, expr(true)); // expr() оставляет токен в
+			interpreter.table.put(varName, expr(true)); // expr() оставляет токен в
 											// currTok.name ...
 		} else if (currTok.name == Tag.END) {
-			inter.table.put(varName, new TypedValue(0));
+			interpreter.table.put(varName, new TypedValue(0));
 		}
-		inter.output.addln(" со значением " + inter.table.get(varName));
+		interpreter.output.addln(" со значением " + interpreter.table.get(varName));
 	}
 
 	// Удаляет переменную
@@ -250,18 +251,18 @@ public class Parser {
 		
 		getToken();
 		if (currTok.name == Tag.MUL) {
-			inter.table.clear();
-			inter.output.addln("Все переменные удалены!");
+			interpreter.table.clear();
+			interpreter.output.addln("Все переменные удалены!");
 		} else
 			match(Tag.NAME);
 		String stringValue = new String(((WordT)currTok).value);
-		if (!inter.table.isEmpty()) {
-			if (!inter.table.containsKey(stringValue)) {
-				inter.output.addln("del: Переменной " + stringValue
+		if (!interpreter.table.isEmpty()) {
+			if (!interpreter.table.containsKey(stringValue)) {
+				interpreter.output.addln("del: Переменной " + stringValue
 						+ " нет в таблице переменных!");
 			} else {
-				inter.table.remove(stringValue);
-				inter.output.addln("del: Переменная " + stringValue + " удалена.");
+				interpreter.table.remove(stringValue);
+				interpreter.output.addln("del: Переменная " + stringValue + " удалена.");
 			}
 		}
 	}
@@ -288,12 +289,12 @@ public class Parser {
 		case MUL:
 			options.resetAll();
 			resetTable();
-			inter.output.addln("Всё сброшено.");
+			interpreter.output.addln("Всё сброшено.");
 			break;
 		case NAME:
 			if(((WordT)currTok).value.equals("interpreter.table")){
 				resetTable();
-				inter.output.addln("Таблица переменных сброшена.");
+				interpreter.output.addln("Таблица переменных сброшена.");
 			}else error("должен быть токен "+new WordT(Tag.NAME, "interpreter.table"));
 			break;
 		default:
@@ -329,15 +330,15 @@ public class Parser {
 	
 	// Сброс таблицы переменных в исходное состояние
 	void resetTable() {
-		inter.table.clear();
-		inter.table.put("e", new TypedValue(Math.E));
-		inter.table.put("pi", new TypedValue(Math.PI));
-		inter.table.put("ans", lastResult);
+		interpreter.table.clear();
+		interpreter.table.put("e", new TypedValue(Math.E));
+		interpreter.table.put("pi", new TypedValue(Math.PI));
+		interpreter.table.put("ans", lastResult);
 	}
 
 	// Помощь по грамматике
 	void help() {
-		inter.output.addln("Грамматика(не актуальная):\n"
+		interpreter.output.addln("Грамматика(не актуальная):\n"
 				+ "program:\n"
 				+ "\texpr_list* EXIT\n"
 				+ "\n"
@@ -365,22 +366,23 @@ public class Parser {
 
 	// Выводит информацию о текущем состоянии
 	void state() {
-		inter.output.addln("Текущее состояние:\nПеременных " + inter.table.size());
+		interpreter.output.addln("Текущее состояние:\nПеременных " + interpreter.table.size());
 		options.printAll();
 	};
 
 	// складывает и вычитает
 	private TypedValue expr(boolean get) throws Exception {
 		TypedValue left = term(get);
-		Tag s;
 		for (;;){	// ``вечно''
-			switch (s=currTok.name) {
+			switch (currTok.name) {
 			case PLUS:
+				left = interpreter.plus(left, term(true));
+				break;
 			case MINUS:
-				left = inter.exec(new Expr(left, term(true), s));
+				left = interpreter.minus(left, term(true));
 				break; // этот break относится к switch
 			default:
-				if(!inter.skip) lastResult = left;
+				if(!interpreter.skip) lastResult = left;
 				return left;
 			}
 		}
@@ -389,12 +391,15 @@ public class Parser {
 	// умножает и делит
 	private TypedValue term(boolean get) throws Exception {
 		TypedValue left = prim(get);
-		Tag s;
+
 		for (;;){
-			switch (s=currTok.name) {
+			switch (currTok.name) {
 			case MUL:
+				left = interpreter.mul(left, term(true));
+				break;
 			case DIV:
-				left = inter.exec(new Term(left, term(true), s));
+				left = interpreter.div(left, term(true));
+				//right = prim(true);//left *= power(true);
 				break; // этот break относится к switch
 			default:
 				return left;
@@ -463,13 +468,11 @@ public class Parser {
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			//TypedValue v = interpreter.table.get(name);
-			TypedValue v = inter.exec(new TableGet(name, inter));
+			TypedValue v = interpreter.table.get(name);
 			if (getToken() == Tag.ASSIGN) {
-				//v = expr(true);
-				//interpreter.table.put(name, v);
-				//interpreter.output.addln("Значение переменой " + name + " изменено на " + v);
-				inter.exec(new TablePut(name, expr(true)));
+				v = expr(true);
+				interpreter.table.put(name, v);
+				interpreter.output.addln("Значение переменой " + name + " изменено на " + v);
 			}
 			return v;
 		}
@@ -503,7 +506,7 @@ public class Parser {
 				getToken();
 				match(Tag.LP); // Проверка наличия (
 			}
-			
+
 			switch (funcName) {
 			case SIN:
 				y = (Math.sin(expr(true).getDouble())); // следующий токен END для
@@ -566,7 +569,7 @@ public class Parser {
 		int errors = options.getInt(OptId.ERRORS);
 		errors++;
 		options.set(OptId.ERRORS, errors);
-		inter.output.flush();
+		interpreter.output.flush();
 		throw new MyException(string);
 	}
 
