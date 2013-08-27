@@ -1,13 +1,8 @@
 package main;
 import interpretator.Interpreter;
-import interpretator.TypedValue;
-import interpretator.Types;
 
-import java.util.*;
-import java.util.Map.Entry;
-
-import options.OptId;
-import options.Options;
+import options.*;
+import types.TypedValue;
 import lexer.*;
 
 /**
@@ -134,12 +129,11 @@ public class Parser {
 		// expr отставляет не обработанный токен в curr_tok.name, здесь мы его
 		// анализируем
 		match(Tag.RP); // ')'
-		// если condition==true
+	
 		block(condition.getBoolean());
 		getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
-			// если condition==false
 			block(!condition.getBoolean());
 		} else { // если после if { expr_list } идёт не else
 			return false; // тогда в следующией итерации цикла в program() мы

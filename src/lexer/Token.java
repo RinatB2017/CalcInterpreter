@@ -1,6 +1,6 @@
 package lexer;
 
-import interpretator.*;
+import types.TypedValue;
 
 // Пара Имя-Значение
 public class Token {

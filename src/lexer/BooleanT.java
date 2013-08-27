@@ -1,6 +1,6 @@
 package lexer;
 
-import interpretator.TypedValue;
+import types.TypedValue;
 
 
 

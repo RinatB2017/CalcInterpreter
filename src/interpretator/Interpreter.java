@@ -1,6 +1,8 @@
 package interpretator;
 
 import java.util.*;
+
+import types.TypedValue;
 import main.OutputSystem;
 
 
@@ -17,6 +19,9 @@ public class Interpreter {
 		this.output = output;
 	}
 
+	// incrDepth() и decrDepth() считают глубину вложенности относительно
+	// той точки, где в Parser.block() был установлен Interpreter.skip=true.
+	// При глубине 0 Interpreter.skip сбрасывается в false.
 	public void incrDepth(){
 		if(skip) depth++;
 	}

@@ -1,6 +1,12 @@
-package interpretator;
+package types;
 
-
+/**
+ * Обеспечиват поддержку типов:
+ * простых (INTEGER, DOUBLE, BOOLEAN)
+ * и сложных (VECTOR).
+ * @author Ник
+ *
+ */
 public class TypedValue {
 	private int i;
 	private double d;
