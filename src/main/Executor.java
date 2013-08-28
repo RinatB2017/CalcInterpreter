@@ -7,6 +7,8 @@ package main;
  * Последняя версия на GitHub: https://github.com/nikit-cpp/CalcInterpreter.git
  * */
 
+import interpretator.Interpreter;
+
 import java.io.*;
 
 import options.Options;
@@ -23,7 +25,8 @@ public class Executor {
 		Options o = new Options(output);
 		Lexer l = new Lexer();
 		Buffer b = new Buffer(l, args, stdin, o, output);
-		Parser p = new Parser(b, o, output);
+		Interpreter i = new Interpreter(o, output);
+		Parser p = new Parser(b, o, output, i);
 		
 		while (true) {
 			try {

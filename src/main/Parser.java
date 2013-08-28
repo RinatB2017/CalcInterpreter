@@ -23,19 +23,16 @@ public class Parser {
 	private Options options = null;
 	private Interpreter inter;
 	
-	public TypedValue lastResult = new TypedValue(0);
+	//public TypedValue lastResult = new TypedValue(0);
 
 	// Конструктор
-	public Parser(Buffer buf, Options options, OutputSystem output) {
+	public Parser(Buffer buf, Options options, OutputSystem output, Interpreter i) {
 		this.buf = buf;
 		this.options = options;
-		inter = new Interpreter(output);
-		resetTable();
+		inter = i;
+		inter.resetTable();
 	}
 
-	/*private double numberValue;
-	private String stringValue;
-	*/
 	private boolean echoPrint = false; // Используется для эхопечати токенов при
 										// их чтении методом getToken() при
 										// void_func() : print
@@ -54,11 +51,6 @@ public class Parser {
 
 		currTok = buf.getToken();
 
-		/*if (currTok.name == Tag.INTEGER)
-			numberValue = Double.parseDouble(currTok.value);
-		if (currTok.name == Tag.NAME)
-			stringValue = currTok.value;
-		*/
 		return currTok.name;
 	}
 
@@ -86,7 +78,7 @@ public class Parser {
 			default:
 				inter.output.clear();
 				get = instr();
-				inter.table.put("ans", lastResult);
+				//inter.table.put("ans", lastResult);
 				inter.output.flush();
 			}
 		}
@@ -287,12 +279,12 @@ public class Parser {
 		switch (currTok.name) {
 		case MUL:
 			options.resetAll();
-			resetTable();
+			inter.resetTable();
 			inter.output.addln("Всё сброшено.");
 			break;
 		case NAME:
 			if(((WordT)currTok).value.equals("interpreter.table")){
-				resetTable();
+				inter.resetTable();
 				inter.output.addln("Таблица переменных сброшена.");
 			}else error("должен быть токен "+new WordT(Tag.NAME, "interpreter.table"));
 			break;
@@ -325,14 +317,6 @@ public class Parser {
 		default:
 			return false;
 		*/
-	}
-	
-	// Сброс таблицы переменных в исходное состояние
-	void resetTable() {
-		inter.table.clear();
-		inter.table.put("e", new TypedValue(Math.E));
-		inter.table.put("pi", new TypedValue(Math.PI));
-		inter.table.put("ans", lastResult);
 	}
 
 	// Помощь по грамматике
@@ -380,7 +364,7 @@ public class Parser {
 				left = inter.exec(new Expr(left, term(true), s));
 				break; // этот break относится к switch
 			default:
-				if(!inter.skip) lastResult = left;
+				//if(!inter.skip) lastResult = left;
 				return left;
 			}
 		}
@@ -463,14 +447,10 @@ public class Parser {
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			//TypedValue v = interpreter.table.get(name);
-			TypedValue v = inter.exec(new TableGet(name, inter));
 			if (getToken() == Tag.ASSIGN) {
-				//v = expr(true);
-				//interpreter.table.put(name, v);
-				//interpreter.output.addln("Значение переменой " + name + " изменено на " + v);
-				inter.exec(new TablePut(name, expr(true)));
+				inter.exec(new TablePut(name, expr(true), inter));
 			}
+			TypedValue v = inter.exec(new TableGet(name, inter));
 			return v;
 		}
 		case MINUS: { // унарный минус
@@ -496,70 +476,9 @@ public class Parser {
 
 	// функции, возвращающие значение (non-void): sin, cos
 	private boolean func() throws Exception {
-		if (ofRadian(currTok.name)) {
-			Tag funcName = currTok.name; // Запоминаем для дальнейшего
-												// использования
-			if (!options.getBoolean(OptId.GREEDY_FUNC)) {
-				getToken();
-				match(Tag.LP); // Проверка наличия (
-			}
-			
-			switch (funcName) {
-			case SIN:
-				y = (Math.sin(expr(true).getDouble())); // следующий токен END для
-											// prim()<-term()<-expr()<-expr_list()
-											// получен в этом вызове expr()
-				break;
-			case COS:
-				y = (Math.cos(expr(true).getDouble())); // следующий токен END для
-											// prim()<-term()<-expr()<-expr_list()
-											// получен в этом вызове expr()
-				break;
-			default:
-				error("Не хватает обработчика для функции "
-						+ funcName.toString());
-			}
-
-			if (!options.getBoolean(OptId.GREEDY_FUNC)) {
-				match(Tag.RP);// Проверка наличия ')' - её оставил expr()
-				getToken(); // считываем токен, следующий за ')'
-			} // если Нежадные, то в currTok останется токен, на котором
-				// "запнулся" expr
-				// Таким образом достигается единообразие оставленного в currTok
-				// токена для не- и жадного режимов
-
-			// Округление до привычных значений
-			y = (doubleCompare(y, 0)) ? 0 : y;
-			y = (doubleCompare(y, 0.5)) ? 0.5 : y;
-			y = (doubleCompare(y, -0.5)) ? -0.5 : y;
-			y = (doubleCompare(y, 1)) ? 1 : y;
-			y = (doubleCompare(y, -1)) ? -1 : y;
-
-			return true;
-		}
-
 		return false;
 	}
 	
-	// Функция от аргумента в радианной мере
-	private boolean ofRadian(Tag name) {
-		switch (name) {
-		case SIN:
-		case COS:
-			return true;
-		default:
-			return false;
-		}
-	}
-	
-	// Сравнивает 2 double с заданной в
-	// options.getInt(Terminal.PRECISION) точностью
-	boolean doubleCompare(double a, double b) {
-		if (Math.abs(a - b) < 1.0 / Math.pow(10,
-				options.getInt(OptId.PRECISION)))
-			return true;
-		return false;
-	}
 
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws MyException {

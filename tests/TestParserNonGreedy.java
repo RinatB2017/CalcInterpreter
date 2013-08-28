@@ -1,4 +1,5 @@
 
+import interpretator.Interpreter;
 import options.OptId;
 import options.Options;
 
@@ -15,7 +16,8 @@ public class TestParserNonGreedy extends Assert {
 	static Lexer l;
 	static Buffer b;
 	static Parser p;
-
+	static Interpreter i;
+	
 	@Before
 	public void setUp() throws MyException {
 		OutputSystem out = new OutputSystem();
@@ -23,11 +25,10 @@ public class TestParserNonGreedy extends Assert {
 		Options o = new Options(out);
 		o.set(OptId.AUTO_END, true);
 		o.set(OptId.GREEDY_FUNC, false);
-		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens :
-		// true, false
+		
 		b = new Buffer(l, null, null, o, out);
-		// Старый конструктор Parser: опции autoPrint, greedyFunc : true, false
-		p = new Parser(b, o, out);
+		i = new Interpreter(o, out);
+		p = new Parser(b, o, out, i);
 	}
 
 	@After
@@ -46,62 +47,62 @@ public class TestParserNonGreedy extends Assert {
 		}.getClass().getEnclosingMethod().getName());
 		b.setArgs(new String[] { "sin(-pi/2)" });
 		p.program();
-		assertEquals(-1.0, p.lastResult);
+		assertEquals(-1.0, i.lastResult);
 	}
 
 	@Test
 	public void test3FactorialFactorial() throws Exception {
 		b.setArgs(new String[] { "3!!" });
 		p.program();
-		assertEquals(720.0, p.lastResult);
+		assertEquals(720.0, i.lastResult);
 	}
 
 	@Test
 	public void test3FactorialAdd4Factorial() throws Exception {
 		b.setArgs(new String[] { "3!+4!" });
 		p.program();
-		assertEquals(30.0, p.lastResult);
+		assertEquals(30.0, i.lastResult);
 	}
 
 	@Test
 	public void test1minus3FactoriAladd4Factorial() throws Exception {
 		b.setArgs(new String[] { "1-3!+4!" });
 		p.program();
-		assertEquals(19.0, p.lastResult);
+		assertEquals(19.0, i.lastResult);
 	}
 
 	@Test
 	public void test1plus3FactoriAladd4Factorial() throws Exception {
 		b.setArgs(new String[] { "1+3!+4!" });
 		p.program();
-		assertEquals(31.0, p.lastResult);
+		assertEquals(31.0, i.lastResult);
 	}
 
 	@Test
 	public void test3FactorialMul4Factorial() throws Exception {
 		b.setArgs(new String[] { "3!*4!" });
 		p.program();
-		assertEquals(144.0, p.lastResult);
+		assertEquals(144.0, i.lastResult);
 	}
 
 	@Test
 	public void test2pow3Factorial() throws Exception {
 		b.setArgs(new String[] { "2^3!" }); // 2^(3!)
 		p.program();
-		assertEquals(64.0, p.lastResult);
+		assertEquals(64.0, i.lastResult);
 	}
 
 	@Test
 	public void test2pow3FactorialPlus1() throws Exception {
 		b.setArgs(new String[] { "2^3!+1" }); // 2^(3!)+1
 		p.program();
-		assertEquals(65.0, p.lastResult);
+		assertEquals(65.0, i.lastResult);
 	}
 
 	@Test
 	public void testRightAssociatePower() throws Exception {
 		b.setArgs(new String[] { "2^3^4" });
 		p.program();
-		assertEquals(Math.pow(2, Math.pow(3, 4)), p.lastResult);
+		assertEquals(Math.pow(2, Math.pow(3, 4)), i.lastResult);
 	}
 }

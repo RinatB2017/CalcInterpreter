@@ -1,5 +1,7 @@
 package interpretator;
 
+import main.MyException;
+import options.OptId;
 import types.TypedValue;
 
 public class TableGet implements Returnable {
@@ -14,8 +16,18 @@ public class TableGet implements Returnable {
 
 	@Override
 	public TypedValue execute() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (!i.table.containsKey(name)){
+			if (i.options.getBoolean(OptId.STRICTED))
+				throw new MyException("Запрещено автоматическое создание переменных в stricted-режиме");
+			else {
+				i.table.put(name, new TypedValue(0)); // Если в table нет переменной, то
+				// добавляем её со зачением 0
+				i.output.addln("Создана переменная " + name
+						+ " со значением " + i.table.get(name));
+			}
+		}
+		TypedValue r = i.table.get(name);
+		return r;
 	}
 
 }

@@ -1,7 +1,6 @@
 package interpretator;
 
 import lexer.Tag;
-import main.MyException;
 import types.TypedValue;
 
 public class Expr implements Returnable {
@@ -21,7 +20,7 @@ public class Expr implements Returnable {
 		case MINUS:
 			return left.minus(right);
 		default:
-			throw new MyException("неверный знак в Expr");
+			throw new Exception("неверный знак в Expr");
 		}
 	}
 	

@@ -3,15 +3,20 @@ package interpretator;
 import types.TypedValue;
 
 public class TablePut implements Voidable {
-
-	public TablePut(String name, TypedValue expr) {
-		// TODO Auto-generated constructor stub
+	private Interpreter i; 
+	private String name;
+	private TypedValue v;
+	public TablePut(String name, TypedValue v, Interpreter i) {
+		this.name=name;
+		this.i=i;
+		this.v=v;
 	}
 
 	@Override
 	public void execute() throws Exception {
-		// TODO Auto-generated method stub
-
+		//v = expr(true);
+		i.table.put(name, v);
+		i.output.addln("Значение переменой " + name + " изменено на " + v);
 	}
 
 }

@@ -1,4 +1,5 @@
 
+import interpretator.Interpreter;
 import options.OptId;
 import options.Options;
 
@@ -16,6 +17,7 @@ public class TestParserFails extends Assert {
 	static Lexer l;
 	static Buffer b;
 	static Parser p;
+	static Interpreter i;
 
 	@Before
 	public void setUp() throws MyException {
@@ -24,11 +26,10 @@ public class TestParserFails extends Assert {
 		Options o = new Options(out);
 		o.set(OptId.AUTO_END, true);
 		o.set(OptId.GREEDY_FUNC, true);
-		// Старый конструктор Buffer: опции lexerAutoEnd, lexerPrintTokens :
-		// true, false
+		
 		b = new Buffer(l, null, null, o, out);
-		// Старый конструктор Parser: опции autoPrint, greedyFunc : true, true
-		p = new Parser(b, o, out);
+		i = new Interpreter(o, out);
+		p = new Parser(b, o, out, i);
 	}
 
 	@After

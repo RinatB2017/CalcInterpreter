@@ -1,6 +1,8 @@
 package interpretator;
 
 import java.util.*;
+
+import options.Options;
 import types.TypedValue;
 import main.OutputSystem;
 
@@ -10,12 +12,14 @@ public class Interpreter {
 	private int depth=0;
 	
 	public OutputSystem output;
+	public Options options;
 	public HashMap<String, TypedValue> table; // Таблица переменных
 		
 	// Конструктор
-	public Interpreter(OutputSystem output ) {
+	public Interpreter(Options ops, OutputSystem output) {
 		table = new HashMap<String, TypedValue>();
 		this.output = output;
+		this.options=ops;
 	}
 
 	// incrDepth() и decrDepth() считают глубину вложенности относительно
@@ -40,7 +44,7 @@ public class Interpreter {
 		if(skip)
 			return null;
 		
-		return n.execute();
+		return lastResult=n.execute();
 	}
 	
 	/**
@@ -54,5 +58,15 @@ public class Interpreter {
 		
 		n.execute();
 	}
+	
+	public TypedValue lastResult = new TypedValue(0);
+	
+	// Сброс таблицы переменных в исходное состояние
+		public void resetTable() {
+			table.clear();
+			table.put("e", new TypedValue(Math.E));
+			table.put("pi", new TypedValue(Math.PI));
+			table.put("ans", lastResult);
+		}
 	
 }

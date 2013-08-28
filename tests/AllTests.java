@@ -4,7 +4,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ TestParserGreedyMost.class, TestParserNonGreedy.class,
-		TestParserFails.class })
+		TestParserFails.class, TestParserInterpreter.class })
 public class AllTests {
 
 }
