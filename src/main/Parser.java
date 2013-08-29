@@ -119,43 +119,46 @@ public class Parser extends Env{
 		// анализируем
 		match(Tag.RP); // ')'
 	
-		block(condition.getBoolean());
-		getToken(); // считываем очередной токен
+		boolean get = block(condition.getBoolean());
+		if(get) getToken(); // считываем очередной токен
 
 		if (currTok.name == Tag.ELSE) {
 			block(!condition.getBoolean());
+			return true;
 		} else { // если после if { expr_list } идёт не else
 			return false; // тогда в следующией итерации цикла в program() мы
 							// просмотрим уже считанный выше токен, а не будем
 							// считывать новый
 		}
-		return true;
 	}
 
 	// { expr_list }
-	private void block(boolean condition) throws Exception {
+	private boolean block(boolean condition) throws Exception {
 		if(!condition) inter.skip=true;
 		inter.incrDepth();
 		
-		// TODO boolean fbrackets = true; после того как уберу skipBlock()
 		getToken();
-		match(Tag.LF); // '{'
-
-		boolean get = true; // нужно ли считывать токен в самом начале
-		do {
-			if (get)
-				getToken();
-
-			switch (currTok.name) {
-			case RF:
-				inter.decrDepth();
-				return; // '}'
-			default:
-				get = instr();
-			}
-		} while (currTok.name != Tag.EXIT);
-
-		error("block() Ожидается RF }");
+		if(currTok.name==Tag.LF) { // '{'
+			boolean get = true; // нужно ли считывать токен в самом начале
+			do {
+				if (get)
+					getToken();
+	
+				switch (currTok.name) {
+				case RF:
+					inter.decrDepth();
+					return true; // '}'
+				default:
+					get = instr();
+				}
+			} while (currTok.name != Tag.EXIT);
+			error("block() Ожидается RF }");
+			return true;
+		}else{
+			instr(); 
+			inter.decrDepth();
+			return false;
+		}
 	}
 
 	
