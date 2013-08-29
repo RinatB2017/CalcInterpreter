@@ -1,4 +1,10 @@
 package main;
+
+import executables.Expr;
+import executables.Print;
+import executables.TableGet;
+import executables.TablePut;
+import executables.Term;
 import interpretator.*;
 import options.*;
 import types.TypedValue;
@@ -16,20 +22,17 @@ import lexer.*;
  * 
  * @see Parser#getToken()
  * */
-public class Parser {
+public class Parser extends Env{
 	private Token currTok = null; // текущий обрабатываемый токен, изменяется
 									// методом getToken()
-	private Buffer buf = null;
-	private Options options = null;
-	private Interpreter inter;
+	private final Buffer buf;
+	private final Interpreter inter;
 	
-	//public TypedValue lastResult = new TypedValue(0);
-
 	// Конструктор
-	public Parser(Buffer buf, Options options, OutputSystem output, Interpreter i) {
+	public Parser(Buffer buf, Interpreter inter) {
+		super(inter.output, inter.table, inter.options);
 		this.buf = buf;
-		this.options = options;
-		inter = i;
+		this.inter=inter;
 		inter.resetTable();
 	}
 
@@ -44,7 +47,7 @@ public class Parser {
 	 */
 	private Tag getToken() throws Exception {
 		if (echoPrint && currTok.name != Tag.END && !inter.skip)
-			inter.output.append(currTok.toString() + ' '); // Печать предыдущего считанного
+			output.append(currTok.toString() + ' '); // Печать предыдущего считанного
 												// токена, т. к. в exprList()
 												// токен уже считан до включения
 												// флага echoPrint
@@ -76,10 +79,10 @@ public class Parser {
 			case EXIT:
 				return;
 			default:
-				inter.output.clear();
+				output.clear();
 				get = instr();
-				//inter.table.put("ans", lastResult);
-				inter.output.flush();
+				//table.put("ans", lastResult);
+				output.flush();
 			}
 		}
 	}
@@ -102,7 +105,7 @@ public class Parser {
 										// this.getToken() ...
 				TypedValue v = expr(false);
 				if (options.getBoolean(OptId.AUTO_PRINT) && !inter.skip)
-					inter.output.finishAppend("= " + v);
+					output.finishAppend("= " + v);
 				echoPrint = false; // ... а теперь выключаем
 			}
 			match(Tag.END);
@@ -153,7 +156,6 @@ public class Parser {
 				inter.decrDepth();
 				return; // '}'
 			default:
-				get = true;
 				get = instr();
 			}
 		} while (currTok.name != Tag.EXIT);
@@ -210,11 +212,11 @@ public class Parser {
 		getToken();
 		if (currTok.name == Tag.END) { // a. если нет expression, то
 											// выводим все переменные
-			inter.exec(new Print(null, inter));
+			inter.exec(new Print(null));
 		} else { // b. выводим значение expression
 			echoPrint = true;
 			TypedValue v = expr(false); // expr() оставляет токен в currTok.name ...
-			inter.exec(new Print(v, inter));
+			inter.exec(new Print(v));
 			echoPrint = false;
 		}
 	}
@@ -226,15 +228,15 @@ public class Parser {
 		String varName = new String(((WordT)currTok).value); // ибо stringValue может
 													// затереться при вызове
 													// expr()
-		inter.output.add("Создана переменная " + varName);
+		output.add("Создана переменная " + varName);
 		getToken();
 		if (currTok.name == Tag.ASSIGN) {
-			inter.table.put(varName, expr(true)); // expr() оставляет токен в
+			table.put(varName, expr(true)); // expr() оставляет токен в
 											// currTok.name ...
 		} else if (currTok.name == Tag.END) {
-			inter.table.put(varName, new TypedValue(0));
+			table.put(varName, new TypedValue(0));
 		}
-		inter.output.addln(" со значением " + inter.table.get(varName));
+		output.addln(" со значением " + table.get(varName));
 	}
 
 	// Удаляет переменную
@@ -242,18 +244,18 @@ public class Parser {
 		
 		getToken();
 		if (currTok.name == Tag.MUL) {
-			inter.table.clear();
-			inter.output.addln("Все переменные удалены!");
+			table.clear();
+			output.addln("Все переменные удалены!");
 		} else
 			match(Tag.NAME);
 		String stringValue = new String(((WordT)currTok).value);
-		if (!inter.table.isEmpty()) {
-			if (!inter.table.containsKey(stringValue)) {
-				inter.output.addln("del: Переменной " + stringValue
+		if (!table.isEmpty()) {
+			if (!table.containsKey(stringValue)) {
+				output.addln("del: Переменной " + stringValue
 						+ " нет в таблице переменных!");
 			} else {
-				inter.table.remove(stringValue);
-				inter.output.addln("del: Переменная " + stringValue + " удалена.");
+				table.remove(stringValue);
+				output.addln("del: Переменная " + stringValue + " удалена.");
 			}
 		}
 	}
@@ -280,13 +282,13 @@ public class Parser {
 		case MUL:
 			options.resetAll();
 			inter.resetTable();
-			inter.output.addln("Всё сброшено.");
+			output.addln("Всё сброшено.");
 			break;
 		case NAME:
-			if(((WordT)currTok).value.equals("interpreter.table")){
+			if(((WordT)currTok).value.equals("table")){
 				inter.resetTable();
-				inter.output.addln("Таблица переменных сброшена.");
-			}else error("должен быть токен "+new WordT(Tag.NAME, "interpreter.table"));
+				output.addln("Таблица переменных сброшена.");
+			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));
 			break;
 		default:
 			if (setname(currTok)==null)
@@ -321,7 +323,7 @@ public class Parser {
 
 	// Помощь по грамматике
 	void help() {
-		inter.output.addln("Грамматика(не актуальная):\n"
+		output.addln("Грамматика(не актуальная):\n"
 				+ "program:\n"
 				+ "\texpr_list* EXIT\n"
 				+ "\n"
@@ -349,7 +351,7 @@ public class Parser {
 
 	// Выводит информацию о текущем состоянии
 	void state() {
-		inter.output.addln("Текущее состояние:\nПеременных " + inter.table.size());
+		output.addln("Текущее состояние:\nПеременных " + table.size());
 		options.printAll();
 	};
 
@@ -448,9 +450,9 @@ public class Parser {
 													// затереть stringValue
 
 			if (getToken() == Tag.ASSIGN) {
-				inter.exec(new TablePut(name, expr(true), inter));
+				inter.exec(new TablePut(name, expr(true)));
 			}
-			TypedValue v = inter.exec(new TableGet(name, inter));
+			TypedValue v = inter.exec(new TableGet(name));
 			return v;
 		}
 		case MINUS: { // унарный минус
@@ -485,7 +487,7 @@ public class Parser {
 		int errors = options.getInt(OptId.ERRORS);
 		errors++;
 		options.set(OptId.ERRORS, errors);
-		inter.output.flush();
+		output.flush();
 		throw new MyException(string);
 	}
 

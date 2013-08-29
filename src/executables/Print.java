@@ -1,25 +1,19 @@
-package interpretator;
+package executables;
 
-import java.util.HashMap;
+import interpretator.Voidable;
+
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import main.OutputSystem;
-
 import types.TypedValue;
 
-public class Print implements Voidable {
+public class Print extends Voidable {
 
-	public Print(TypedValue v, Interpreter i) {
-		super();
+	public Print(TypedValue v) {
 		this.v = v;
-		this.output=i.output;
-		this.table=i.table;
 	}
 
 	private TypedValue v;
-	private OutputSystem output;
-	private HashMap<String, TypedValue> table;
 	
 	@Override
 	public void execute() throws Exception {

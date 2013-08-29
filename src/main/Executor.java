@@ -10,8 +10,10 @@ package main;
 import interpretator.Interpreter;
 
 import java.io.*;
+import java.util.HashMap;
 
 import options.Options;
+import types.TypedValue;
 import lexer.Lexer;
 import lexer.Tag;
 
@@ -22,11 +24,12 @@ public class Executor {
 		BufferedReader stdin = new BufferedReader(new InputStreamReader(
 				System.in));
 		OutputSystem output = new OutputSystem();
-		Options o = new Options(output);
-		Lexer l = new Lexer();
-		Buffer b = new Buffer(l, args, stdin, o, output);
-		Interpreter i = new Interpreter(o, output);
-		Parser p = new Parser(b, o, output, i);
+		Options options = new Options(output);
+		Lexer lexer = new Lexer();
+		Buffer buffer = new Buffer(lexer, args, stdin, options, output);
+		HashMap<String, TypedValue> table = new HashMap<String, TypedValue>(); 
+		Interpreter inter = new Interpreter(options, table, output);
+		Parser p = new Parser(buffer, inter);
 		
 		while (true) {
 			try {
@@ -34,14 +37,14 @@ public class Executor {
 				if (p.getCurrTok().name == Tag.EXIT)
 					break;
 			} catch (MyException m) {
-				System.err.println("Ошибка на " + b.getLineNum()
-						+ " на токене №" + b.getTokNum() + " " + p.getCurrTok()
+				System.err.println("Ошибка на " + buffer.getLineNum()
+						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok()
 						+ ":");
 				System.err.println(m.getMessage());
 				continue;
 			} catch (Exception e) {
-				System.err.println("Критическая ошибка на " + b.getLineNum()
-						+ " на токене №" + b.getTokNum() + " " + p.getCurrTok()
+				System.err.println("Критическая ошибка на " + buffer.getLineNum()
+						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok()
 						+ ", продолжение работы невозможно.");
 				System.err.println(e.getMessage() + "\n");
 				e.printStackTrace();

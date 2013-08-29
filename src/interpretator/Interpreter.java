@@ -7,19 +7,13 @@ import types.TypedValue;
 import main.OutputSystem;
 
 
-public class Interpreter {
+public class Interpreter extends Env{
 	public boolean skip=false; // Пропуск инструкций через себя без выполнения при if, for, do, while, ...
 	private int depth=0;
-	
-	public OutputSystem output;
-	public Options options;
-	public HashMap<String, TypedValue> table; // Таблица переменных
 		
 	// Конструктор
-	public Interpreter(Options ops, OutputSystem output) {
-		table = new HashMap<String, TypedValue>();
-		this.output = output;
-		this.options=ops;
+	public Interpreter(Options options, HashMap<String, TypedValue> table, OutputSystem output) {
+		super(output, table, options);
 	}
 
 	// incrDepth() и decrDepth() считают глубину вложенности относительно
@@ -44,6 +38,10 @@ public class Interpreter {
 		if(skip)
 			return null;
 		
+		n.output=output;
+		n.table=table;
+		n.options=options;
+		
 		return lastResult=n.execute();
 	}
 	
@@ -55,6 +53,10 @@ public class Interpreter {
 	public void exec(Voidable n) throws Exception{
 		if(skip)
 			return;
+
+		n.output=output;
+		n.table=table;
+		n.options=options;
 		
 		n.execute();
 	}
@@ -62,11 +64,11 @@ public class Interpreter {
 	public TypedValue lastResult = new TypedValue(0);
 	
 	// Сброс таблицы переменных в исходное состояние
-		public void resetTable() {
-			table.clear();
-			table.put("e", new TypedValue(Math.E));
-			table.put("pi", new TypedValue(Math.PI));
-			table.put("ans", lastResult);
-		}
+	public void resetTable() {
+		table.clear();
+		table.put("e", new TypedValue(Math.E));
+		table.put("pi", new TypedValue(Math.PI));
+		table.put("ans", lastResult);
+	}
 	
 }

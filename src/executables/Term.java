@@ -1,9 +1,10 @@
-package interpretator;
+package executables;
 
+import interpretator.Returnable;
 import lexer.Tag;
 import types.TypedValue;
 
-public class Term implements Returnable {
+public class Term extends Returnable {
 	private TypedValue left, right;
 	private Tag sign;
 	

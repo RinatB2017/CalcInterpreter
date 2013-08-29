@@ -1,10 +1,13 @@
 
+import java.util.HashMap;
+
 import interpretator.Interpreter;
 import options.OptId;
 import options.Options;
 
 import org.junit.*;
 
+import types.TypedValue;
 import junit.framework.Assert;
 import lexer.Lexer;
 import main.Buffer;
@@ -27,8 +30,8 @@ public class TestParserInterpreter extends Assert {
 		o.set(OptId.GREEDY_FUNC, false);
 
 		b = new Buffer(l, null, null, o, out);
-		i = new Interpreter(o, out);
-		p = new Parser(b, o, out, i);
+		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
+		p = new Parser(b, i);
 	}
 
 	@After
