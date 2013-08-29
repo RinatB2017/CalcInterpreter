@@ -6,5 +6,5 @@ package types;
  *
  */
 public enum Types {
-	INTEGER, DOUBLE, BOOLEAN, VECTOR 
+	INTEGER, DOUBLE, BOOLEAN, VECTOR, FUNCTION
 }
