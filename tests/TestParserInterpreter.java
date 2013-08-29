@@ -98,4 +98,16 @@ public class TestParserInterpreter extends Assert {
 		p.program();
 		assertEquals(1, i.table.size());
 	}
+	
+	@Test(expected = MyException.class)
+	public void checkIntDivZero() throws Exception {
+		b.setArgs(new String[] { "1/0" });
+		p.program();
+	}
+	
+	@Test(expected = MyException.class)
+	public void checkDoubleDivZero() throws Exception {
+		b.setArgs(new String[] { "1.8/0" });
+		p.program();
+	}
 }

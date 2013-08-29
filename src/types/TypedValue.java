@@ -1,5 +1,7 @@
 package types;
 
+import main.MyException;
+
 /**
  * Обеспечиват поддержку типов:
  * простых (INTEGER, DOUBLE, BOOLEAN)
@@ -53,6 +55,8 @@ public class TypedValue {
 			return ""+d;
 		case BOOLEAN:
 			return ""+b;
+		default:
+			break;
 		}
 		return null;
 	}
@@ -118,10 +122,16 @@ public class TypedValue {
 	public TypedValue div(TypedValue right) throws Exception {
 		switch (type){
 		case INTEGER:
-			i /= right.getInt();
+			int r = right.getInt();
+			if(r==0)
+				throw new MyException("Целочисленное деление на 0.");
+			i /= r;
 			return this;
 		case DOUBLE:
-			d /= right.getDouble();
+			double rd=right.getDouble();
+			if(rd==0)
+				throw new MyException("Вещественное деление на 0.");
+			d /= rd;
 			return this;
 		case BOOLEAN:
 		case VECTOR:

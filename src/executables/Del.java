@@ -1,6 +1,5 @@
 package executables;
 
-import lexer.WordT;
 import interpretator.Voidable;
 
 public class Del extends Voidable{
@@ -25,7 +24,8 @@ public class Del extends Voidable{
 					table.remove(name4del);
 					output.addln("del: Переменная " + name4del + " удалена.");
 				}
-			}
+			} else
+				output.addln("Таблица переменных пуста, нечего удалять.");
 		}	
 	}
 }

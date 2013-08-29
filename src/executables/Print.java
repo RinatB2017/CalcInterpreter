@@ -19,7 +19,7 @@ public class Print extends Voidable {
 	public void execute() throws Exception {
 		if(v==null){
 			if (table.isEmpty()) {
-				output.addln("table is empty!");
+				output.addln("Таблица переменных пуста, нечего показывать.");
 			} else {
 				output.addln("[table]");
 				Iterator<Entry<String, TypedValue>> it = table.entrySet().iterator();
