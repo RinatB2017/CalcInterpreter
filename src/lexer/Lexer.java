@@ -56,6 +56,7 @@ public class Lexer {
 		this.addItem("shutdown", Tag.EXIT);
 		this.addItem("print", Tag.PRINT);
 		this.addItem("add", Tag.ADD);
+		this.addItem("var", Tag.ADD);
 		this.addItem("del", Tag.DEL);
 		this.addItem("reset", Tag.RESET);
 		this.addItem("set", Tag.SET);

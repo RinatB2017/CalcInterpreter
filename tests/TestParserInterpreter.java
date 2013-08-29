@@ -84,4 +84,18 @@ public class TestParserInterpreter extends Assert {
 		p.program();
 		assertEquals(10, i.lastResult.getInt());
 	}
+	
+	@Test
+	public void testDelAll() throws Exception {
+		b.setArgs(new String[] { "del *;" });
+		p.program();
+		assertEquals(0, i.table.size());
+	}
+	
+	@Test
+	public void testDelAllAddOneDelOne() throws Exception {
+		b.setArgs(new String[] { "del *; var uut=9; var t; del uut;" });
+		p.program();
+		assertEquals(1, i.table.size());
+	}
 }

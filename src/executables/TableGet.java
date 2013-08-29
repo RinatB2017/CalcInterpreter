@@ -21,7 +21,7 @@ public class TableGet extends Returnable {
 				table.put(name, new TypedValue(0)); // Если в table нет переменной, то
 				// добавляем её со зачением 0
 				output.addln("Создана переменная " + name
-						+ " со значением " + table.get(name));
+						+ " со значением по умолчанию " + table.get(name));
 			}
 		}
 		TypedValue r = table.get(name);

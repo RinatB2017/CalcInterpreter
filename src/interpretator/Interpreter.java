@@ -42,7 +42,9 @@ public class Interpreter extends Env{
 		n.table=table;
 		n.options=options;
 		
-		return lastResult=n.execute();
+		lastResult=n.execute();
+		table.put("ans", lastResult);
+		return lastResult;
 	}
 	
 	/**

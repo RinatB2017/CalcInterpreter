@@ -1,10 +1,6 @@
 package main;
 
-import executables.Expr;
-import executables.Print;
-import executables.TableGet;
-import executables.TablePut;
-import executables.Term;
+import executables.*;
 import interpretator.*;
 import options.*;
 import types.TypedValue;
@@ -81,7 +77,6 @@ public class Parser extends Env{
 			default:
 				output.clear();
 				get = instr();
-				//table.put("ans", lastResult);
 				output.flush();
 			}
 		}
@@ -225,38 +220,32 @@ public class Parser extends Env{
 	private void add() throws Exception {
 		getToken();
 		match(Tag.NAME);
-		String varName = new String(((WordT)currTok).value); // ибо stringValue может
+		String name = new String(((WordT)currTok).value); // ибо stringValue может
 													// затереться при вызове
 													// expr()
-		output.add("Создана переменная " + varName);
 		getToken();
-		if (currTok.name == Tag.ASSIGN) {
-			table.put(varName, expr(true)); // expr() оставляет токен в
-											// currTok.name ...
-		} else if (currTok.name == Tag.END) {
-			table.put(varName, new TypedValue(0));
+		switch(currTok.name){
+			case ASSIGN:
+				inter.exec(new TablePut(name, expr(true))); // expr() оставляет токен в
+												// currTok.name ...
+				break;
+			case END:
+				inter.exec(new TablePut(name, new TypedValue(0)));
+				break;
+			default:
+				error("Ожидается '=' или ';' после имени.");
 		}
-		output.addln(" со значением " + table.get(varName));
 	}
 
 	// Удаляет переменную
 	private void del() throws Exception {
-		
 		getToken();
 		if (currTok.name == Tag.MUL) {
-			table.clear();
-			output.addln("Все переменные удалены!");
-		} else
+			inter.exec(new Del(null));
+		} else{
 			match(Tag.NAME);
-		String stringValue = new String(((WordT)currTok).value);
-		if (!table.isEmpty()) {
-			if (!table.containsKey(stringValue)) {
-				output.addln("del: Переменной " + stringValue
-						+ " нет в таблице переменных!");
-			} else {
-				table.remove(stringValue);
-				output.addln("del: Переменная " + stringValue + " удалена.");
-			}
+			String stringValue = new String(((WordT)currTok).value);
+			inter.exec(new Del(stringValue));
 		}
 	}
 
@@ -366,7 +355,6 @@ public class Parser extends Env{
 				left = inter.exec(new Expr(left, term(true), s));
 				break; // этот break относится к switch
 			default:
-				//if(!inter.skip) lastResult = left;
 				return left;
 			}
 		}
@@ -449,9 +437,10 @@ public class Parser extends Env{
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			if (getToken() == Tag.ASSIGN) {
+			if (getToken() == Tag.ASSIGN)
 				inter.exec(new TablePut(name, expr(true)));
-			}
+			//else
+			//	inter.exec(new TablePut(name, new TypedValue(0)));
 			TypedValue v = inter.exec(new TableGet(name));
 			return v;
 		}
