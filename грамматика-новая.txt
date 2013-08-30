@@ -71,9 +71,8 @@ prim =
 	|	BOOLEAN
 	|	vector // (1, 2, 3) или одновектор (4-1), что без вопросов приводится к int
 	|	'.' NAME
-	|	NAME right
+	|	NAME [ right ]
 	|	'-' prim
-	|	predefined_func
 	
 right =
 		'=' bool // a=8-9*7, a = (1, 2, 3)
@@ -89,25 +88,6 @@ func_args =
 
 func_подст =
 	bool { ',' bool }
-
-predefined_func =
-		of_radian '(' expr ')'
-	|	returns_radian '(' expr ')'
-	|	dimensionless '(' expr ')' // безразмерные ф-ии, например LOG
-
-// Безразмерные ф-ии
-dimensionless =
-		D // дифференциал
-	|	INTEGRATE // интеграл
-	|	LOG
-
-of_radian =
-		SIN
-	|	COS
-
-returns_radian =
-		ARCSIN
-	|	ARCCOS
 
 void_func =
 		print
@@ -126,7 +106,7 @@ add =
 	|	ADD NAME '(' func_args ')' '=' expr // определение ф-ии, например tg(x) = sin(x) '/' cos(x).
 		В интерпретаторе для избежания получения значения x используем НОВОЕ ОКРУЖЕНИЕ, содержащее ссылки на подставляемую переменную.
 		Если нужно получить значение x:
-		tg(x) = sin(x) '/' cos(.x)
+		tg(x) = sin(x) '/' cos(.x) // <- .NAME example here
 	
 del =
 	DEL ( '*' | NAME )

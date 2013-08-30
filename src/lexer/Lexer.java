@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Ник
  */
 
-public class Lexer {
+public final class Lexer {
 
 	/**
 	 * Элемент Регексп : Имя

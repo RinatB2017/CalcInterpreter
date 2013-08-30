@@ -27,7 +27,7 @@ class Option<T> {
  * */
 
 @SuppressWarnings("rawtypes")
-public class Options {
+public final class Options {
 	private HashMap<OptId, Option> opts = new HashMap<OptId, Option>(); // Ид
 																				// :
 																				// Опция

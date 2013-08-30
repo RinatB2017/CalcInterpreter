@@ -1,21 +1,20 @@
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
-
-import interpretator.Interpreter;
+import interpreter.Interpreter;
 import options.OptId;
 import options.Options;
 
-import org.junit.*;
-
+import parser.Parser;
 import types.TypedValue;
-import junit.framework.Assert;
+
 import lexer.Lexer;
 import main.Buffer;
 import main.MyException;
 import main.OutputSystem;
-import main.Parser;
 
-public class TestParserInterpreter extends Assert {
+public class TestParserInterpreter {
 	static Lexer l;
 	static Buffer b;
 	static Parser p;

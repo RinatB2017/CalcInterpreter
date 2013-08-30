@@ -24,3 +24,23 @@ stricted==on by default
 
 help state, help if, ...
 BigDecimal
+
+// Преобразовать эти нетерминалы в преобразователь значений(deg->rad, rad->deg)
+predefined_func =
+		of_radian '(' expr ')'
+	|	returns_radian '(' expr ')'
+	|	dimensionless '(' expr ')' // безразмерные ф-ии, например LOG
+
+// Безразмерные ф-ии
+dimensionless =
+		D // дифференциал
+	|	INTEGRATE // интеграл
+	|	LOG
+
+of_radian =
+		SIN
+	|	COS
+
+returns_radian =
+		ARCSIN
+	|	ARCCOS

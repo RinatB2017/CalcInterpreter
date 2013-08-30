@@ -1,6 +1,8 @@
 package main;
 import java.util.*;
 
+import parser.Parser;
+
 /**
  * Буфер для умной задержки вывода при интерактивном вводе. Изначально
  * разрабатывался для взаимодействия с эхопечатью Parser.echoPrint и системой
@@ -26,7 +28,7 @@ import java.util.*;
  * результата
  */
 
-public class OutputSystem {
+public final class OutputSystem {
 	private ArrayList<String> buffer; // буфер для всех сообщений
 	private StringBuilder builder; // буфер для сообщений bprint или expr
 

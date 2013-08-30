@@ -1,6 +1,6 @@
 package executables;
 
-import interpretator.Voidable;
+import interpreter.Voidable;
 import types.TypedValue;
 
 public class TablePut extends Voidable {

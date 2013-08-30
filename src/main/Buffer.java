@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import options.OptId;
 import options.Options;
+import parser.Parser;
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
@@ -17,7 +18,7 @@ import lexer.Token;
  * @see #getToken()
  * */
 
-public class Buffer {
+public final class Buffer {
 	private ArrayList<Token> tokens; // Массив токенов <название, значение>
 	private Lexer lexer;
 	private String[] args;

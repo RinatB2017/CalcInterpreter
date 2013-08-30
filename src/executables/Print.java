@@ -1,6 +1,6 @@
 package executables;
 
-import interpretator.Voidable;
+import interpreter.Voidable;
 
 import java.util.Iterator;
 import java.util.Map.Entry;

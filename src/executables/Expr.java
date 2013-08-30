@@ -1,6 +1,6 @@
 package executables;
 
-import interpretator.Returnable;
+import interpreter.Returnable;
 import lexer.Tag;
 import types.TypedValue;
 

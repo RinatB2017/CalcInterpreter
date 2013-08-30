@@ -1,6 +1,6 @@
 package executables;
 
-import interpretator.Voidable;
+import interpreter.Voidable;
 
 public class Del extends Voidable{
 	
