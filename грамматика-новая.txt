@@ -56,11 +56,11 @@ term =
 	
 // 100+100+2^3% == 216
 persent =
-	power [ '%' ]
+	degree [ '%' ]
 
 // 3!^2 == 36, 2^3^4 = 2^(3^4)
-power =
-	factorial [ '^' power ]
+degree =
+	factorial [ '^' degree ]
 
 factorial =
 	prim { '!' }

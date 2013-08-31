@@ -58,10 +58,10 @@ expr =
 	term { ( '+' | '(+)' | '-' ) term }
 	
 term =
-	power { ( '*' | '/' ) power }
+	degree { ( '*' | '/' ) degree }
 
-power =
-	factorial [ '^' power ]
+degree =
+	factorial [ '^' degree ]
 
 factorial =
 	prim { '!' }

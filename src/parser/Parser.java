@@ -369,13 +369,13 @@ public final class Parser extends Env{
 	
 	// умножает и делит
 	private TypedValue term(boolean get) throws Exception {
-		TypedValue left = prim(get);
+		TypedValue left = degree(get);
 		Tag s;
 		for (;;){
 			switch (s=currTok.name) {
 			case MUL:
 			case DIV:
-				left = inter.exec(new Term(left, term(true), s));
+				left = inter.exec(new Term(left, degree(true), s));
 				break; // этот break относится к switch
 			default:
 				return left;
@@ -383,41 +383,32 @@ public final class Parser extends Env{
 		}
 	}
 
-	/*
+	
 	// Степень a^b
-	private TypedValue power(boolean get) throws Exception {
+	private TypedValue degree(boolean get) throws Exception {
 		TypedValue left = factorial(get);
 		switch (currTok.name) {
 		case POW:
-			left = Math.pow(left, power(true));
+			left = inter.exec(new Degree(left, degree(true)));
 		default:
 			return left;
 		}
 	}
 
 	// факториал
-	private double factorial(boolean get) throws Exception {
-		double left = prim(get);
-		for (;;)
-			// ``вечно''
+	private TypedValue factorial(boolean get) throws Exception {
+		TypedValue left = prim(get);
+		for (;;){
 			switch (currTok.name) {
 			case FACTORIAL:
-				if (left < 0)
-					error("Факториал отрицательного числа не определён!");
-				int t = (int) Math.rint(left); // TODO сделать невозможным
-												// взятие факториала от 4.5,
-												// 4.8, 4.1, ...
-				left = 1.0;
-				while (t != 0) {
-					left *= t--;
-				}
+				left = inter.exec(new Factorial(left));
 				getToken(); // для следующих
 				break;
 			default:
 				return left;
 			}
+		}
 	}
-	 */
 	
 	// обрабатывает первичное
 	private TypedValue prim(boolean get) throws Exception {
@@ -474,17 +465,16 @@ public final class Parser extends Env{
 	
 	private TypedValue right(String name) throws Exception{
 		switch (currTok.name) {
-		case ASSIGN:
-			inter.exec(new TablePut(name, expr(true)));
-		case END:
-		case RP: // для funcArgs(), в котором есть getToken(). От ошибки aaa=8-9) защищает instr()->match(Tag.END)
-			return inter.exec(new TableGet(name));
 		case LP:
 			System.out.print("function "+name);
 			funcArgs();
 			return new TypedValue(1337);
+		case ASSIGN:
+			inter.exec(new TablePut(name, expr(true)));
+		case END:
+		case RP: // для funcArgs(), в котором есть getToken(). От ошибки aaa=8-9) защищает instr()->match(Tag.END)
 		default:
-			return new TypedValue(0);
+			return inter.exec(new TableGet(name));
 		}
 		
 	}

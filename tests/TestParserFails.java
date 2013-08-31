@@ -36,7 +36,7 @@ public class TestParserFails {
 
 	@After
 	public void tearDown() throws Exception {
-		assertTrue(p.getErrors() != 0);
+		assertTrue(p.getErrors() != 0); // TODO Это причина провала многих тестов, также и в других тестовых классах
 	}
 
 	@Test(expected = MyException.class)

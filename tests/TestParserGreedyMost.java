@@ -62,14 +62,14 @@ public class TestParserGreedyMost {
 																			// одну
 																			// строку
 		p.program();
-		assertEquals(321.694, i.lastResult); // работает
+		assertEquals(321.694, i.lastResult.getDouble(), 0.001); // работает
 	}
 
 	@Test
 	public void testPrint_() throws Exception {
 		b.setArgs(new String[] { "print print_ = as3=321.694", "", "" });
 		p.program();
-		assertEquals(321.694, i.lastResult); // работает
+		assertEquals(321.694, i.lastResult.getDouble(), 0.001); // работает
 	}
 
 	@Test
@@ -81,9 +81,9 @@ public class TestParserGreedyMost {
 
 	@Test
 	public void testPrint_1() throws Exception {
-		b.setArgs(new String[] { "print -1" });
+		b.setArgs(new String[] { "print -1.0+0.0" });
 		p.program();
-		assertEquals(-1.0, i.lastResult); // работает
+		assertEquals(-1.0, i.lastResult.getDouble(), 0.01); // работает
 	}
 
 	@Test
@@ -102,16 +102,16 @@ public class TestParserGreedyMost {
 
 	@Test
 	public void testPrintZero() throws Exception {
-		b.setArgs(new String[] { "print 0.0" });
+		b.setArgs(new String[] { "print 0.0-0.0" });
 		p.program();
-		assertEquals(0.0, i.lastResult); // работает
+		assertEquals(0.0, i.lastResult.getDouble(), 0.01); // работает
 	}
 
 	@Test
 	public void testIf_false_firstAfterIf() throws Exception {
 		b.setArgs(new String[] { "if(sin pi) {print 2+ 2*2;}  print e" });
 		p.program();
-		assertEquals(Math.E, i.lastResult);
+		assertEquals(Math.E, i.lastResult.getDouble(), 0.001);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class TestParserGreedyMost {
 	public void testaab() throws Exception {
 		b.setArgs(new String[] { "a = 1; b = a+2; print b;" });
 		p.program();
-		assertEquals(3.0, i.lastResult); // работает
+		assertEquals(3, i.lastResult.getInt()); // работает
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class TestParserGreedyMost {
 	public void testAns() throws Exception {
 		b.setArgs(new String[] { "2; (5+3)+ans" });
 		p.program();
-		assertEquals(10.0, i.lastResult); // работает
+		assertEquals(16, i.lastResult.getInt()); // работает
 	}
 
 	@Test
@@ -201,6 +201,6 @@ public class TestParserGreedyMost {
 																// функции на
 																// ЧИСЛО
 		p.program();
-		assertEquals(34.0, i.lastResult); // работает
+		assertEquals(34, i.lastResult.getInt()); // работает
 	}
 }

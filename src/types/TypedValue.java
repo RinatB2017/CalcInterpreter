@@ -15,7 +15,18 @@ public class TypedValue {
 	private boolean b;
 	private String s;
 	private MathVector v;
+	private FuncExpr f;
 	public Types type;
+	
+	public TypedValue(TypedValue t){
+		this.i=t.i;
+		this.d=t.d;
+		this.b=t.b;
+		this.s=t.s;
+		this.v=t.v;
+		this.f=t.f;
+		this.type=t.type;
+	}
 	
 	public TypedValue(int o){
 		this.i=o;
@@ -152,5 +163,38 @@ public class TypedValue {
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
 		return null;
+	}
+
+	public TypedValue degree(TypedValue degree) throws Exception {
+		switch (type){
+		case INTEGER:
+			i = (int) Math.pow(i, degree.getInt());
+			return this;
+		case DOUBLE:
+			d = Math.pow(d, degree.getDouble());
+			return this;
+		case BOOLEAN:
+		case VECTOR:
+			throw new Exception("Забыл BOOLEAN и VECTOR");
+		}
+		return null;
+	}
+	
+	public TypedValue factorial() throws Exception {
+		switch (type){
+		case INTEGER:
+			if (i < 0)
+				throw new MyException("Факториал отрицательного числа не определён!");
+			int t = i;
+			i = 1;
+			while (t != 0) {
+				i *= t--;
+			}
+			
+			return this;
+		default:
+			throw new MyException("Факториал определён только для INTEGER");
+		}
+		//return null;
 	}
 }

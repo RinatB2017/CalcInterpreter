@@ -25,7 +25,7 @@ public class TableGet extends Returnable {
 			}
 		}
 		TypedValue r = table.get(name);
-		return r;
+		return new TypedValue(r);
 	}
 
 }
