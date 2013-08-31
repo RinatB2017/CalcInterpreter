@@ -79,7 +79,8 @@ public final class Lexer {
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь
 																		// - заэкранированная
 																		// точка
-
+		this.addItem(",", Tag.COMMA);
+		
 		this.addItem("\\+", Tag.PLUS);
 		this.addItem("-", Tag.MINUS);
 		this.addItem("\\*", Tag.MUL);

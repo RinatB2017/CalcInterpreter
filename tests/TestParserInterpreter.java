@@ -109,4 +109,25 @@ public class TestParserInterpreter {
 		b.setArgs(new String[] { "1.8/0" });
 		p.program();
 	}
+	
+	@Test
+	public void testFuncArgs0() throws Exception {
+		b.setArgs(new String[] { "del *; megaf(1, 2.3)" });
+		p.program();
+		assertEquals(0, i.table.size());
+	}
+	
+	@Test
+	public void testFuncArgs2() throws Exception {
+		b.setArgs(new String[] { "del *; megaf(1, 2.3, e)" });
+		p.program();
+		assertEquals(2, i.table.size());
+	}
+	
+	@Test
+	public void testFuncVoidArgs() throws Exception {
+		b.setArgs(new String[] { "del *; megavf()" });
+		p.program();
+		assertEquals(0, i.table.size());
+	}
 }

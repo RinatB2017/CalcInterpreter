@@ -39,13 +39,13 @@ public class Executor {
 					break;
 			} catch (MyException m) {
 				System.err.println("Ошибка на " + buffer.getLineNum()
-						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok()
+						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()
 						+ ":");
 				System.err.println(m.getMessage());
 				continue;
 			} catch (Exception e) {
 				System.err.println("Критическая ошибка на " + buffer.getLineNum()
-						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok()
+						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()
 						+ ", продолжение работы невозможно.");
 				System.err.println(e.getMessage() + "\n");
 				e.printStackTrace();

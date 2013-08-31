@@ -5,7 +5,7 @@ import types.TypedValue;
 // Пара Имя-Значение
 public class Token {
 	public final Tag name;
-	public final String string;
+	final String string;
 
 	public Token(Tag n) {
 		name = n;
@@ -19,13 +19,14 @@ public class Token {
 	
 	@Override
 	public String toString() {
-		//return "Token[name=" + name.toString() + ", value=\"" + value + "\"]";
 		return string;
+	}
+	
+	public String toStringWithName() {
+		return "'"+name.toString()+"' \""+toString()+"\"";
 	}
 	
 	public static TypedValue createTypedValue(){
 		return null;
 	}
-	
-	//public String value;
 }

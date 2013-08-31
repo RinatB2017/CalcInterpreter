@@ -60,6 +60,20 @@ public class TypedValue {
 		}
 		return null;
 	}
+	
+	public boolean equals(TypedValue sec) throws Exception{
+		if (this.type!=sec.type) return false;
+		
+		switch (type){
+		case INTEGER:
+			return (i==sec.i);
+		case DOUBLE:
+			return (d==sec.d);
+		default:
+			// TODO TypedValue equals for case FUNCTION
+			throw new Exception("Забыл BOOLEAN и VECTOR ");
+		}
+	}
 
 	public TypedValue negative() throws Exception {
 		switch (type){

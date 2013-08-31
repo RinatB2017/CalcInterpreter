@@ -194,11 +194,11 @@ public class TestParserGreedyMost {
 	@Test
 	public void testTemplateForFutureVector() throws Exception {
 		b.setArgs(new String[] { "p=4; (3*p^2 + 6*p - 4)/2" }); // TODO Убрать
-																// p=8 и
+																// p=4 и
 																// использовать
 																// для проверки
 																// деления
-																// вектора на
+																// функции на
 																// ЧИСЛО
 		p.program();
 		assertEquals(34.0, i.lastResult); // работает

@@ -7,7 +7,7 @@ import types.TypedValue;
 import main.OutputSystem;
 
 
-public class Interpreter extends Env{
+public final class Interpreter extends Env{
 	public boolean skip=false; // Пропуск инструкций через себя без выполнения при if, for, do, while, ...
 	private int depth=0;
 		
@@ -38,6 +38,7 @@ public class Interpreter extends Env{
 		if(skip)
 			return null;
 		
+		// Доинициализируем объект здесь для сокращения числа аргументов конструктора
 		n.output=output;
 		n.table=table;
 		n.options=options;
@@ -56,6 +57,7 @@ public class Interpreter extends Env{
 		if(skip)
 			return;
 
+		// Доинициализируем объект здесь для сокращения числа аргументов конструктора
 		n.output=output;
 		n.table=table;
 		n.options=options;

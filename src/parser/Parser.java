@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.LinkedList;
+
 import executables.*;
 import interpreter.*;
 import options.*;
@@ -442,11 +444,14 @@ public final class Parser extends Env{
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
 
-			if (getToken() == Tag.ASSIGN)
+			getToken();
+			/*if (getToken() == Tag.ASSIGN)
 				inter.exec(new TablePut(name, expr(true)));
+			*/
 			
-			TypedValue v = inter.exec(new TableGet(name));
-			return v;
+			
+			//TypedValue v = inter.exec(new TableGet(name));
+			return right(name);//v;
 		}
 		case MINUS: { // унарный минус
 			return prim(true).negative();
@@ -465,6 +470,50 @@ public final class Parser extends Env{
 			return null;
 		}
 		}
+	}
+	
+	private TypedValue right(String name) throws Exception{
+		switch (currTok.name) {
+		case ASSIGN:
+			inter.exec(new TablePut(name, expr(true)));
+		case END:
+		case RP: // для funcArgs(), в котором есть getToken(). От ошибки aaa=8-9) защищает instr()->match(Tag.END)
+			return inter.exec(new TableGet(name));
+		case LP:
+			System.out.print("function "+name);
+			funcArgs();
+			return new TypedValue(1337);
+		default:
+			return new TypedValue(0);
+		}
+		
+	}
+	
+	private void funcArgs() throws Exception {
+		System.out.print("(");
+		LinkedList<TypedValue> args = new LinkedList<TypedValue>();
+		boolean get=true;
+		getToken();
+		switch(currTok.name){
+		case RP:
+			break;
+		default:
+			get = false;
+		
+			do{
+				TypedValue t=expr(get);
+				args.add(t);
+				get=true;
+			}while(currTok.name==Tag.COMMA);
+			match(Tag.RP);
+			
+			
+			for (TypedValue t : args){
+				System.out.print(t+", ");
+			}
+		}
+		System.out.println(")");
+		getToken(); // получаем следующий токен, его проверка на соответствие END - в instr()
 	}
 
 	private double y; // для временного хранения результата func()

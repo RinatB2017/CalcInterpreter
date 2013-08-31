@@ -128,7 +128,7 @@ public final class Buffer {
 						break;
 					}
 
-					if (options.getBoolean(OptId.PRINT_TOKENS)) // TODO выяснить почему не работает
+					if (options.getBoolean(OptId.PRINT_TOKENS))
 						printTokens();
 				}
 
@@ -146,18 +146,19 @@ public final class Buffer {
 	 * Вывод найденных токенов в System.out
 	 */
 	public void printTokens() {
-		output.add("lexer at line " + lineNum + " ");
+		output.addln("на " + getLineNum() + " "+"\"" + str + "\" :");
 		if (!tokens.isEmpty()) {
-			output.addln("\"" + str + "\" found next tokens:");
-			// System.out.println("<name> <value>\n");
+			output.addln("[founded tokens]");
+			
 			for (int i = 0; i < tokens.size(); i++) {
 				Token t = tokens.get(i);
-				// System.out.println(""+i+ " " + t.name + " " + t.value);
-				output.addln(t.toString());
+				output.addln(t.toStringWithName());
 			}
+			output.addln("[/founded tokens]");
 		} else
-			System.out.println("Nothing found for \"" + str + "\".");
-		// System.out.println();
+			output.addln("Nothing found.");
+		
+		output.flush();
 	}
 
 	/**
