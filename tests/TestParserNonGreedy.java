@@ -27,7 +27,7 @@ public class TestParserNonGreedy {
 		Options o = new Options(out);
 		o.set(OptId.AUTO_END, true);
 		o.set(OptId.GREEDY_FUNC, false);
-		
+		MyException.staticInit(o, out);
 		b = new Buffer(l, null, null, o, out);
 		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
 		p = new Parser(b, i);
@@ -35,11 +35,9 @@ public class TestParserNonGreedy {
 
 	@After
 	public void tearDown() throws Exception {
-		// if (p.getCurrTok().name==Terminal.RF)
-		// p.error("Неправильный выход из expr_list, возможно лишняя RF }");
-		if (p.getErrors() > 0)
+		if (MyException.getErrors() > 0)
 			System.err.println("Ошибка на " + b.getLineNum());
-		assertTrue(p.getErrors() == 0);
+		assertTrue(MyException.getErrors() == 0);
 	}
 
 	@Ignore // TODO снять после запила функций

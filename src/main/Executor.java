@@ -26,6 +26,7 @@ public class Executor {
 				System.in));
 		OutputSystem output = new OutputSystem();
 		Options options = new Options(output);
+		MyException.staticInit(options, output);
 		Lexer lexer = new Lexer();
 		Buffer buffer = new Buffer(lexer, args, stdin, options, output);
 		HashMap<String, TypedValue> table = new HashMap<String, TypedValue>(); 

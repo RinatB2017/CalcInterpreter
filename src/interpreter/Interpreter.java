@@ -38,7 +38,7 @@ public final class Interpreter extends Env{
 		if(skip)
 			return null;
 		
-		// Доинициализируем объект здесь для сокращения числа аргументов конструктора
+		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора
 		n.output=output;
 		n.table=table;
 		n.options=options;
@@ -57,7 +57,7 @@ public final class Interpreter extends Env{
 		if(skip)
 			return;
 
-		// Доинициализируем объект здесь для сокращения числа аргументов конструктора
+		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора
 		n.output=output;
 		n.table=table;
 		n.options=options;

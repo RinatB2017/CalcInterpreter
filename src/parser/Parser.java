@@ -466,9 +466,8 @@ public final class Parser extends Env{
 	private TypedValue right(String name) throws Exception{
 		switch (currTok.name) {
 		case LP:
-			System.out.print("function "+name);
-			funcArgs();
-			return new TypedValue(1337);
+			LinkedList<TypedValue> args = funcArgs();
+			return inter.exec(new Func(name, args));
 		case ASSIGN:
 			inter.exec(new TablePut(name, expr(true)));
 		case END:
@@ -479,15 +478,15 @@ public final class Parser extends Env{
 		
 	}
 	
-	private void funcArgs() throws Exception {
-		System.out.print("(");
-		LinkedList<TypedValue> args = new LinkedList<TypedValue>();
+	private LinkedList<TypedValue> funcArgs() throws Exception {
+		LinkedList<TypedValue> args = null;
 		boolean get=true;
 		getToken();
 		switch(currTok.name){
 		case RP:
 			break;
 		default:
+			args = new LinkedList<TypedValue>();
 			get = false;
 		
 			do{
@@ -496,14 +495,10 @@ public final class Parser extends Env{
 				get=true;
 			}while(currTok.name==Tag.COMMA);
 			match(Tag.RP);
-			
-			
-			for (TypedValue t : args){
-				System.out.print(t+", ");
-			}
 		}
-		System.out.println(")");
+
 		getToken(); // получаем следующий токен, его проверка на соответствие END - в instr()
+		return args;
 	}
 
 	private double y; // для временного хранения результата func()
@@ -515,11 +510,11 @@ public final class Parser extends Env{
 	
 
 	// Бросает исключение MyException и увеичивает счётчик ошибок
-	public void error(String string) throws MyException {
-		int errors = options.getInt(OptId.ERRORS);
+	public void error(String string) throws Exception  {
+		/*int errors = options.getInt(OptId.ERRORS);
 		errors++;
 		options.set(OptId.ERRORS, errors);
-		output.flush();
+		output.flush();*/
 		throw new MyException(string);
 	}
 
@@ -529,8 +524,8 @@ public final class Parser extends Env{
 	}
 
 	// Нижеприведённые методы нужны только лишь для тестов и отладки
-	public int getErrors() {
+	/*public int getErrors() {
 		return options.getInt(OptId.ERRORS);
-	}
+	}*/
 
 }

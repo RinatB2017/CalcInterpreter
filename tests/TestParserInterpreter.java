@@ -27,7 +27,7 @@ public class TestParserInterpreter {
 		Options o = new Options(out);
 		o.set(OptId.AUTO_END, true);
 		o.set(OptId.GREEDY_FUNC, false);
-
+		MyException.staticInit(o, out);
 		b = new Buffer(l, null, null, o, out);
 		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
 		p = new Parser(b, i);
@@ -35,9 +35,9 @@ public class TestParserInterpreter {
 
 	@After
 	public void tearDown() throws Exception {
-		if (p.getErrors() > 0)
+		if (MyException.getErrors() > 0)
 			System.err.println("Ошибка на " + b.getLineNum());
-		assertTrue(p.getErrors() == 0);
+		assertTrue(MyException.getErrors() == 0);
 	}
 
 	
@@ -97,24 +97,12 @@ public class TestParserInterpreter {
 		p.program();
 		assertEquals(1, i.table.size());
 	}
-	
-	@Test(expected = MyException.class)
-	public void checkIntDivZero() throws Exception {
-		b.setArgs(new String[] { "1/0" });
-		p.program();
-	}
-	
-	@Test(expected = MyException.class)
-	public void checkDoubleDivZero() throws Exception {
-		b.setArgs(new String[] { "1.8/0" });
-		p.program();
-	}
-	
+		
 	@Test
 	public void testFuncArgs0() throws Exception {
 		b.setArgs(new String[] { "del *; megaf(1, 2.3)" });
 		p.program();
-		assertEquals(0, i.table.size());
+		assertEquals(1, i.table.size());
 	}
 	
 	@Test
@@ -128,6 +116,6 @@ public class TestParserInterpreter {
 	public void testFuncVoidArgs() throws Exception {
 		b.setArgs(new String[] { "del *; megavf()" });
 		p.program();
-		assertEquals(0, i.table.size());
+		assertEquals(1, i.table.size());
 	}
 }
