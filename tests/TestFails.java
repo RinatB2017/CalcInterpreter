@@ -1,49 +1,36 @@
 import org.junit.*;
-
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-
-import interpreter.Interpreter;
 import options.OptId;
-import options.Options;
-import parser.Parser;
-import types.TypedValue;
-import lexer.Lexer;
 import lexer.Tag;
-import main.Buffer;
 import main.MyException;
-import main.OutputSystem;
 
-public class TestParserFails {
-	static Lexer l;
-	static Buffer b;
-	static Parser p;
-	static Interpreter i;
+
+public class TestFails extends EnvForTests{
 
 	@Before
-	public void setUp() throws MyException {
-		OutputSystem out = new OutputSystem();
-		l = new Lexer();
-		Options o = new Options(out);
-		o.set(OptId.AUTO_END, true);
+	public void setUp() throws Exception {
+		super.setUp();
 		o.set(OptId.GREEDY_FUNC, true);
-		MyException.staticInit(o, out);
-		b = new Buffer(l, null, null, o, out);
-		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
-		p = new Parser(b, i);
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		assertTrue(MyException.getErrors() != 0);
 	}
 
+	
 	@Ignore
 	@Test(expected = MyException.class)
-	public void checkDivZero() throws Exception {
+	public void checkDivByZeroSin() throws Exception {
 		b.setArgs(new String[] { "1/sin(-pi)" }); // Работает округление до 0 в
 													// Parser.func()
+		p.program();
+	}
+	
+	@Test(expected = MyException.class)
+	public void checkDivZero() throws Exception {
+		b.setArgs(new String[] { "-1/0" });
 		p.program();
 	}
 
@@ -73,18 +60,9 @@ public class TestParserFails {
 		p.program();
 	}
 
-	@Ignore
-	// Ложный тест верного выражения, которое не бросит исключения
-	@Test(expected = MyException.class)
-	public void checkExtraRFIgrore() throws Exception {
-		b.setArgs(new String[] { "sin(-pi/2)" });
-		p.program();
-	}
-
-	@Ignore
 	@Test(expected = MyException.class)
 	public void checkExtraRFIf() throws Exception {
-		b.setArgs(new String[] { "if(1+-9){sin(-pi/4);}}" });
+		b.setArgs(new String[] { "if(true){sin(-pi/4.0);}}" });
 		p.program();
 
 		if (p.getCurrTok().name == Tag.RF)
@@ -104,8 +82,20 @@ public class TestParserFails {
 	}
 	
 	@Test(expected = MyException.class)
-	public void checkDoubleDivZero() throws Exception {
+	public void checkIntDivZeroD() throws Exception {
+		b.setArgs(new String[] { "1/0.0" });
+		p.program();
+	}
+	
+	@Test(expected = MyException.class)
+	public void checkDoubleDivZeroI() throws Exception {
 		b.setArgs(new String[] { "1.8/0" });
+		p.program();
+	}
+	
+	@Test(expected = MyException.class)
+	public void checkDoubleDivZero() throws Exception {
+		b.setArgs(new String[] { "1.8/0.0" });
 		p.program();
 	}
 }

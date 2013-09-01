@@ -1,56 +1,15 @@
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-
-import interpreter.Interpreter;
-import options.OptId;
-import options.Options;
-
-import parser.Parser;
-import types.TypedValue;
-import lexer.Lexer;
-import main.Buffer;
-import main.MyException;
-import main.OutputSystem;
-
-public class TestParserNonGreedy {
-	static Lexer l;
-	static Buffer b;
-	static Parser p;
-	static Interpreter i;
-	
-	@Before
-	public void setUp() throws MyException {
-		OutputSystem out = new OutputSystem();
-		l = new Lexer();
-		Options o = new Options(out);
-		o.set(OptId.AUTO_END, true);
-		o.set(OptId.GREEDY_FUNC, false);
-		MyException.staticInit(o, out);
-		b = new Buffer(l, null, null, o, out);
-		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
-		p = new Parser(b, i);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		if (MyException.getErrors() > 0)
-			System.err.println("Ошибка на " + b.getLineNum());
-		assertTrue(MyException.getErrors() == 0);
-	}
-
-	@Ignore // TODO снять после запила функций
+public class TestBasicArith extends EnvForTests{
 	@Test
-	public void testPrint2As3() throws Exception {
-		// http://automated-testing.info/forum/kak-poluchit-imya-metoda-vo-vremya-vypolneniya-testa#comment-961
-		System.out.println(new Object() {
-		}.getClass().getEnclosingMethod().getName());
-		b.setArgs(new String[] { "sin(-pi/2)" });
+	public void test2plus2mul2() throws Exception {
+		b.setArgs(new String[] { "2+2*2;" });
 		p.program();
-		assertEquals(-1.0, i.lastResult);
+		assertEquals(6, i.lastResult.getInt());
 	}
-
+	
 	@Test
 	public void test3FactorialFactorial() throws Exception {
 		b.setArgs(new String[] { "3!!" });
@@ -105,5 +64,20 @@ public class TestParserNonGreedy {
 		b.setArgs(new String[] { "2^3^4" });
 		p.program();
 		assertEquals((int)Math.pow(2, Math.pow(3, 4)), i.lastResult.getInt());
+	}
+	
+	@Test
+	public void testAns() throws Exception {
+		b.setArgs(new String[] { "2; (5+3)+ans" });
+		p.program();
+		assertEquals(16, i.lastResult.getInt()); // работает
+	}
+	
+	// TODO Убрать p=4 и использовать для проверки деления функции на ЧИСЛО
+	@Test
+	public void testTemplateForFutureVector() throws Exception {
+		b.setArgs(new String[] { "p=4; (3*p^2 + 6*p - 4)/2" }); 
+		p.program();
+		assertEquals(34, i.lastResult.getInt()); // работает
 	}
 }

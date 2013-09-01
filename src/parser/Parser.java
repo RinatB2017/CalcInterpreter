@@ -123,9 +123,11 @@ public final class Parser extends Env{
 		// анализируем
 		match(Tag.RP); // ')'
 	
-		boolean get = block(condition.getBoolean());
-		if(get) getToken(); // считываем очередной токен
-
+		//boolean get = 
+		block(condition.getBoolean());
+		//if(get)
+		getToken(); // считываем очередной токен
+		
 		if (currTok.name == Tag.ELSE) {
 			block(!condition.getBoolean());
 			return true;
@@ -136,7 +138,7 @@ public final class Parser extends Env{
 		}
 	}
 
-	// { expr_list }
+	// ( instr { instr } '}' ) | instr
 	private boolean block(boolean condition) throws Exception {
 		if(!condition) inter.skip=true;
 		inter.incrDepth();
@@ -159,7 +161,7 @@ public final class Parser extends Env{
 			error("block() Ожидается RF }");
 			return true;
 		}else{
-			instr(); 
+			instr(); // оставляет END в currTok
 			inter.decrDepth();
 			return false;
 		}
