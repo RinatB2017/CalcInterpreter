@@ -1,3 +1,6 @@
+:: Хорошая справка по консольной Jav`е
+:: http://habrahabr.ru/post/125210/
+
 @echo off
 
 :: [ПАРАМЕТР КОМАНДНОЙ СТРОКИ](Значение по умолчанию) - [ОПИСАНИЕ]
@@ -12,5 +15,5 @@
 :: auto_print(true) // Автоматический вывод значений выражений
 :: greedy_func(false) // Жадные функции: скобки не обязательны, всё, что написано после имени функции и до токена END ; считается аргументом функции.
 
-java -classpath ./bin Executor "set auto_end= false; set greedy_func = false" < "in.txt" > "out.txt" 2> "err.txt"
+java -classpath ./bin main.Executor "set auto_end= false; set greedy_func = false" < "in.txt" > "out.txt" 2> "err.txt"
 ::pause
