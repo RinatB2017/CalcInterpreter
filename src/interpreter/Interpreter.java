@@ -3,6 +3,7 @@ package interpreter;
 import java.util.*;
 
 import options.Options;
+import types.FuncType;
 import types.TypedValue;
 import main.OutputSystem;
 
@@ -73,6 +74,14 @@ public final class Interpreter extends Env{
 		table.put("e", new TypedValue(Math.E));
 		table.put("pi", new TypedValue(Math.PI));
 		table.put("ans", lastResult);
+		
+		// TODO выяснить, почему не работает в конструкторе: errors 6, failures 3
+		table.put("sin", new TypedValue(1, FuncType.OFRADIAN)); // TODO 1 доб-ть арг-т: FuncPrim(BuiltIn.SIN)
+		table.put("cos", new TypedValue(1, FuncType.OFRADIAN));
+		table.put("arcsin", new TypedValue(1, FuncType.RETURNRADIAN));
+		table.put("arccos", new TypedValue(1, FuncType.RETURNRADIAN));
+		table.put("log", new TypedValue(1, FuncType.DIMENSIONLESS));
+		table.put("pow", new TypedValue(2, FuncType.DIMENSIONLESS));
 	}
 	
 }

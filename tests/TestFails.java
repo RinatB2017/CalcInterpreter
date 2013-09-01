@@ -23,8 +23,7 @@ public class TestFails extends EnvForTests{
 	@Ignore
 	@Test(expected = MyException.class)
 	public void checkDivByZeroSin() throws Exception {
-		b.setArgs(new String[] { "1/sin(-pi)" }); // Работает округление до 0 в
-													// Parser.func()
+		b.setArgs(new String[] { "1.0/sin(-pi)" });
 		p.program();
 	}
 	

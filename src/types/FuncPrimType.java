@@ -1,5 +1,5 @@
 package types;
 
 public enum FuncPrimType {
-	NAME, CONSTANT
+	NAME, CONSTANT, BUILTIN
 }

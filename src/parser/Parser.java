@@ -1,6 +1,6 @@
 package parser;
 
-import java.util.LinkedList;
+import java.util.*;
 
 import executables.*;
 import interpreter.*;
@@ -468,7 +468,7 @@ public final class Parser extends Env{
 	private TypedValue right(String name) throws Exception{
 		switch (currTok.name) {
 		case LP:
-			LinkedList<TypedValue> args = funcArgs();
+			ArrayList<TypedValue> args = funcArgs();
 			return inter.exec(new Func(name, args));
 		case ASSIGN:
 			inter.exec(new TablePut(name, expr(true)));
@@ -480,15 +480,15 @@ public final class Parser extends Env{
 		
 	}
 	
-	private LinkedList<TypedValue> funcArgs() throws Exception {
-		LinkedList<TypedValue> args = null;
+	private ArrayList<TypedValue> funcArgs() throws Exception {
+		ArrayList<TypedValue> args = null;
 		boolean get=true;
 		getToken();
 		switch(currTok.name){
 		case RP:
 			break;
 		default:
-			args = new LinkedList<TypedValue>();
+			args = new ArrayList<TypedValue>();
 			get = false;
 		
 			do{

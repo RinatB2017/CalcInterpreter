@@ -1,5 +1,7 @@
 package types;
 
+import java.util.ArrayList;
+
 import main.MyException;
 
 /**
@@ -16,8 +18,11 @@ public class TypedValue {
 	private String s;
 	private MathVector v;
 	private FuncExpr f;
-	public Types type;
+	public final Types type;
+	private FuncType ft;
+	private int numOfArgs;
 	
+	// Конструктор копирования, вызывается при создании копии для временного объекта в TableGet
 	public TypedValue(TypedValue t){
 		this.i=t.i;
 		this.d=t.d;
@@ -26,6 +31,8 @@ public class TypedValue {
 		this.v=t.v;
 		this.f=t.f;
 		this.type=t.type;
+		this.ft=t.ft;
+		this.numOfArgs=t.numOfArgs;
 	}
 	
 	public TypedValue(int o){
@@ -41,6 +48,11 @@ public class TypedValue {
 	public TypedValue(boolean b) {
 		this.b=b;
 		this.type=Types.BOOLEAN;
+	}
+	
+	public TypedValue(int numOfArgs, FuncType t) {
+		this.type=Types.FUNCTION;
+		this.ft=t;
 	}
 
 	public int getInt(){
