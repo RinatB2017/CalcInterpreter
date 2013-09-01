@@ -1,5 +1,8 @@
 package lexer;
 
+import types.TypedValue;
+import types.Types;
+
 
 
 public class IntegerT extends Token{
@@ -13,4 +16,8 @@ public class IntegerT extends Token{
 		return "" + value ;
 	}
 
+	public void getTypedValueTo(TypedValue o) throws Exception{
+		o.type=Types.INTEGER;
+		o.setI(value);
+	}
 }

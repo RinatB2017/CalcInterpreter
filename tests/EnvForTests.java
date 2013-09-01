@@ -1,5 +1,5 @@
 import static org.junit.Assert.assertTrue;
-import interpreter.Interpreter;
+import inter.Interpreter;
 
 import java.util.HashMap;
 

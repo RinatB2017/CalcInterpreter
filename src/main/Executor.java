@@ -7,7 +7,7 @@ package main;
  * Последняя версия на GitHub: https://github.com/nikit-cpp/CalcInterpreter.git
  * */
 
-import interpreter.Interpreter;
+import inter.Interpreter;
 
 import java.io.*;
 import java.util.HashMap;

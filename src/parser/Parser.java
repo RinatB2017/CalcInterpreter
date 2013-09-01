@@ -2,8 +2,11 @@ package parser;
 
 import java.util.*;
 
-import executables.*;
-import interpreter.*;
+import inter.*;
+import inter.returnables.*;
+import inter.voidables.Del;
+import inter.voidables.Print;
+import inter.voidables.TablePut;
 import options.*;
 import types.TypedValue;
 import lexer.*;
@@ -33,7 +36,6 @@ public final class Parser extends Env{
 		super(inter.output, inter.table, inter.options);
 		this.buf = buf;
 		this.inter=inter;
-		inter.resetTable();
 	}
 
 	private boolean echoPrint = false; // Используется для эхопечати токенов при
@@ -418,21 +420,13 @@ public final class Parser extends Env{
 			getToken();
 
 		switch (currTok.name) {
-		case INTEGER: { // целочисленная константа
-			TypedValue v = new TypedValue(((IntegerT)currTok).value);
+		case INTEGER:
+		case DOUBLE:
+		case BOOLEAN:
+			TypedValue v = new TypedValue();
+			currTok.getTypedValueTo(v);
 			getToken();// получить следующий токен ...
 			return v;
-		}
-		case DOUBLE: { // константа с плавающей точкой
-			TypedValue v = new TypedValue(((DoubleT)currTok).value);
-			getToken();// получить следующий токен ...
-			return v;
-		}
-		case BOOLEAN: { // булева константа
-			TypedValue v = new TypedValue(((BooleanT)currTok).value);
-			getToken();// получить следующий токен ...
-			return v;
-		}
 		case NAME: {
 			String name = new String(((WordT)currTok).value); // нужно, ибо expr() может
 													// затереть stringValue
@@ -524,10 +518,4 @@ public final class Parser extends Env{
 	public Token getCurrTok() {
 		return currTok;
 	}
-
-	// Нижеприведённые методы нужны только лишь для тестов и отладки
-	/*public int getErrors() {
-		return options.getInt(OptId.ERRORS);
-	}*/
-
 }

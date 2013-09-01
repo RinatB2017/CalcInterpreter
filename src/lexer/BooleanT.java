@@ -1,6 +1,7 @@
 package lexer;
 
 import types.TypedValue;
+import types.Types;
 
 
 
@@ -17,8 +18,8 @@ public class BooleanT extends Token{
 		return "" + value;
 	}
 	
-	//@Override
-	public static TypedValue createTypedValue(){
-		return null;
+	public void getTypedValueTo(TypedValue o) throws Exception{
+		o.type=Types.BOOLEAN;
+		o.setB(value);
 	}
 }

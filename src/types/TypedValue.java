@@ -1,7 +1,7 @@
 package types;
 
-import java.util.ArrayList;
-
+import types.func.FuncExpr;
+import types.func.FuncType;
 import main.MyException;
 
 /**
@@ -11,29 +11,34 @@ import main.MyException;
  * @author Ник
  *
  */
-public class TypedValue {
+public class TypedValue implements Cloneable{
 	private int i;
 	private double d;
 	private boolean b;
-	private String s;
+	//private String s;
 	private MathVector v;
 	private FuncExpr f;
-	public final Types type;
+	public Types type;
 	private FuncType ft;
 	private int numOfArgs;
 	
+    public TypedValue clone() throws CloneNotSupportedException{
+    	TypedValue obj=(TypedValue)super.clone();
+        return obj;
+    }
+	
 	// Конструктор копирования, вызывается при создании копии для временного объекта в TableGet
-	public TypedValue(TypedValue t){
+	/*public TypedValue(TypedValue t){
 		this.i=t.i;
 		this.d=t.d;
 		this.b=t.b;
-		this.s=t.s;
+		//this.s=t.s;
 		this.v=t.v;
 		this.f=t.f;
 		this.type=t.type;
 		this.ft=t.ft;
 		this.numOfArgs=t.numOfArgs;
-	}
+	}*/
 	
 	public TypedValue(int o){
 		this.i=o;
@@ -55,6 +60,9 @@ public class TypedValue {
 		this.ft=t;
 	}
 
+	public TypedValue() {
+	}
+
 	public int getInt(){
 		return i;
 	}
@@ -64,11 +72,23 @@ public class TypedValue {
 	public boolean getBoolean(){
 		return b;
 	}
-	public String getString(){
+	/*public String getString(){
 		return s;
+	}*/
+	
+	
+	public void setI(int i) {
+		this.i = i;
 	}
-	
-	
+
+	public void setD(double d) {
+		this.d = d;
+	}
+
+	public void setB(boolean b) {
+		this.b = b;
+	}
+
 	@Override
 	public String toString(){
 		switch (type){
