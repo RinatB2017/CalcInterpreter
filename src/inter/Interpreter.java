@@ -4,7 +4,7 @@ import java.util.*;
 
 import options.Options;
 import types.TypedValue;
-import types.func.FuncType;
+import types.func.def.Dimension;
 import main.OutputSystem;
 
 
@@ -76,12 +76,13 @@ public final class Interpreter extends Env{
 		table.put("pi", new TypedValue(Math.PI));
 		table.put("ans", lastResult);
 		
-		table.put("sin", new TypedValue(1, FuncType.OFRADIAN)); // TODO 1 доб-ть арг-т: FuncPrim(BuiltIn.SIN)
-		table.put("cos", new TypedValue(1, FuncType.OFRADIAN));
-		table.put("arcsin", new TypedValue(1, FuncType.RETURNRADIAN));
-		table.put("arccos", new TypedValue(1, FuncType.RETURNRADIAN));
-		table.put("log", new TypedValue(1, FuncType.DIMENSIONLESS));
-		table.put("pow", new TypedValue(2, FuncType.DIMENSIONLESS));
+		// TODO переработать
+		table.put("sin", new TypedValue(1, Dimension.RADIAN)); // TODO 1 доб-ть арг-т: FuncPrim(BuiltIn.SIN)
+		table.put("cos", new TypedValue(1, Dimension.RADIAN));
+		table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
+		table.put("arccos", new TypedValue(1, Dimension.RADIAN));
+		table.put("log", new TypedValue(1, Dimension.DIMENSIONLESS));
+		table.put("pow", new TypedValue(2, Dimension.DIMENSIONLESS));
 	}
 	
 }
