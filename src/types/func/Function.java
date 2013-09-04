@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import main.MyException;
 import types.TypedValue;
-import types.func.def.Argument;
-import types.func.def.Definition;
+import types.func.def.*;
 
 public abstract class Function {
 	protected Definition definition;

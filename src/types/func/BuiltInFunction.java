@@ -1,9 +1,6 @@
 package types.func;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
-import main.MyException;
 import types.TypedValue;
 import types.func.def.Argument;
 
@@ -44,7 +41,7 @@ public class BuiltInFunction extends Function {
 			break;
 		}
 		checkRet(ret);
-		return null;
+		return ret;
 	}
 
 }
