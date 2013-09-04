@@ -14,9 +14,9 @@ public abstract class Function {
 		definition=new Definition(args, ret);
 	}
 	
-	protected void checkArguments(ArrayList<TypedValue> arguments) throws Exception{
+	protected void checkArguments(ArrayList<TypedValue> arguments) throws MyException{
 		if(arguments==null)
-			throw new Exception("args==null");
+			throw new MyException("args==null");
 		if(arguments.size()!=definition.args.size())
 			throw new MyException("Неверное кол-во аргументов");
 		for(int i=0; i<arguments.size(); i++){
