@@ -3,9 +3,13 @@ package types.func.def;
 import types.Types;
 
 public class Argument {
-	Types type;
+	public Types type;
 	Dimension dimension;
 	
+	public Argument(Types type, Dimension dimension) {
+		this.type = type;
+		this.dimension = dimension;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;

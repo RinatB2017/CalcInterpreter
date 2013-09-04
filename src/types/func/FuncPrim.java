@@ -6,6 +6,11 @@ import types.*;
 import types.func.def.Argument;
 
 public class FuncPrim extends Function{
+	public FuncPrim(ArrayList<Argument> args, Argument ret) {
+		super(args, ret);
+		// TODO Auto-generated constructor stub
+	}
+
 	String name=null; // имя ф-ии или переменной
 	
 	TypedValue constant=null; // константа или объект функционального типа, который по сути тоже является константой, как например 2.
@@ -18,7 +23,7 @@ public class FuncPrim extends Function{
 	}
 
 	@Override
-	public TypedValue execute(ArrayList<ArgValue> arguments) {
+	public TypedValue execute(ArrayList<TypedValue> arguments) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -4,7 +4,10 @@ import java.util.*;
 
 import options.Options;
 import types.TypedValue;
-import types.func.Function;
+import types.Types;
+import types.func.BuiltInFunction;
+import types.func.EnumOfBuiltInFunctions;
+import types.func.def.Argument;
 import types.func.def.Dimension;
 import main.OutputSystem;
 
@@ -77,13 +80,56 @@ public final class Interpreter extends Env{
 		table.put("pi", new TypedValue(Math.PI));
 		table.put("ans", lastResult);
 		
-		// TODO переработать
-		table.put("sin", new TypedValue(new BuiltInFunction()));
-		table.put("cos", new TypedValue(1, Dimension.RADIAN)); // TODO fix it
+		ArrayList<Argument> sinArg = new ArrayList<Argument>();
+		sinArg.add(new Argument(Types.DOUBLE, Dimension.RADIAN));
+	
+		table.put(
+			"sin",
+			new TypedValue(
+				new BuiltInFunction(
+					EnumOfBuiltInFunctions.SIN,
+					sinArg,
+					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
+				)
+			)
+		);
+		table.put(
+			"cos",
+			new TypedValue(
+				new BuiltInFunction(
+					EnumOfBuiltInFunctions.COS,
+					sinArg,
+					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
+				)
+			)
+		);
+		table.put(
+			"tan",
+			new TypedValue(
+				new BuiltInFunction(
+					EnumOfBuiltInFunctions.TAN,
+					sinArg,
+					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
+				)
+			)
+		);
+		/*table.put(
+			"ctg",
+			new TypedValue(
+				new BuiltInFunction(
+					EnumOfBuiltInFunctions.CTG,
+					sinArg,
+					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
+				)
+			)
+		);
+		
+		
 		table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
 		table.put("arccos", new TypedValue(1, Dimension.RADIAN));
 		table.put("log", new TypedValue(1, Dimension.DIMENSIONLESS));
 		table.put("pow", new TypedValue(2, Dimension.DIMENSIONLESS));
+		*/
 	}
 	
 }
