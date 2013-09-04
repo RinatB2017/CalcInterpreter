@@ -1,6 +1,7 @@
 package types;
 
 import types.func.FuncExpr;
+import types.func.Function;
 import types.func.def.Dimension;
 import main.MyException;
 
@@ -17,10 +18,8 @@ public class TypedValue implements Cloneable{
 	private boolean b;
 	//private String s;
 	private MathVector v;
-	private FuncExpr f;
+	private Function f;
 	public Types type;
-	private Dimension ft;
-	private int numOfArgs;
 	
     public TypedValue clone() throws CloneNotSupportedException{
     	TypedValue obj=(TypedValue)super.clone();
@@ -55,9 +54,9 @@ public class TypedValue implements Cloneable{
 		this.type=Types.BOOLEAN;
 	}
 	
-	public TypedValue(int numOfArgs, Dimension t) {
+	public TypedValue(Function f) {
 		this.type=Types.FUNCTION;
-		this.ft=t;
+		this.f=f;
 	}
 
 	public TypedValue() {
@@ -75,6 +74,9 @@ public class TypedValue implements Cloneable{
 	/*public String getString(){
 		return s;
 	}*/
+	public Function getFunction(){
+		return f;
+	}
 	
 	
 	public void setI(int i) {

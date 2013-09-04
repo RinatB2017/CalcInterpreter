@@ -4,6 +4,7 @@ import java.util.*;
 
 import options.Options;
 import types.TypedValue;
+import types.func.Function;
 import types.func.def.Dimension;
 import main.OutputSystem;
 
@@ -77,8 +78,8 @@ public final class Interpreter extends Env{
 		table.put("ans", lastResult);
 		
 		// TODO переработать
-		table.put("sin", new TypedValue(1, Dimension.RADIAN)); // TODO 1 доб-ть арг-т: FuncPrim(BuiltIn.SIN)
-		table.put("cos", new TypedValue(1, Dimension.RADIAN));
+		table.put("sin", new TypedValue(new Function()));
+		table.put("cos", new TypedValue(1, Dimension.RADIAN)); // TODO fix it
 		table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
 		table.put("arccos", new TypedValue(1, Dimension.RADIAN));
 		table.put("log", new TypedValue(1, Dimension.DIMENSIONLESS));

@@ -29,7 +29,8 @@ public class Func extends Returnable{
 			}
 		
 		System.out.println(")");
-		return new TypedValue(1338);
+		//return new TypedValue(1338);
+		return funcObj.getFunction().execute(args);
 	}
 
 }
