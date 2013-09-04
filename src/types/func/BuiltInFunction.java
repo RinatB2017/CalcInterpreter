@@ -17,7 +17,7 @@ public class BuiltInFunction extends Function {
 	}
 	
 	@Override
-	public TypedValue execute(ArrayList <ArgValue> arguments) throws MyException {
+	public TypedValue execute(ArrayList <ArgValue> arguments) throws Exception {
 		checkArguments(arguments);
 		TypedValue ret=null;
 		switch(f){
