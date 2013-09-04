@@ -78,7 +78,7 @@ public final class Interpreter extends Env{
 		table.put("ans", lastResult);
 		
 		// TODO переработать
-		table.put("sin", new TypedValue(new Function()));
+		table.put("sin", new TypedValue(new BuiltInFunction()));
 		table.put("cos", new TypedValue(1, Dimension.RADIAN)); // TODO fix it
 		table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
 		table.put("arccos", new TypedValue(1, Dimension.RADIAN));
