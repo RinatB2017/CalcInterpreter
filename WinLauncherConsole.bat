@@ -4,4 +4,5 @@
 @echo off
 
 java -Dfile.encoding=Cp866 -classpath ./bin main.Executor "set auto_end=true"
-pause
+
+if ERRORLEVEL 1 pause

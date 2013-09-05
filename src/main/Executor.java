@@ -32,10 +32,9 @@ public class Executor {
 		HashMap<String, TypedValue> table = new HashMap<String, TypedValue>(); 
 		Interpreter inter = new Interpreter(options, table, output);
 		Parser p = new Parser(buffer, inter);
-		
+		int exitcode = 0;
 		while (true) {
-			try {
-				p.program();
+			try { p.program();
 				if (p.getCurrTok().name == Tag.EXIT)
 					break;
 			} catch (MyException m) {
@@ -50,9 +49,11 @@ public class Executor {
 						+ ", продолжение работы невозможно.");
 				System.err.println(e.getMessage() + "\n");
 				e.printStackTrace();
+				exitcode=1;
 				break;// while
 			}
 		}// while
 		System.out.println("Выход...");
+		System.exit(exitcode);
 	}
 }
