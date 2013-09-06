@@ -1,14 +1,11 @@
 package inter;
 
+import inter.voidables.Reset;
+
 import java.util.*;
 
 import options.Options;
 import types.TypedValue;
-import types.Types;
-import types.func.BuiltInFunction;
-import types.func.EnumOfBuiltInFunctions;
-import types.func.def.Argument;
-import types.func.def.Dimension;
 import main.OutputSystem;
 
 
@@ -19,7 +16,13 @@ public final class Interpreter extends Env{
 	// Конструктор
 	public Interpreter(Options options, HashMap<String, TypedValue> table, OutputSystem output) {
 		super(output, table, options);
-		resetTable();
+		
+		try {
+			this.exec(new Reset(null)); // reset all
+		} catch (Exception e) {
+			System.out.println("error while reset all in Interpreter construstor");
+			e.printStackTrace();
+		}
 	}
 
 	// incrDepth() и decrDepth() считают глубину вложенности относительно
@@ -44,10 +47,8 @@ public final class Interpreter extends Env{
 		if(skip)
 			return null;
 		
-		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора
-		n.output=output;
-		n.table=table;
-		n.options=options;
+		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора наследника Returnable
+		n.lateInit(options, table, output);
 		
 		lastResult=n.execute();
 		table.put("ans", lastResult);
@@ -63,73 +64,12 @@ public final class Interpreter extends Env{
 		if(skip)
 			return;
 
-		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора
-		n.output=output;
-		n.table=table;
-		n.options=options;
+		// Доинициализируем объект значениями из суперкласса Env здесь для сокращения числа аргументов конструктора наследника Voidable
+		n.lateInit(options, table, output);
 		
 		n.execute();
 	}
 	
 	public TypedValue lastResult = new TypedValue(0);
-	
-	// Сброс таблицы переменных в исходное состояние
-	public void resetTable() {
-		table.clear();
-		table.put("e", new TypedValue(Math.E));
-		table.put("pi", new TypedValue(Math.PI));
-		table.put("ans", lastResult);
-		
-		ArrayList<Argument> sinArg = new ArrayList<Argument>();
-		sinArg.add(new Argument(Types.DOUBLE, Dimension.RADIAN));
-	
-		table.put(
-			"sin",
-			new TypedValue(
-				new BuiltInFunction(
-					EnumOfBuiltInFunctions.SIN,
-					sinArg,
-					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
-				)
-			)
-		);
-		table.put(
-			"cos",
-			new TypedValue(
-				new BuiltInFunction(
-					EnumOfBuiltInFunctions.COS,
-					sinArg,
-					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
-				)
-			)
-		);
-		table.put(
-			"tan",
-			new TypedValue(
-				new BuiltInFunction(
-					EnumOfBuiltInFunctions.TAN,
-					sinArg,
-					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
-				)
-			)
-		);
-		/*table.put(
-			"ctg",
-			new TypedValue(
-				new BuiltInFunction(
-					EnumOfBuiltInFunctions.CTG,
-					sinArg,
-					new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
-				)
-			)
-		);
-		
-		
-		table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
-		table.put("arccos", new TypedValue(1, Dimension.RADIAN));
-		table.put("log", new TypedValue(1, Dimension.DIMENSIONLESS));
-		table.put("pow", new TypedValue(2, Dimension.DIMENSIONLESS));
-		*/
-	}
 	
 }

@@ -6,6 +6,7 @@ import inter.*;
 import inter.returnables.*;
 import inter.voidables.Del;
 import inter.voidables.Print;
+import inter.voidables.Reset;
 import inter.voidables.TablePut;
 import options.*;
 import types.TypedValue;
@@ -198,9 +199,6 @@ public final class Parser extends Env{
 		case SET:
 			set();
 			break;
-		case HELP:
-			help();
-			break;
 		case STATE:
 			state();
 			break;
@@ -280,20 +278,20 @@ public final class Parser extends Env{
 		getToken();
 		switch (currTok.name) {
 		case MUL:
-			options.resetAll();
-			inter.resetTable();
-			output.addln("Всё сброшено.");
+			inter.exec(new Reset(null));
 			break;
 		case NAME:
-			if(((WordT)currTok).value.equals("table")){
+			/*if(((WordT)currTok).value.equals("table")){
 				inter.resetTable();
 				output.addln("Таблица переменных сброшена.");
-			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));
+			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));*/
+			String string = ((WordT)currTok).value;
+			inter.exec(new Reset(string));
 			break;
 		default:
-			if (setname(currTok)==null)
+			//if (setname(currTok)==null)
 				error("reset: неверная опция");
-			options.reset(setname(currTok));
+			//options.reset(setname(currTok));
 		}
 	}
 
@@ -320,34 +318,6 @@ public final class Parser extends Env{
 			return false;
 		*/
 	}
-
-	// Помощь по грамматике
-	void help() {
-		output.addln("Грамматика(не актуальная):\n"
-				+ "program:\n"
-				+ "\texpr_list* EXIT\n"
-				+ "\n"
-				+ "expr_list:\n"
-				+ "\texpr END\n"
-				+ "\tvoid_func END\n"
-				+ "\tif_ END\n"
-				+
-
-				"\n"
-				+ "if_:\n"
-				+ "\t\"if\" '('expr')' '{' expt_list '}'\n"
-				+ "\t\"if\" '('expr')' '{' expt_list '}' \"else\" '{' expt_list '}'\n"
-				+ "expr:\n" + "\texpr + term\n" + "\texpr - term\n"
-				+ "\tterm\n" + "\n" + "term:\n" + "\tterm / pow\n"
-				+ "\tterm * pow\n" + "\tpow\n" + "\n" + "pow:\n"
-				+ "\tpow ^ prim\n" + "\tprim\n" + "\n" + "prim:\n"
-				+ "\tINTEGER\n" + "\tNAME\n" + "\tNAME = expr\n" + "\t-prim\n"
-				+ "\t(expr)\n" + "\tfunc\n" + "\n" + "func:\n" + "\tsin expr\n"
-				+ "\tcos expr\n" + "\n" + "void_func:\n" + "\tprint\n"
-				+ "\tadd\n" + "\tdel\n" + "\treset\n" + "\tset\n" + "\tunset\n"
-				+ "\thelp\n" + "\tstate\n\n");
-
-	};
 
 	// Выводит информацию о текущем состоянии
 	void state() {
