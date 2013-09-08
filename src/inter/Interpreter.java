@@ -1,9 +1,7 @@
 package inter;
 
 import inter.voidables.Reset;
-
 import java.util.*;
-
 import options.Options;
 import types.TypedValue;
 import main.OutputSystem;
@@ -71,5 +69,4 @@ public final class Interpreter extends Env{
 	}
 	
 	public TypedValue lastResult = new TypedValue(0);
-	
 }

@@ -10,7 +10,7 @@ public class Argument {
 		this.type = type;
 		this.dimension = dimension;
 	}
-	@Override
+	/*@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -29,5 +29,10 @@ public class Argument {
 		if (type != other.type)
 			return false;
 		return true;
+	}*/
+	
+	@Override
+	public String toString() {
+		return "" + type + ":" + dimension + "";
 	}
 }

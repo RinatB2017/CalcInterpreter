@@ -137,6 +137,18 @@ public final class Options {
 			output.addln("" + li.getKey() + " " + li.getValue());
 		}
 	}
+	
+	// Преобразует строку в OptId
+	public static OptId setname(String t) throws MyException {
+		for(OptId id: OptId.values()){
+			//System.out.println("trying "+i.toString());
+			if(t.toLowerCase().equals(id.toString().toLowerCase())){
+				//System.out.println("match on "+i.toString());
+				return id;
+			}
+		}
+		throw new MyException("Нет такой опции "+t+"; посмотреть список возможных опций можно вызовом state");
+	}
 
 	// Получение значения
 	public int getInt(OptId id) {

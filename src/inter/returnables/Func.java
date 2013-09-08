@@ -22,14 +22,6 @@ public class Func extends Returnable{
 		if(funcObj==null) throw new MyException("Объекта с именем "+name+" нет в таблице!");
 		if(funcObj.type!=Types.FUNCTION) throw new MyException("Объект с именем "+name+" не является функцией.");
 		
-		System.out.print("calling "+name+"(");
-		if(args!=null)
-			for (TypedValue t : args){
-				System.out.print(t+", ");
-			}
-		
-		System.out.println(")");
-		//return new TypedValue(1338);
 		return funcObj.getFunction().execute(args);
 	}
 

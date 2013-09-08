@@ -67,7 +67,7 @@ public class TestFunctions extends EnvForTests{
 		
 	@Test
 	public void testFuncArgs0() throws Exception {
-		b.setArgs(new String[] { "sin(1, 2.3)" });
+		b.setArgs(new String[] { "sin(pi)" });
 		p.program();
 		//assertEquals(1, i.table.size());
 	}
@@ -84,5 +84,12 @@ public class TestFunctions extends EnvForTests{
 		b.setArgs(new String[] { "/*del *;*/ log()" });
 		p.program();
 		//assertEquals(1, i.table.size());
+	}
+	
+	@Test
+	public void testFuncSinPiDiv2MinusCosPi() throws Exception {
+		b.setArgs(new String[] { "sin(pi/2.0)-cos(pi)" });
+		p.program();
+		assertEquals(2.0, i.lastResult.getDouble(), 0.01);
 	}
 }

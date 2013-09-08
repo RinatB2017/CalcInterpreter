@@ -95,15 +95,40 @@ public class TypedValue implements Cloneable{
 	public String toString(){
 		switch (type){
 		case INTEGER:
-			return ""+i;
+			return String.valueOf(i);
 		case DOUBLE:
-			return ""+d;
+			return String.valueOf(d);
 		case BOOLEAN:
-			return ""+b;
+			return String.valueOf(b);
 		default:
 			break;
 		}
 		return null;
+	}
+	
+	public String toStringForPrintTable(){
+		String s = type.toString();
+		switch (type){
+		case INTEGER:
+			return s+" "+i;
+		case DOUBLE:
+			return s+" "+d;
+		case BOOLEAN:
+			return s+" "+b;
+		case FUNCTION:
+			return f.toString();
+		default:
+			break;
+		}
+		return null;
+	}
+	
+	public String getFuncArgs(){
+		return f.getFuncArgs();
+	}
+	
+	public String getFuncRet(){
+		return f.getFuncRet();
 	}
 	
 	public boolean equals(TypedValue sec) throws Exception{

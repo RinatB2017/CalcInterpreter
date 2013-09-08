@@ -4,10 +4,8 @@ import java.util.*;
 
 import inter.*;
 import inter.returnables.*;
-import inter.voidables.Del;
-import inter.voidables.Print;
-import inter.voidables.Reset;
-import inter.voidables.TablePut;
+import inter.voidables.*;
+import inter.voidables.Set;
 import options.*;
 import types.TypedValue;
 import lexer.*;
@@ -261,16 +259,20 @@ public final class Parser extends Env{
 	// Установка опций
 	private void set() throws Exception {
 		getToken();
-		if (setname(currTok)==null)
-			error("set: неверная опция");
-		OptId what = setname(currTok);
 
-		getToken();
-		match(Tag.ASSIGN);
+		switch (currTok.name) {
+		case NAME:
+			String string = ((WordT)currTok).value;
+			getToken();
+			match(Tag.ASSIGN);
 
-		getToken();
-		options.set(what, currTok); // Поскольку мы отправили Текущий токен ...
-									// expr не пройдёт!
+			getToken();
+
+			inter.exec(new Set(string, currTok));
+			break;
+		default:
+			error("set: ожидается токен NAME");
+		}
 	}
 
 	// Сброс опций или таблицы переменных
@@ -281,48 +283,17 @@ public final class Parser extends Env{
 			inter.exec(new Reset(null));
 			break;
 		case NAME:
-			/*if(((WordT)currTok).value.equals("table")){
-				inter.resetTable();
-				output.addln("Таблица переменных сброшена.");
-			}else error("должен быть токен "+new WordT(Tag.NAME, "table"));*/
 			String string = ((WordT)currTok).value;
 			inter.exec(new Reset(string));
 			break;
 		default:
-			//if (setname(currTok)==null)
-				error("reset: неверная опция");
-			//options.reset(setname(currTok));
+			error("reset: ожидается токен NAME либо *");
 		}
-	}
-
-	OptId setname(Token t) {
-		for(OptId i: OptId.values()){
-			//System.out.println("trying "+i.toString());
-			if(((WordT)t).value.toLowerCase().equals(i.toString().toLowerCase())){
-				//System.out.println("match on "+i.toString());
-				return i;
-			}
-		}
-		return null;
-		
-		/*case ARGS_AUTO_END:
-		case AUTO_END:
-		case PRINT_TOKENS:
-		case PRECISION:
-		case ERRORS:
-		case STRICTED:
-		case AUTO_PRINT:
-		case GREEDY_FUNC:
-			return true;
-		default:
-			return false;
-		*/
 	}
 
 	// Выводит информацию о текущем состоянии
-	void state() {
-		output.addln("Текущее состояние:\nПеременных " + table.size());
-		options.printAll();
+	void state() throws Exception {
+		inter.exec(new State());
 	};
 
 	// складывает и вычитает
@@ -402,12 +373,6 @@ public final class Parser extends Env{
 													// затереть stringValue
 
 			getToken();
-			/*if (getToken() == Tag.ASSIGN)
-				inter.exec(new TablePut(name, expr(true)));
-			*/
-			
-			
-			//TypedValue v = inter.exec(new TableGet(name));
 			return right(name);//v;
 		}
 		case MINUS: { // унарный минус
@@ -420,9 +385,6 @@ public final class Parser extends Env{
 			return e;
 		}
 		default: {
-			if(func())
-				return new TypedValue(y);
-
 			error("требуется первичное_выражение (нетерминал prim)");
 			return null;
 		}
@@ -466,21 +428,9 @@ public final class Parser extends Env{
 		getToken(); // получаем следующий токен, его проверка на соответствие END - в instr()
 		return args;
 	}
-
-	private double y; // для временного хранения результата func()
-
-	// функции, возвращающие значение (non-void): sin, cos
-	private boolean func() throws Exception {
-		return false;
-	}
 	
-
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws Exception  {
-		/*int errors = options.getInt(OptId.ERRORS);
-		errors++;
-		options.set(OptId.ERRORS, errors);
-		output.flush();*/
 		throw new MyException(string);
 	}
 

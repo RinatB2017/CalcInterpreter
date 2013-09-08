@@ -2,6 +2,7 @@ package inter.voidables;
 
 import java.util.ArrayList;
 
+import options.OptId;
 import types.TypedValue;
 import types.Types;
 import types.func.BuiltInFunction;
@@ -9,9 +10,11 @@ import types.func.EnumOfBuiltInFunctions;
 import types.func.def.Argument;
 import types.func.def.Dimension;
 import inter.*;
+import static options.Options.setname;
 
 public class Reset extends Voidable {
-	String string;
+	private String string;
+	
 	public Reset(String string) {
 		this.string=string;
 	}
@@ -22,6 +25,11 @@ public class Reset extends Voidable {
 			options.resetAll();
 			resetTable();
 			output.addln("Всё сброшено.");
+		}else if(string.equals("table")){
+			resetTable();
+		}else{
+			OptId what = setname(string);
+			options.reset(what);
 		}
 		return;
 	}

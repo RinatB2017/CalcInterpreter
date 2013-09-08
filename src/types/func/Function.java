@@ -8,6 +8,7 @@ import types.func.def.*;
 
 public abstract class Function {
 	protected Definition definition;
+	
 	public abstract TypedValue execute(ArrayList<TypedValue> args) throws Exception;
 	
 	public Function(ArrayList<Argument> args, Argument ret){
@@ -30,5 +31,19 @@ public abstract class Function {
 			throw new Exception("ret==null");
 		if(ret.type!= definition.ret.type)
 			throw new MyException("Не совпадает тип аргумента функции со своим определением.");
+	}
+	
+	
+	@Override
+	public String toString() {
+		return getFuncRet()+ " " + getFuncArgs();
+	}
+
+	public String getFuncArgs() {
+		return definition.args.toString();
+	}
+	
+	public String getFuncRet() {
+		return definition.ret.toString();
 	}
 }
