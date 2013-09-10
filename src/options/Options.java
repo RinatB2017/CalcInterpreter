@@ -152,14 +152,14 @@ public final class Options {
 
 	// Получение значения
 	public int getInt(OptId id) {
-		return (int) optsVals.get(id);
+		return (Integer) optsVals.get(id);
 	}
 
 	public double getDouble(OptId id) {
-		return (double) optsVals.get(id);
+		return (Double) optsVals.get(id);
 	}
 
 	public boolean getBoolean(OptId id) {
-		return (boolean) optsVals.get(id);
+		return (Boolean) optsVals.get(id);
 	}
 }
