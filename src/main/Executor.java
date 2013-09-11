@@ -34,7 +34,8 @@ public class Executor {
 		Parser p = new Parser(buffer, inter);
 		int exitcode = 0;
 		while (true) {
-			try { p.program();
+			try {
+				p.program();
 				if (p.getCurrTok().tag == Tag.EXIT)
 					break;
 			} catch (MyException m) {
