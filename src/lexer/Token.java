@@ -27,6 +27,6 @@ public class Token {
 	}
 	
 	public void getTypedValueTo(TypedValue o) throws Exception{
-		throw new Exception("вызов getTypedValue для Token");
+		throw new UnsupportedOperationException();
 	}
 }
