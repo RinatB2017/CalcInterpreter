@@ -26,7 +26,7 @@ public class Token {
 		return "'"+name.toString()+"' \""+toString()+"\"";
 	}
 	
-	public void getTypedValueTo(TypedValue o) throws Exception{
-		throw new UnsupportedOperationException();
+	public void getTypedValueTo(TypedValue o) throws Exception{ // поддерживается только в наследниках, которых должен сгенерировать лексер
+		throw new UnsupportedOperationException(); 
 	}
 }
