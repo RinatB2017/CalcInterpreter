@@ -98,7 +98,7 @@ public final class Options {
 	// Token точнее чем Object
 	public void set(OptId what, Token value) throws MyException {
 		OptId id = what;
-		switch (value.name) {
+		switch (value.tag) {
 		case BOOLEAN:
 			set(id, ((BooleanT) value).value ? true : false);
 			break;

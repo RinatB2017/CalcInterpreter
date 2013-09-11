@@ -72,6 +72,7 @@ public class TestFunctions extends EnvForTests{
 		//assertEquals(1, i.table.size());
 	}
 	
+	@Ignore
 	@Test
 	public void testFuncArgs2() throws Exception {
 		b.setArgs(new String[] { "/*del *; */sin(1, 2.3, e)" });
@@ -79,6 +80,7 @@ public class TestFunctions extends EnvForTests{
 		//assertEquals(2, i.table.size());
 	}
 	
+	@Ignore
 	@Test
 	public void testFuncVoidArgs() throws Exception {
 		b.setArgs(new String[] { "/*del *;*/ log()" });

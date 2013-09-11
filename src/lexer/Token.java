@@ -4,16 +4,16 @@ import types.TypedValue;
 
 // Пара Имя-Значение
 public class Token {
-	public final Tag name;
+	public final Tag tag;
 	final String string;
 
 	public Token(Tag n) {
-		name = n;
+		tag = n;
 		string=null;
 	}
 	
 	public Token(Tag n, String s) {
-		name = n;
+		tag = n;
 		this.string=s;
 	}
 	
@@ -23,7 +23,7 @@ public class Token {
 	}
 	
 	public String toStringWithName() {
-		return "'"+name.toString()+"' \""+toString()+"\"";
+		return "'"+tag.toString()+"' \""+toString()+"\"";
 	}
 	
 	public void getTypedValueTo(TypedValue o) throws Exception{ // поддерживается только в наследниках, которых должен сгенерировать лексер

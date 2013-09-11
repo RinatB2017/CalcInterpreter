@@ -64,7 +64,7 @@ public class TestFails extends EnvForTests{
 		b.setArgs(new String[] { "if(true){sin(-pi/4.0);}}" });
 		p.program();
 
-		if (p.getCurrTok().name == Tag.RF)
+		if (p.getCurrTok().tag == Tag.RF)
 			p.error("Неправильный выход из expr_list, возможно лишняя RF }");
 	}
 	

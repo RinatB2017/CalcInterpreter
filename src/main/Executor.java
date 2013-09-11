@@ -35,7 +35,7 @@ public class Executor {
 		int exitcode = 0;
 		while (true) {
 			try { p.program();
-				if (p.getCurrTok().name == Tag.EXIT)
+				if (p.getCurrTok().tag == Tag.EXIT)
 					break;
 			} catch (MyException m) {
 				System.err.println("Ошибка на " + buffer.getLineNum()

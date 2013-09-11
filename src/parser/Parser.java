@@ -47,7 +47,7 @@ public final class Parser extends Env{
 	 * @see Buffer#getToken()
 	 */
 	private Tag getToken() throws Exception {
-		if (echoPrint && currTok.name != Tag.END && !inter.skip)
+		if (echoPrint && currTok.tag != Tag.END && !inter.skip)
 			output.append(currTok.toString() + ' '); // Печать предыдущего считанного
 												// токена, т. к. в exprList()
 												// токен уже считан до включения
@@ -55,12 +55,12 @@ public final class Parser extends Env{
 
 		currTok = buf.getToken();
 
-		return currTok.name;
+		return currTok.tag;
 	}
 
 	// if(currTok.name!=Terminal.LP) error("Ожидается (");
 	void match(Tag t) throws Exception {
-		if (currTok.name != t)
+		if (currTok.tag != t)
 			error("ожидается терминал " + t);
 	}
 
@@ -76,7 +76,7 @@ public final class Parser extends Env{
 				getToken();
 			get = true;
 
-			switch (currTok.name) {
+			switch (currTok.tag) {
 			case EXIT:
 				return;
 			default:
@@ -91,7 +91,7 @@ public final class Parser extends Env{
 		echoPrint = false; // Отменяем эхопечать токенов, если она не была
 							// отменена из-за вызова error() -> MyException
 
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case END:
 			break;
 		case IF:
@@ -129,7 +129,7 @@ public final class Parser extends Env{
 		//if(get)
 		getToken(); // считываем очередной токен
 		
-		if (currTok.name == Tag.ELSE) {
+		if (currTok.tag == Tag.ELSE) {
 			block(!condition.getBoolean());
 			return true;
 		} else { // если после if { expr_list } идёт не else
@@ -145,20 +145,20 @@ public final class Parser extends Env{
 		inter.incrDepth();
 		
 		getToken();
-		if(currTok.name==Tag.LF) { // '{'
+		if(currTok.tag==Tag.LF) { // '{'
 			boolean get = true; // нужно ли считывать токен в самом начале
 			do {
 				if (get)
 					getToken();
 	
-				switch (currTok.name) {
+				switch (currTok.tag) {
 				case RF:
 					inter.decrDepth();
 					return true; // '}'
 				default:
 					get = instr();
 				}
-			} while (currTok.name != Tag.EXIT);
+			} while (currTok.tag != Tag.EXIT);
 			error("block() Ожидается RF }");
 			return true;
 		}else{
@@ -175,7 +175,7 @@ public final class Parser extends Env{
 		boolean isNeedReadEndToken = true; // Нужно ли считать токен END для
 											// анализа в exprList или он уже
 											// считан expr
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case PRINT:
 			print(); // expr() оставляет токен в currTok.name ...
 			isNeedReadEndToken = false; // ...и здесь мы отменяем считывние
@@ -212,7 +212,7 @@ public final class Parser extends Env{
 	// Выводит значение выражения expr либо всю таблицу переменных
 	private void print() throws Exception {
 		getToken();
-		if (currTok.name == Tag.END) { // a. если нет expression, то
+		if (currTok.tag == Tag.END) { // a. если нет expression, то
 											// выводим все переменные
 			inter.exec(new Print(null));
 		} else { // b. выводим значение expression
@@ -231,7 +231,7 @@ public final class Parser extends Env{
 													// затереться при вызове
 													// expr()
 		getToken();
-		switch(currTok.name){
+		switch(currTok.tag){
 			case ASSIGN:
 				inter.exec(new TablePut(name, expr(true))); // expr() оставляет токен в
 												// currTok.name ...
@@ -247,7 +247,7 @@ public final class Parser extends Env{
 	// Удаляет переменную
 	private void del() throws Exception {
 		getToken();
-		if (currTok.name == Tag.MUL) {
+		if (currTok.tag == Tag.MUL) {
 			inter.exec(new Del(null));
 		} else{
 			match(Tag.NAME);
@@ -260,7 +260,7 @@ public final class Parser extends Env{
 	private void set() throws Exception {
 		getToken();
 
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case NAME:
 			String string = ((WordT)currTok).value;
 			getToken();
@@ -278,7 +278,7 @@ public final class Parser extends Env{
 	// Сброс опций или таблицы переменных
 	private void reset() throws Exception {
 		getToken();
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case MUL:
 			inter.exec(new Reset(null));
 			break;
@@ -301,7 +301,7 @@ public final class Parser extends Env{
 		TypedValue left = term(get);
 		Tag s;
 		for (;;){	// ``вечно''
-			switch (s=currTok.name) {
+			switch (s=currTok.tag) {
 			case PLUS:
 			case MINUS:
 				left = inter.exec(new Expr(left, term(true), s));
@@ -317,7 +317,7 @@ public final class Parser extends Env{
 		TypedValue left = degree(get);
 		Tag s;
 		for (;;){
-			switch (s=currTok.name) {
+			switch (s=currTok.tag) {
 			case MUL:
 			case DIV:
 				left = inter.exec(new Term(left, degree(true), s));
@@ -332,7 +332,7 @@ public final class Parser extends Env{
 	// Степень a^b
 	private TypedValue degree(boolean get) throws Exception {
 		TypedValue left = factorial(get);
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case POW:
 			left = inter.exec(new Degree(left, degree(true)));
 		default:
@@ -344,7 +344,7 @@ public final class Parser extends Env{
 	private TypedValue factorial(boolean get) throws Exception {
 		TypedValue left = prim(get);
 		for (;;){
-			switch (currTok.name) {
+			switch (currTok.tag) {
 			case FACTORIAL:
 				left = inter.exec(new Factorial(left));
 				getToken(); // для следующих
@@ -360,7 +360,7 @@ public final class Parser extends Env{
 		if (get)
 			getToken();
 
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case INTEGER:
 		case DOUBLE:
 		case BOOLEAN:
@@ -392,7 +392,7 @@ public final class Parser extends Env{
 	}
 	
 	private TypedValue right(String name) throws Exception{
-		switch (currTok.name) {
+		switch (currTok.tag) {
 		case LP:
 			ArrayList<TypedValue> args = funcArgs();
 			return inter.exec(new Func(name, args));
@@ -410,7 +410,7 @@ public final class Parser extends Env{
 		ArrayList<TypedValue> args = null;
 		boolean get=true;
 		getToken();
-		switch(currTok.name){
+		switch(currTok.tag){
 		case RP:
 			break;
 		default:
@@ -421,7 +421,7 @@ public final class Parser extends Env{
 				TypedValue t=expr(get);
 				args.add(t);
 				get=true;
-			}while(currTok.name==Tag.COMMA);
+			}while(currTok.tag==Tag.COMMA);
 			match(Tag.RP);
 		}
 

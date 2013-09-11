@@ -138,7 +138,7 @@ public final class Lexer {
 				Prev = Cur; // Для нормальной работы с первой полученной
 							// подстрокой
 
-			if (matched && Cur.name == Prev.name) { // если подстрока совпала с
+			if (matched && Cur.tag == Prev.tag) { // если подстрока совпала с
 													// маской токена...
 				// Для следующей итерации цикла
 				Prev = Cur; // настраиваем ссылку Prev на объект по ссылке Cur;
@@ -159,7 +159,7 @@ public final class Lexer {
 						// поменялось имя токена NAME -> EXIT, NAME -> IF, ...
 				if (matched) { // если для новой подстроки резко поменялось имя
 								// токена NAME -> EXIT
-					if (Cur.name == Tag.ILLEGAL_TOKEN) { // случай
+					if (Cur.tag == Tag.ILLEGAL_TOKEN) { // случай
 																// PRINT"print"
 																// ->
 																// ILLEGAL_TOKEN"print "
@@ -200,7 +200,7 @@ public final class Lexer {
 			if (isNeedAddToken) {
 				// System.out.println("Adding token name=\""+Prev.name+
 				// "\", value=\"" + Prev.value+"\"\n");
-				switch (Prev.name) {
+				switch (Prev.tag) {
 				case SKIPABLE:
 					break;
 				case L_COMMENT:
@@ -211,24 +211,24 @@ public final class Lexer {
 					break;
 				default:
 					if (!withinComment) {
-						switch (Prev.name) {
+						switch (Prev.tag) {
 						case INTEGER:
-							tokens.add(new IntegerT(Prev.name, Integer
+							tokens.add(new IntegerT(Prev.tag, Integer
 									.parseInt(Prev.string)));
 							break;
 						case DOUBLE:
-							tokens.add(new DoubleT(Prev.name, Double
+							tokens.add(new DoubleT(Prev.tag, Double
 									.parseDouble(Prev.string)));
 							break;
 						case BOOLEAN:
-							tokens.add(new BooleanT(Prev.name, Boolean
+							tokens.add(new BooleanT(Prev.tag, Boolean
 									.parseBoolean(Prev.string)));
 							break;
 						case NAME:
-							tokens.add(new WordT(Prev.name, Prev.string));
+							tokens.add(new WordT(Prev.tag, Prev.string));
 							break;
 						default:
-							tokens.add(new Token(Prev.name, Prev.string));
+							tokens.add(new Token(Prev.tag, Prev.string));
 							break;
 
 						}
