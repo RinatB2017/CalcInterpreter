@@ -4,7 +4,7 @@ import org.junit.*;
 
 public class TestCasting extends EnvForTests{
 
-	@Test
+	/*@Test
 	public void testInsertedIfEl1() throws Exception {
 		b.setArgs(new String[] { "if(1){ if(2){print 2+2*2;}else{print err2;} }else{print err1;}" });
 		p.program();
@@ -51,12 +51,26 @@ public class TestCasting extends EnvForTests{
 		b.setArgs(new String[] { "if(-e+e){print 2 + 3; ;}else{ print 14+0; ;} print;" });
 		p.program();
 		assertEquals(14, i.lastResult.getInt());
-	}
+	}*/
 	
 	@Test
 	public void checkCastingMaxDoubleAndInt() throws Exception {
 		b.setArgs(new String[] { "-pi/4" });
 		p.program();
 		assertEquals(-Math.PI / 4.0, i.lastResult.getDouble(), 0.001);
+	}
+	
+	@Test
+	public void testFuncSinPiDiv2MinusCosPi() throws Exception {
+		b.setArgs(new String[] { "sin(pi/2)-cos(pi)" });
+		p.program();
+		assertEquals(2.0, i.lastResult.getDouble(), 0.01);
+	}
+	
+	@Test
+	public void testX() throws Exception {
+		b.setArgs(new String[] { "2/2.0" });
+		p.program();
+		assertEquals(1.0, i.lastResult.getDouble(), 0.01);
 	}
 }

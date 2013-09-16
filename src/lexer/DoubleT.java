@@ -12,7 +12,7 @@ public class DoubleT extends Token{
 	
 	@Override
 	public String toString() {
-		return "" + value;
+		return String.valueOf(value);
 	}
 
 	public void getTypedValueTo(TypedValue o) throws Exception{

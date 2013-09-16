@@ -2,10 +2,7 @@ package types;
 
 import options.OptId;
 import options.Options;
-import types.func.FuncExpr;
-import types.func.Function;
-import types.func.def.Dimension;
-import lexer.Tag;
+import types.func.*;
 import main.MyException;
 
 /**
@@ -53,18 +50,15 @@ public class TypedValue implements Cloneable{
 	
 	// Конструкторы
 	public TypedValue(int o){
-		this.i=o;
-		this.type=Types.INTEGER;
+		setI(o);
 	}
 	
 	public TypedValue(double e) {
-		this.d=e;
-		this.type=Types.DOUBLE;
+		setD(e);
 	}
 
 	public TypedValue(boolean b) {
-		this.b=b;
-		this.type=Types.BOOLEAN;
+		setB(b);
 	}
 	
 	public TypedValue(Function f) {
@@ -76,8 +70,8 @@ public class TypedValue implements Cloneable{
 	}
 	
 	
-	// TODO запретить возвращать максимальный тип для INTEGER и DOUBLE
 	public static Types max(Types left, Types right) throws MyException {
+		// Запрет возврата максимального типа для INTEGER и DOUBLE
 		if(left==Types.BOOLEAN||right==Types.BOOLEAN) throw new MyException("В преобразовании участвует BOOLEAN");
 		
 		int t1 = Types.get(left);
@@ -251,6 +245,7 @@ public class TypedValue implements Cloneable{
 		}
 	}
 
+	// Меняет знак. 
 	public TypedValue negative() throws Exception {
 		switch (type){
 		case INTEGER:
@@ -258,6 +253,9 @@ public class TypedValue implements Cloneable{
 			return this;
 		case DOUBLE:
 			d = -d;
+			return this;
+		case BOOLEAN:
+			b=!b;
 			return this;
 		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR ");
@@ -273,10 +271,9 @@ public class TypedValue implements Cloneable{
 			d += right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 
 	public TypedValue minus(TypedValue right) throws Exception {
@@ -288,10 +285,9 @@ public class TypedValue implements Cloneable{
 			d -= right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue mul(TypedValue right) throws Exception {
@@ -303,10 +299,9 @@ public class TypedValue implements Cloneable{
 			d *= right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue div(TypedValue right) throws Exception {
@@ -324,10 +319,9 @@ public class TypedValue implements Cloneable{
 			d /= rd;
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 
 	public TypedValue degree(TypedValue degree) throws Exception {
@@ -339,10 +333,9 @@ public class TypedValue implements Cloneable{
 			d = Math.pow(d, degree.getDouble());
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue factorial() throws Exception {
@@ -360,6 +353,5 @@ public class TypedValue implements Cloneable{
 		default:
 			throw new MyException("Факториал определён только для INTEGER");
 		}
-		//return null;
 	}
 }

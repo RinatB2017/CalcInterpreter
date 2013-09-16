@@ -7,7 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	TestFunctions.class,
 	TestBasicArith.class,
 	TestFails.class,
-	TestIf.class
+	TestIf.class,
+	TestCasting.class,
+	TestCastingAndFunctions.class
 })
 public class JUnit4TestSuite {
 

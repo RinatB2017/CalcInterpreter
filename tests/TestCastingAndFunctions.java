@@ -4,7 +4,7 @@ import org.junit.*;
 
 
 public class TestCastingAndFunctions extends EnvForTests{
-	@Test
+	/*@Test
 	public void testIf_false_firstAfterIf() throws Exception {
 		b.setArgs(new String[] { "if(sin pi) {print 2+ 2*2;}  print e" });
 		p.program();
@@ -23,7 +23,7 @@ public class TestCastingAndFunctions extends EnvForTests{
 		b.setArgs(new String[] { "if(sin pi){print 2 + 2*2;} else {print printMe;}" });
 		p.program();
 		assertEquals(0, i.lastResult.getInt());
-	}
+	}*/
 	
 	@Test
 	public void testPrint2As3() throws Exception {
@@ -36,21 +36,21 @@ public class TestCastingAndFunctions extends EnvForTests{
 	
 	@Test
 	public void testPrintCosPiDiv2() throws Exception {
-		b.setArgs(new String[] { "print cos pi/2" });
+		b.setArgs(new String[] { "print cos (pi/2)" });
 		p.program();
 		assertEquals(0.0, i.lastResult.getDouble(), 0.01);
 	}
 
 	@Test
 	public void testPrintSinPiDiv2() throws Exception {
-		b.setArgs(new String[] { "print sin pi/2" });
+		b.setArgs(new String[] { "print sin (pi/2)" });
 		p.program();
 		assertEquals(1.0, i.lastResult.getDouble(), 0.01);
 	}
 
 	@Test
 	public void testPrintCosSinPiDiv2() throws Exception {
-		b.setArgs(new String[] { "print cos sin pi/2" });
+		b.setArgs(new String[] { "print cos( sin( pi/2) )" });
 		p.program();
 		assertEquals(Math.cos(Math.sin(Math.PI / 2.0)), i.lastResult.getDouble(), 0.01);
 	}
