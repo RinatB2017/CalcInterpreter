@@ -4,10 +4,9 @@ import inter.Returnable;
 import types.TypedValue;
 
 public class Factorial extends Returnable{
-private TypedValue left;
 	
-	public Factorial(TypedValue left) {
-		this.left = left;
+	public Factorial(TypedValue left) throws Exception {
+		super(left, null);
 	}
 	
 	public TypedValue execute() throws Exception {

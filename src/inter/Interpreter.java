@@ -1,8 +1,10 @@
 package inter;
 
 import inter.voidables.Reset;
+
 import java.util.*;
-import options.Options;
+
+import options.*;
 import types.TypedValue;
 import main.OutputSystem;
 
@@ -14,6 +16,8 @@ public final class Interpreter extends Env{
 	// Конструктор
 	public Interpreter(Options options, HashMap<String, TypedValue> table, OutputSystem output) {
 		super(output, table, options);
+		
+		TypedValue.setOptions(options);
 		
 		try {
 			this.exec(new Reset(null)); // reset all

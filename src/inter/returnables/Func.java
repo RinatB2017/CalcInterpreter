@@ -20,7 +20,7 @@ public class Func extends Returnable{
 	public TypedValue execute() throws Exception{
 		TypedValue funcObj = table.get(name);
 		if(funcObj==null) throw new MyException("Объекта с именем "+name+" нет в таблице!");
-		if(funcObj.type!=Types.FUNCTION) throw new MyException("Объект с именем "+name+" не является функцией.");
+		if(funcObj.getType()!=Types.FUNCTION) throw new MyException("Объект с именем "+name+" не является функцией.");
 		
 		return funcObj.getFunction().execute(args);
 	}

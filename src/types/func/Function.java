@@ -21,7 +21,7 @@ public abstract class Function {
 		if(arguments.size()!=definition.args.size())
 			throw new MyException("Неверное кол-во аргументов");
 		for(int i=0; i<arguments.size(); i++){
-			if(arguments.get(i).type!=definition.getArg(i).type)
+			if(arguments.get(i).getType()!=definition.getArg(i).type)
 				throw new MyException("Не совпадает тип аргумента функции со своим определением.");
 		}
 	}
@@ -29,7 +29,7 @@ public abstract class Function {
 	protected void checkRet(TypedValue ret) throws Exception{
 		if(ret==null)
 			throw new Exception("ret==null");
-		if(ret.type!= definition.ret.type)
+		if(ret.getType()!= definition.ret.type)
 			throw new MyException("Не совпадает тип аргумента функции со своим определением.");
 	}
 	
