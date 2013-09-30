@@ -76,17 +76,19 @@ public class BuiltInFunction extends Function {
 		}
 	}
 
-	// Преобразовать радианы в градусы и т. д. в зависимости от опций
+	// Преобразовать аргументы (радианы в градусы и т. д. в зависимости от опций)
 	private void convertArgumentsByDefinition(ArrayList<TypedValue> arguments) throws Exception{
 		for(int i=0; i<arguments.size(); i++){
 			toDim(arguments.get(i), definition.args.get(i).getDimension());
 		}
 	}
-		
+	
+	// Преобразовать выходное значение (радианы в градусы и т. д. в зависимости от опций)
 	private void convertRetValueByDefinition(TypedValue ret) throws Exception{
 		toDim(ret,definition.ret.getDimension());
 	}
 	
+	// Преобразует в размерность, получаемую по ключу OptId.DIMENSION
 	private void toDim(TypedValue v, Dimension defDim) throws Exception{
 		checkNoDimensionless(dimensionFromOptions, true);
 		
@@ -102,11 +104,12 @@ public class BuiltInFunction extends Function {
 		}
 	}
 	
+	// Преобразует в радианы
 	private void toRad(TypedValue v, Dimension defDim) throws Exception {
 		if(v.getType()!=Types.DOUBLE) return;
 		switch(defDim){
 		case DEG:
-			// x радиан = 
+			// x радиан = 180 * x градус / pi
 			v.setDouble(180 * v.getDouble() / Math.PI);
 			break;
 		default:
@@ -114,12 +117,13 @@ public class BuiltInFunction extends Function {
 			break;
 		}
 	}
-
+	
+	// Преобразует в градусы
 	private void toDeg(TypedValue v, Dimension defDim) throws Exception{
 		if(v.getType()!=Types.DOUBLE) return;
 		switch(defDim){
 		case RAD:
-			// x градус =
+			// x градус = pi * x радиан / 180
 			v.setDouble(Math.PI * v.getDouble() / 180);
 			break;
 		default:
