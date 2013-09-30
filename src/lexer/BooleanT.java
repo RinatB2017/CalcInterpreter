@@ -1,9 +1,6 @@
 package lexer;
 
-import types.TypedValue;
-import types.Types;
-
-
+import types.*;
 
 public class BooleanT extends Token{
 	final public boolean value;
@@ -15,11 +12,10 @@ public class BooleanT extends Token{
 	
 	@Override
 	public String toString() {
-		return "" + value;
+		return String.valueOf(value);
 	}
 	
 	public void getTypedValueTo(TypedValue o) throws Exception{
-		o.type=Types.BOOLEAN;
-		o.setB(value);
+		o.setBoolean(value);
 	}
 }

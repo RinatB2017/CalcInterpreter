@@ -35,4 +35,8 @@ public class Argument {
 	public String toString() {
 		return "" + type + ":" + dimension + "";
 	}
+
+	public Dimension getDimension() {
+		return dimension;
+	}
 }

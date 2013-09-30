@@ -3,18 +3,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import types.func.def.Dimension;
 import lexer.BooleanT;
 import lexer.IntegerT;
 import lexer.Token;
 import main.MyException;
 import main.OutputSystem;
+import static types.func.def.Dimension.checkNoDimensionless;
 
 /**
  * Класс для хранения значения по умолчанию
  * */
 class Option<T> {
 	T defaultValue;
-
+	// TODO допустимые значения(тоже T) и их проверку
 	Option(T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
@@ -28,52 +30,49 @@ class Option<T> {
 
 @SuppressWarnings("rawtypes")
 public final class Options {
-	private HashMap<OptId, Option> opts = new HashMap<OptId, Option>(); // Ид
-																				// :
-																				// Опция
-	private HashMap<OptId, Object> optsVals = new HashMap<OptId, Object>(); // Ид
-																					// :
-																					// Значение
+	// Ид : Опция
+	private HashMap<OptId, Option> opts = new HashMap<OptId, Option>();
+	
+	// Ид : Значение
+	private HashMap<OptId, Object> optsVals = new HashMap<OptId, Object>();
+	
 	private OutputSystem output;
 
 	// Конструктор
 	@SuppressWarnings("unchecked")
 	public Options(OutputSystem out) {
 		this.output = out;
+		
+		// Автодобавление токена END в конце считанной последовательности
+		this.add(OptId.ARGS_AUTO_END, new Option(true));
+		
+		// Автодобавление токена END в конце считанной последовательности
+		this.add(OptId.AUTO_END, new Option(true));
+		
+		// Вывод найденных токенов для просканированной строки
+		this.add(OptId.PRINT_TOKENS, new Option(false));
 
-		this.add(OptId.ARGS_AUTO_END, new Option(true)); // Автодобавление
-															// токена END в
-															// конце считанной
-															// последовательности
-		this.add(OptId.AUTO_END, new Option(true)); // Автодобавление токена
-														// END в конце считанной
-														// последовательности
-		this.add(OptId.PRINT_TOKENS, new Option(false)); // Вывод найденных
-															// токенов для
-															// просканированной
-															// строки
-
-		this.add(OptId.PRECISION, new Option(5)); // Отрицательная степень
-														// 10, используемая при
-														// сравнении малых
-														// значений методом
-														// doubleCompare()
-		this.add(OptId.ERRORS, new Option(0)); // Счётчик возникших ошибок
-		this.add(OptId.STRICTED, new Option(false)); // Запрет автосоздания
-														// переменных
-		this.add(OptId.AUTO_PRINT, new Option(true)); // Автоматический вывод
-															// значений
-															// выражений
-		this.add(OptId.GREEDY_FUNC, new Option(false)); // Жадные функции:
-															// скобки не
-															// обязательны, всё,
-															// что написано
-															// после имени
-															// функции и до
-															// токена END ;
-															// считается
-															// аргументом
-															// функции.
+		// Отрицательная степень 10, используемая при сравнении малых значений
+		//методом doubleCompare()
+		this.add(OptId.PRECISION, new Option(5));
+		
+		// Счётчик возникших ошибок
+		this.add(OptId.ERRORS, new Option(0));
+		
+		// Запрет автосоздания переменных
+		this.add(OptId.STRICTED, new Option(false));
+		
+		// Автоматический вывод значений выражений
+		this.add(OptId.AUTO_PRINT, new Option(true));
+		
+		// Жадные функции:
+		// скобки не обязательны, всё, что написано после имени функции и до
+		// токена END ;
+		// считается аргументом функции.
+		this.add(OptId.GREEDY_FUNC, new Option(false));
+		
+		// Размерность по умолчанию
+		this.add(OptId.DIMENSION, new Option(Dimension.RAD));
 	}
 
 	// Добавление опций
@@ -83,8 +82,12 @@ public final class Options {
 	}
 
 	// Перезапись значений. Object должен совпадать с типом <T>@Option
-	public void set(OptId id, Object o) throws MyException {
-		if (o.getClass() != optsVals.get(id).getClass()) { // проверка типа
+	public void set(OptId id, Object o) throws Exception {
+		Object defaultObj = optsVals.get(id);
+		if(defaultObj==null){
+			throw new Exception("Нет значения по умолчанию для "+id);
+		}
+		if (o.getClass() != defaultObj.getClass()) { // проверка типа
 			// System.err.println("Неверный класс "+o.getClass()+", требуется "+optsVals.get(id).getClass());
 			throw new MyException("Неверный класс " + o.getClass()
 					+ ", требуется " + optsVals.get(id).getClass());
@@ -96,7 +99,7 @@ public final class Options {
 	// Перезапись значений для Parser.set()
 	// Когда 2-й параметр Token, вызывается эта перегруженная функция, т. к.
 	// Token точнее чем Object
-	public void set(OptId what, Token value) throws MyException {
+	public void set(OptId what, Token value) throws Exception {
 		OptId id = what;
 		switch (value.tag) {
 		case BOOLEAN:
@@ -105,8 +108,15 @@ public final class Options {
 		case INTEGER:
 			set(id, ((IntegerT) value).value);
 			break;
+		case NAME:
+			if(id==OptId.DIMENSION){
+				Dimension dim=dimname(value.toString());
+				checkNoDimensionless(dim,false);
+				set(id, dim);
+			}
+			break;
 		default:
-			throw new MyException("неверный тип значения опции");
+			throw new MyException("неверный тип значения опции: "+value.tag);
 		}
 		output.addln("Установлена опция " + id.toString() + " в "
 				+ optsVals.get(id));
@@ -149,6 +159,15 @@ public final class Options {
 		}
 		throw new MyException("Нет такой опции "+t+"; посмотреть список возможных опций можно вызовом state");
 	}
+	
+	public static Dimension dimname(String t) throws MyException{
+		for(Dimension id: Dimension.values()){
+			if(t.toLowerCase().equals(id.toString().toLowerCase())){
+				return id;
+			}
+		}
+		throw new MyException("Нет такого режима конвертации "+t+".");
+	}
 
 	// Получение значения
 	public int getInt(OptId id) {
@@ -161,5 +180,9 @@ public final class Options {
 
 	public boolean getBoolean(OptId id) {
 		return (Boolean) optsVals.get(id);
+	}
+
+	public Dimension getDimension() {
+		return (Dimension) optsVals.get(OptId.DIMENSION);
 	}
 }

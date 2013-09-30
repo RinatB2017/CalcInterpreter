@@ -39,7 +39,6 @@ public class TestFails extends EnvForTests{
 		p.program();
 	}
 
-	@Ignore
 	@Test(expected = MyException.class, timeout = 2000)
 	public void checkFactorialCos() throws Exception {
 		b.setArgs(new String[] { "(cos pi)!" }); // Greedy! // Факториал

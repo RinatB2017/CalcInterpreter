@@ -1,7 +1,7 @@
 package types;
 
-import types.func.FuncExpr;
-import types.func.Function;
+import options.OptId;
+import options.Options;
 import types.func.def.Dimension;
 import main.MyException;
 
@@ -13,15 +13,25 @@ import main.MyException;
  *
  */
 public class TypedValue implements Cloneable{
+	private static Options options;
+	
+	public static void setOptions(Options options2){
+		options=options2;
+	}
+	
 	private int i;
 	private double d;
 	private boolean b;
-	//private String s;
 	private MathVector v;
 	private Function f;
-	public Types type;
+	private Types type;
+	private Object dimension; // километры, часы, килограммы и т. д.
 	
-    public TypedValue clone() throws CloneNotSupportedException{
+    public Types getType() {
+		return type;
+	}
+
+	public TypedValue clone() throws CloneNotSupportedException{
     	TypedValue obj=(TypedValue)super.clone();
         return obj;
     }
@@ -39,19 +49,17 @@ public class TypedValue implements Cloneable{
 		this.numOfArgs=t.numOfArgs;
 	}*/
 	
+	// Конструкторы
 	public TypedValue(int o){
-		this.i=o;
-		this.type=Types.INTEGER;
+		setInt(o);
 	}
 	
 	public TypedValue(double e) {
-		this.d=e;
-		this.type=Types.DOUBLE;
+		setDouble(e);
 	}
 
 	public TypedValue(boolean b) {
-		this.b=b;
-		this.type=Types.BOOLEAN;
+		setBoolean(b);
 	}
 	
 	public TypedValue(Function f) {
@@ -59,9 +67,99 @@ public class TypedValue implements Cloneable{
 		this.f=f;
 	}
 
-	public TypedValue() {
+	public TypedValue() {}
+	
+	
+	public static Types max(Types left, Types right) throws MyException {
+		// Запрет возврата максимального типа для INTEGER и DOUBLE
+		if(left==Types.BOOLEAN||right==Types.BOOLEAN) throw new MyException("В преобразовании участвует BOOLEAN");
+		
+		int t1 = Types.get(left);
+		int t2 = Types.get(right);
+		int t3;
+		t3 = (t1>t2) ? t1 : t2;
+		
+		Types ret;
+		ret=Types.set(t3);
+		return ret;
+	}
+	
+	// Преобразует в тип to
+	public void toType(Types to) throws Exception{
+		switch(to){
+		case INTEGER:
+			toInt();
+			break;
+		case DOUBLE:
+			toDouble();
+			break;
+		case BOOLEAN:
+			toBoolean();
+			break;
+		default:
+			throw new Exception("Не реализовано преобразование "+this.type+" в "+to);
+		}
 	}
 
+	void toInt() throws Exception{
+		switch (this.type){
+		case INTEGER:
+			return;
+		case DOUBLE:
+			type=Types.INTEGER;
+			i=(int)d;
+			break;
+		case BOOLEAN:
+			type=Types.INTEGER;
+			i=b?1:0;
+			break;
+		default:
+			throw new Exception(" Не реализовано преобразование "+this.type);
+		}
+	}
+	
+	void toDouble() throws Exception{
+		switch (this.type){
+		case INTEGER:
+			type=Types.DOUBLE;
+			d=(double)i;
+			break;
+		case DOUBLE:
+			return;
+		case BOOLEAN:
+			type=Types.DOUBLE;
+			d=b?1:0;
+			break;
+		default:
+			throw new Exception(" Не реализовано преобразование "+this.type);
+		}
+	}
+	
+	void toBoolean() throws Exception{
+		switch (this.type){
+		case INTEGER:
+			type=Types.BOOLEAN;
+			b=(i!=0)?true:false;
+			break;
+		case DOUBLE:
+			type=Types.BOOLEAN;
+			b=(doubleCompare(d, 0))?true:false;
+			break;
+		case BOOLEAN:
+			return;
+		default:
+			throw new Exception(" Не реализовано преобразование "+this.type);
+		}
+	}
+	
+	
+	static boolean doubleCompare(double a, double b) {
+		if (Math.abs(a - b) < 1.0 / Math.pow(10, options.getInt(OptId.PRECISION)))
+			return true;
+		return false;
+	}
+
+	
 	public int getInt(){
 		return i;
 	}
@@ -79,15 +177,18 @@ public class TypedValue implements Cloneable{
 	}
 	
 	
-	public void setI(int i) {
+	public void setInt(int i) {
+		type=Types.INTEGER;
 		this.i = i;
 	}
 
-	public void setD(double d) {
+	public void setDouble(double d) {
+		type=Types.DOUBLE;
 		this.d = d;
 	}
 
-	public void setB(boolean b) {
+	public void setBoolean(boolean b) {
+		type=Types.BOOLEAN;
 		this.b = b;
 	}
 
@@ -145,6 +246,7 @@ public class TypedValue implements Cloneable{
 		}
 	}
 
+	// Меняет знак. 
 	public TypedValue negative() throws Exception {
 		switch (type){
 		case INTEGER:
@@ -152,6 +254,9 @@ public class TypedValue implements Cloneable{
 			return this;
 		case DOUBLE:
 			d = -d;
+			return this;
+		case BOOLEAN:
+			b=!b;
 			return this;
 		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR ");
@@ -167,10 +272,9 @@ public class TypedValue implements Cloneable{
 			d += right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 
 	public TypedValue minus(TypedValue right) throws Exception {
@@ -182,10 +286,9 @@ public class TypedValue implements Cloneable{
 			d -= right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue mul(TypedValue right) throws Exception {
@@ -197,10 +300,9 @@ public class TypedValue implements Cloneable{
 			d *= right.getDouble();
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue div(TypedValue right) throws Exception {
@@ -218,10 +320,9 @@ public class TypedValue implements Cloneable{
 			d /= rd;
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 
 	public TypedValue degree(TypedValue degree) throws Exception {
@@ -233,10 +334,9 @@ public class TypedValue implements Cloneable{
 			d = Math.pow(d, degree.getDouble());
 			return this;
 		case BOOLEAN:
-		case VECTOR:
+		default:
 			throw new Exception("Забыл BOOLEAN и VECTOR");
 		}
-		return null;
 	}
 	
 	public TypedValue factorial() throws Exception {
@@ -254,6 +354,5 @@ public class TypedValue implements Cloneable{
 		default:
 			throw new MyException("Факториал определён только для INTEGER");
 		}
-		//return null;
 	}
 }

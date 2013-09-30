@@ -5,12 +5,10 @@ import lexer.Tag;
 import types.TypedValue;
 
 public class Term extends Returnable {
-	private TypedValue left, right;
 	private Tag sign;
 	
-	public Term(TypedValue left, TypedValue right, Tag sign) {
-		this.left = left;
-		this.right = right;
+	public Term(TypedValue left, TypedValue right, Tag sign) throws Exception {
+		super(left, right);
 		this.sign = sign;
 	}
 	

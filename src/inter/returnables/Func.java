@@ -1,8 +1,8 @@
 package inter.returnables;
 
 import java.util.*;
-
 import main.MyException;
+import types.Function;
 import types.TypedValue;
 import types.Types;
 import inter.Returnable;
@@ -20,9 +20,12 @@ public class Func extends Returnable{
 	public TypedValue execute() throws Exception{
 		TypedValue funcObj = table.get(name);
 		if(funcObj==null) throw new MyException("Объекта с именем "+name+" нет в таблице!");
-		if(funcObj.type!=Types.FUNCTION) throw new MyException("Объект с именем "+name+" не является функцией.");
+		if(funcObj.getType()!=Types.FUNCTION) throw new MyException("Объект с именем "+name+" не является функцией.");
+		Function theFunction = funcObj.getFunction();
 		
-		return funcObj.getFunction().execute(args);
+		// Выставляем временному объекту настройку(радианы, градусы) для конвертации в execute()
+		theFunction.setDimension(options.getDimension());
+		return theFunction.execute(args);
 	}
 
 }

@@ -1,23 +1,21 @@
 package lexer;
 
-import types.TypedValue;
-import types.Types;
-
-
+import types.*;
 
 public class DoubleT extends Token{
-	public final double value;
+	final public double value;
+	
 	public DoubleT(Tag name, double value) {
 		super(name);
 		this.value=value;
 	}
+	
 	@Override
 	public String toString() {
-		return "" + value;
+		return String.valueOf(value);
 	}
 
 	public void getTypedValueTo(TypedValue o) throws Exception{
-		o.type=Types.DOUBLE;
-		o.setD(value);
+		o.setDouble(value);
 	}
 }
