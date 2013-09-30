@@ -16,6 +16,6 @@ public class DoubleT extends Token{
 	}
 
 	public void getTypedValueTo(TypedValue o) throws Exception{
-		o.setD(value);
+		o.setDouble(value);
 	}
 }

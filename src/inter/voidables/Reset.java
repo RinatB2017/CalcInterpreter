@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import options.OptId;
 import types.TypedValue;
 import types.Types;
-import types.func.BuiltInFunction;
-import types.func.EnumOfBuiltInFunctions;
+import types.func.builtins.BuiltInFunction;
+import types.func.builtins.EnumOfBuiltInFunctions;
 import types.func.def.Argument;
 import types.func.def.Dimension;
 import inter.*;
@@ -42,7 +42,7 @@ public class Reset extends Voidable {
 			table.put("ans", new TypedValue(0));
 			
 			ArrayList<Argument> sinArg = new ArrayList<Argument>();
-			sinArg.add(new Argument(Types.DOUBLE, Dimension.RADIAN));
+			sinArg.add(new Argument(Types.DOUBLE, Dimension.RAD));
 		
 			table.put(
 				"sin",

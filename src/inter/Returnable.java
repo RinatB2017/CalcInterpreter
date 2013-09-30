@@ -17,8 +17,8 @@ public abstract class Returnable extends SetableEnv{
 		
 		Types maxtype;
 		maxtype = TypedValue.max(left.getType(), right.getType());
-		left.to(maxtype);
-		right.to(maxtype);
+		left.toType(maxtype);
+		right.toType(maxtype);
 	}
 	
 	public void lateInit(Options options, HashMap<String, TypedValue> table, OutputSystem output){

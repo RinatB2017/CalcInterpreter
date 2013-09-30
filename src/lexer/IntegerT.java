@@ -16,6 +16,6 @@ public class IntegerT extends Token{
 	}
 
 	public void getTypedValueTo(TypedValue o) throws Exception{
-		o.setI(value);
+		o.setInt(value);
 	}
 }

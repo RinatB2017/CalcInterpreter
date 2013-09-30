@@ -1,4 +1,4 @@
-package types.func;
+package types.func.builtins;
 
 public enum EnumOfBuiltInFunctions {
 	SIN,

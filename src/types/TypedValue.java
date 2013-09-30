@@ -2,7 +2,7 @@ package types;
 
 import options.OptId;
 import options.Options;
-import types.func.*;
+import types.func.def.Dimension;
 import main.MyException;
 
 /**
@@ -25,6 +25,7 @@ public class TypedValue implements Cloneable{
 	private MathVector v;
 	private Function f;
 	private Types type;
+	private Object dimension; // километры, часы, килограммы и т. д.
 	
     public Types getType() {
 		return type;
@@ -50,15 +51,15 @@ public class TypedValue implements Cloneable{
 	
 	// Конструкторы
 	public TypedValue(int o){
-		setI(o);
+		setInt(o);
 	}
 	
 	public TypedValue(double e) {
-		setD(e);
+		setDouble(e);
 	}
 
 	public TypedValue(boolean b) {
-		setB(b);
+		setBoolean(b);
 	}
 	
 	public TypedValue(Function f) {
@@ -66,8 +67,7 @@ public class TypedValue implements Cloneable{
 		this.f=f;
 	}
 
-	public TypedValue() {
-	}
+	public TypedValue() {}
 	
 	
 	public static Types max(Types left, Types right) throws MyException {
@@ -85,7 +85,7 @@ public class TypedValue implements Cloneable{
 	}
 	
 	// Преобразует в тип to
-	public void to(Types to) throws Exception{
+	public void toType(Types to) throws Exception{
 		switch(to){
 		case INTEGER:
 			toInt();
@@ -152,6 +152,7 @@ public class TypedValue implements Cloneable{
 		}
 	}
 	
+	
 	static boolean doubleCompare(double a, double b) {
 		if (Math.abs(a - b) < 1.0 / Math.pow(10, options.getInt(OptId.PRECISION)))
 			return true;
@@ -176,17 +177,17 @@ public class TypedValue implements Cloneable{
 	}
 	
 	
-	public void setI(int i) {
+	public void setInt(int i) {
 		type=Types.INTEGER;
 		this.i = i;
 	}
 
-	public void setD(double d) {
+	public void setDouble(double d) {
 		type=Types.DOUBLE;
 		this.d = d;
 	}
 
-	public void setB(boolean b) {
+	public void setBoolean(boolean b) {
 		type=Types.BOOLEAN;
 		this.b = b;
 	}
