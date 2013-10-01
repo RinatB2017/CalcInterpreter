@@ -31,7 +31,7 @@ public abstract class Function {
 	
 	
 	// Проверка соответствия типов передаваемых аргументов и типов аргументов, указанных в определении
-	protected void checkArguments(ArrayList<TypedValue> arguments) throws MyException{
+	protected void checkArguments(ArrayList<TypedValue> arguments) throws Exception{
 		if(definition.args==null && arguments==null) return;
 		if(definition.args==null)
 			throw new MyException("Список аргументов должен быть пустым.");
@@ -40,8 +40,11 @@ public abstract class Function {
 		if(arguments.size()!=definition.args.size())
 			throw new MyException("Неверное кол-во аргументов");
 		for(int i=0; i<arguments.size(); i++){
-			if(arguments.get(i).getType()!=definition.getArg(i).type)
-				throw new MyException("Не совпадает тип аргумента функции со своим определением.");
+			TypedValue arg = arguments.get(i);
+			Types definedType = definition.getArg(i).type;
+			if(arg.getType()!=definedType)
+				//throw new MyException("Не совпадает тип аргумента функции со своим определением.");
+				arg.tryMaximizeTo(definedType);
 		}
 	}
 	

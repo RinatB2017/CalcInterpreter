@@ -27,6 +27,11 @@ public class BuiltInFunction extends Function {
 			convertArgumentsByDefinition(arguments);
 		
 		TypedValue ret=null;
+		
+		/*
+		 * Добавление функций в таблицу - в классе Reset
+		 * */
+		
 		switch(f){
 		case SIN:
 			ret=new TypedValue(Math.sin(arguments.get(0).getDouble()));
@@ -35,8 +40,10 @@ public class BuiltInFunction extends Function {
 			ret=new TypedValue(Math.cos(arguments.get(0).getDouble()));
 			break;
 		case ARCSIN:
+			ret=new TypedValue(Math.asin(arguments.get(0).getDouble()));
 			break;
 		case ARCCOS:
+			ret=new TypedValue(Math.acos(arguments.get(0).getDouble()));
 			break;
 		case TAN:
 			ret=new TypedValue(Math.tan(arguments.get(0).getDouble()));
@@ -76,41 +83,42 @@ public class BuiltInFunction extends Function {
 		}
 	}
 
-	// Преобразовать аргументы (радианы в градусы и т. д. в зависимости от опций)
+	// Преобразует в аргументы в размерность, указанную в defDim из получаемой по ключу OptId.DIMENSION
 	private void convertArgumentsByDefinition(ArrayList<TypedValue> arguments) throws Exception{
 		for(int i=0; i<arguments.size(); i++){
-			toDim(arguments.get(i), definition.args.get(i).getDimension());
+			convert(arguments.get(i), dimensionFromOptions, definition.args.get(i).getDimension());
 		}
 	}
 	
-	// Преобразовать выходное значение (радианы в градусы и т. д. в зависимости от опций)
+	// Преобразовать выходное значение из указанной в определении выходного значения
+	// в получаемую по ключу OptId.DIMENSION
 	private void convertRetValueByDefinition(TypedValue ret) throws Exception{
-		toDim(ret,definition.ret.getDimension());
+		convert(ret, definition.ret.getDimension(), dimensionFromOptions);
 	}
 	
-	// Преобразует в размерность, получаемую по ключу OptId.DIMENSION
-	private void toDim(TypedValue v, Dimension defDim) throws Exception{
+	private void convert(TypedValue v, Dimension from, Dimension to) throws Exception{
 		checkNoDimensionless(dimensionFromOptions, true);
-		
-		switch(dimensionFromOptions){
+
+		switch(to){ // во что преобразовываем
 		case DEG:
-			toDeg(v, defDim);
+			toDeg(v, from);
 			break;
 		case RAD:
-			toRad(v, defDim);
+			toRad(v, from);
 			break;
 		default:
 			break;
 		}
 	}
 	
+		
 	// Преобразует в радианы
-	private void toRad(TypedValue v, Dimension defDim) throws Exception {
+	private void toRad(TypedValue v, Dimension from) throws Exception {
 		if(v.getType()!=Types.DOUBLE) return;
-		switch(defDim){
+		
+		switch(from){
 		case DEG:
-			// x радиан = 180 * x градус / pi
-			v.setDouble(180 * v.getDouble() / Math.PI);
+			v.setDouble(v.getDouble() * Math.PI / 180);
 			break;
 		default:
 			// Ничего не преобразуем, если величина безразмерностная
@@ -119,12 +127,12 @@ public class BuiltInFunction extends Function {
 	}
 	
 	// Преобразует в градусы
-	private void toDeg(TypedValue v, Dimension defDim) throws Exception{
+	private void toDeg(TypedValue v, Dimension from) throws Exception{
 		if(v.getType()!=Types.DOUBLE) return;
-		switch(defDim){
+		
+		switch(from){
 		case RAD:
-			// x градус = pi * x радиан / 180
-			v.setDouble(Math.PI * v.getDouble() / 180);
+			v.setDouble(v.getDouble() * 180.0 / Math.PI);
 			break;
 		default:
 			// Ничего не преобразуем, если величина безразмерностная

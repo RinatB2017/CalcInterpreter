@@ -153,6 +153,13 @@ public class TypedValue implements Cloneable{
 	}
 	
 	
+	public void tryMaximizeTo(Types requiredType) throws Exception {
+		int t1 = Types.get(this.type); // меньший
+		int t2 = Types.get(requiredType); // больший
+		if(t1>t2) throw new MyException("Не удаётся повысить "+this.type+" до "+requiredType);
+		toType(requiredType);
+	}
+	
 	static boolean doubleCompare(double a, double b) {
 		if (Math.abs(a - b) < 1.0 / Math.pow(10, options.getInt(OptId.PRECISION)))
 			return true;

@@ -72,7 +72,7 @@ public final class Options {
 		this.add(OptId.GREEDY_FUNC, new Option(false));
 		
 		// Размерность по умолчанию
-		this.add(OptId.DIMENSION, new Option(Dimension.RAD));
+		this.add(OptId.DIM, new Option(Dimension.RAD));
 	}
 
 	// Добавление опций
@@ -109,7 +109,7 @@ public final class Options {
 			set(id, ((IntegerT) value).value);
 			break;
 		case NAME:
-			if(id==OptId.DIMENSION){
+			if(id==OptId.DIM){
 				Dimension dim=dimname(value.toString());
 				checkNoDimensionless(dim,false);
 				set(id, dim);
@@ -183,6 +183,6 @@ public final class Options {
 	}
 
 	public Dimension getDimension() {
-		return (Dimension) optsVals.get(OptId.DIMENSION);
+		return (Dimension) optsVals.get(OptId.DIM);
 	}
 }

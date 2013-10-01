@@ -43,7 +43,11 @@ public class Reset extends Voidable {
 			
 			ArrayList<Argument> sinArg = new ArrayList<Argument>();
 			sinArg.add(new Argument(Types.DOUBLE, Dimension.RAD));
-		
+			
+			ArrayList<Argument> arcsinArg = new ArrayList<Argument>();
+			arcsinArg.add(new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS));
+			
+			// Исполнение функций - в классе BuiltInFunction.java
 			table.put(
 				"sin",
 				new TypedValue(
@@ -71,6 +75,28 @@ public class Reset extends Voidable {
 						EnumOfBuiltInFunctions.TAN,
 						sinArg,
 						new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS)
+					)
+				)
+			);
+			
+			table.put(
+				"arcsin",
+				new TypedValue(
+					new BuiltInFunction(
+						EnumOfBuiltInFunctions.ARCSIN,
+						arcsinArg,
+						new Argument(Types.DOUBLE, Dimension.RAD)
+					)
+				)
+			);
+			
+			table.put(
+				"arccos",
+				new TypedValue(
+					new BuiltInFunction(
+						EnumOfBuiltInFunctions.ARCCOS,
+						arcsinArg,
+						new Argument(Types.DOUBLE, Dimension.RAD)
 					)
 				)
 			);
