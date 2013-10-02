@@ -231,14 +231,6 @@ public class TypedValue implements Cloneable{
 		return null;
 	}
 	
-	public String getFuncArgs(){
-		return f.getFuncArgs();
-	}
-	
-	public String getFuncRet(){
-		return f.getFuncRet();
-	}
-	
 	public boolean equals(TypedValue sec) throws Exception{
 		if (this.type!=sec.type) return false;
 		

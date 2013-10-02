@@ -18,17 +18,29 @@ public abstract class Function {
 	
 	@Override
 	public String toString() {
-		return getFuncRet()+ " " + getFuncArgs();
+		String r = definition.ret.toString()+ " (";
+		if(definition.args.isEmpty())
+			;
+		else {
+			r += definition.args.get(0);
+			int i = 1;
+			while(i!=definition.args.size()){
+				r += ", " + definition.args.get(i);
+				i++;
+			}
+		}
+		r += ")";
+		return r;
 	}
 
-	public String getFuncArgs() {
+	/*public String getFuncArgs() {
 		return definition.args.toString();
 	}
 	
 	public String getFuncRet() {
 		return definition.ret.toString();
 	}
-	
+	*/
 	
 	// Проверка соответствия типов передаваемых аргументов и типов аргументов, указанных в определении
 	protected void checkArguments(ArrayList<TypedValue> arguments) throws Exception{

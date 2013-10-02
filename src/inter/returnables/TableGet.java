@@ -4,6 +4,7 @@ import inter.Returnable;
 import main.MyException;
 import options.OptId;
 import types.TypedValue;
+import types.Types;
 
 public class TableGet extends Returnable {
 	private String name;
@@ -25,6 +26,9 @@ public class TableGet extends Returnable {
 			}
 		}
 		TypedValue r = table.get(name);
+		
+		if(r.getType()==Types.FUNCTION)
+			throw new MyException("При обращении к функции нужно указывать скобки.");
 		
 		return r.clone();
 	}

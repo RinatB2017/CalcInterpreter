@@ -396,6 +396,12 @@ public final class Parser extends Env{
 		case LP:
 			ArrayList<TypedValue> args = funcArgs();
 			return inter.exec(new Func(name, args));
+		case NAME:
+		case BOOLEAN:
+		case INTEGER:
+		case DOUBLE:
+			ArrayList<TypedValue> arg = funcArg();
+			return inter.exec(new Func(name, arg));
 		case ASSIGN:
 			inter.exec(new TablePut(name, expr(true)));
 		case END:
@@ -428,6 +434,30 @@ public final class Parser extends Env{
 		getToken(); // получаем следующий токен, его проверка на соответствие END - в instr()
 		return args;
 	}
+	
+	// Возвращает единственный аргумент из токена
+	private ArrayList<TypedValue> funcArg() throws Exception {
+		ArrayList<TypedValue> args = new ArrayList<TypedValue>();
+		TypedValue v;
+		switch(currTok.tag){
+		case INTEGER:
+		case DOUBLE:
+		case BOOLEAN:
+			v = new TypedValue();
+			currTok.getTypedValueTo(v);
+			break;
+		case NAME:
+			String name = new String(((WordT)currTok).value);
+			v = inter.exec(new TableGet(name));
+			break;
+		default:
+			throw new Exception("Wrong case in funcArg()");
+		}
+		getToken(); // Продвигаемся на END
+		args.add(v);
+		return args;
+	}
+
 	
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws Exception  {
