@@ -65,7 +65,7 @@ degree =
 
 factorial =
 	prim { '!' }
-	
+
 prim =
 		NUMBER
 	|	USER_DEFINED_NAME [ '=' expr ]
