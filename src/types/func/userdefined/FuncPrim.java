@@ -8,7 +8,6 @@ import types.func.def.Argument;
 public class FuncPrim extends Function{
 	public FuncPrim(ArrayList<Argument> args, Argument ret) {
 		super(args, ret);
-		// TODO Auto-generated constructor stub
 	}
 
 	String name=null; // имя ф-ии или переменной
@@ -18,13 +17,12 @@ public class FuncPrim extends Function{
 	
 	FuncPrimType type;
 	
-	boolean equals(){
-		return false; // TODO FuncPrim equals()
-	}
+	/*boolean equals(){
+		return false;
+	}*/
 
 	@Override
 	public TypedValue execute(ArrayList<TypedValue> arguments) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

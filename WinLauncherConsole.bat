@@ -3,6 +3,6 @@
 
 @echo off
 
-java -Dfile.encoding=Cp866 -classpath ./bin main.Executor "set auto_end=true"
+java -Dfile.encoding=Cp866 -classpath ./bin main.Executor
 
 if ERRORLEVEL 1 pause

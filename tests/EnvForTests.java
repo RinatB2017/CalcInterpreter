@@ -30,7 +30,7 @@ public abstract class EnvForTests {
 		OutputSystem out = new OutputSystem();
 		l = new Lexer();
 		o = new Options(out);
-		// Сначала интерпретатор сбрасывает всё в значания поумолчанию из Options
+		// Сначала интерпретатор сбрасывает всё в значания по умолчанию из Options
 		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
 		// А затем выставляем нужные нам значения 
 		o.set(OptId.AUTO_END, true);
