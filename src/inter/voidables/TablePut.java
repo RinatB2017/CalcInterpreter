@@ -15,7 +15,7 @@ public class TablePut extends Voidable {
 	public void execute() throws Exception {
 		//v = expr(true);
 		table.put(name, v);
-		output.addln("(Пере)записана переменая " + name + " со значением " + v);
+		output.addln("(Пере)записана переменая " + name + " значением " + v);
 	}
 
 }

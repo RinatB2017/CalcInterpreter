@@ -104,8 +104,9 @@ public final class Parser extends Env{
 					echoPrint = true; // ... включаем эхо-печать в
 										// this.getToken() ...
 				TypedValue v = expr(false);
-				if (options.getBoolean(OptId.AUTO_PRINT) && !inter.skip)
+				if (options.getBoolean(OptId.AUTO_PRINT) && !inter.skip){
 					output.finishAppend("= " + v);
+				}
 				echoPrint = false; // ... а теперь выключаем
 			}
 			match(Tag.END);
@@ -343,6 +344,9 @@ public final class Parser extends Env{
 	// факториал
 	private TypedValue factorial(boolean get) throws Exception {
 		TypedValue left = prim(get);
+		// Здесь перехватываем многочисленные prim()'овские return'ы
+		inter.exec(new TablePut("ans", left));
+		
 		for (;;){
 			switch (currTok.tag) {
 			case FACTORIAL:

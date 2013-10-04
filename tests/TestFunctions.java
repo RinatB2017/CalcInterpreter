@@ -62,7 +62,7 @@ public class TestFunctions extends EnvForTests{
 	public void testDelAllAddOneDelOne() throws Exception {
 		b.setArgs(new String[] { "del *; var uut=9; var t; del uut;" });
 		p.program();
-		assertEquals(1, i.table.size());
+		assertEquals(2, i.table.size());
 	}
 		
 	@Test

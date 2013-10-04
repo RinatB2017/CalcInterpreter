@@ -73,6 +73,14 @@ public class TestBasicArith extends EnvForTests{
 		assertEquals(16, i.lastResult.getInt()); // работает
 	}
 	
+	@Ignore
+	@Test
+	public void testAns_() throws Exception {
+		b.setArgs(new String[] { "2; (5+3)+ans" });
+		p.program();
+		assertEquals(10, i.lastResult.getInt()); // работает
+	}
+	
 	// TODO Убрать p=4 и использовать для проверки деления функции на ЧИСЛО
 	@Test
 	public void testTemplateForFutureVector() throws Exception {
