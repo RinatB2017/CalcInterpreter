@@ -1,8 +1,7 @@
-package parser;
+package inter;
 
 import java.util.*;
 
-import inter.*;
 import inter.returnables.*;
 import inter.voidables.*;
 import inter.voidables.Set;

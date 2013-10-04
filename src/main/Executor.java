@@ -8,12 +8,12 @@ package main;
  * */
 
 import inter.Interpreter;
+import inter.Parser;
 
 import java.io.*;
 import java.util.HashMap;
 
 import options.Options;
-import parser.Parser;
 import types.TypedValue;
 import lexer.Lexer;
 import lexer.Tag;

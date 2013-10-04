@@ -1,10 +1,11 @@
 package main;
+import inter.Parser;
+
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
 import options.OptId;
 import options.Options;
-import parser.Parser;
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;

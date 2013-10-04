@@ -1,7 +1,7 @@
 package main;
-import java.util.*;
+import inter.Parser;
 
-import parser.Parser;
+import java.util.*;
 
 /**
  * Буфер для умной задержки вывода при интерактивном вводе. Изначально

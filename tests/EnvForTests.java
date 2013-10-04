@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertTrue;
 import inter.Interpreter;
+import inter.Parser;
 
 import java.util.HashMap;
 
@@ -13,8 +14,8 @@ import options.Options;
 import org.junit.After;
 import org.junit.Before;
 
-import parser.Parser;
 import types.TypedValue;
+import types.func.def.Dimension;
 
 
 public abstract class EnvForTests {
@@ -29,11 +30,15 @@ public abstract class EnvForTests {
 		OutputSystem out = new OutputSystem();
 		l = new Lexer();
 		o = new Options(out);
+		// Сначала интерпретатор сбрасывает всё в значания поумолчанию из Options
+		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
+		// А затем выставляем нужные нам значения 
 		o.set(OptId.AUTO_END, true);
 		o.set(OptId.GREEDY_FUNC, false);
+		o.set(OptId.DIM, Dimension.RAD);
+		o.set(OptId.STRICTED, false);
 		MyException.staticInit(o, out);
 		b = new Buffer(l, null, null, o, out);
-		i = new Interpreter(o, new HashMap<String, TypedValue>(), out);
 		p = new Parser(b, i);
 	}
 	

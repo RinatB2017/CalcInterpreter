@@ -1,8 +1,14 @@
 package types;
 
+import inter.Interpreter;
+import inter.EnvSetable;
+import inter.EnvSetableStatic;
+import inter.voidables.TablePut;
+
+import java.util.HashMap;
+
 import options.OptId;
 import options.Options;
-import types.func.def.Dimension;
 import main.MyException;
 
 /**
@@ -12,11 +18,14 @@ import main.MyException;
  * @author Ник
  *
  */
-public class TypedValue implements Cloneable{
-	private static Options options;
+public class TypedValue extends EnvSetableStatic implements Cloneable{
+	private static Interpreter inter;
 	
-	public static void setOptions(Options options2){
-		options=options2;
+	public static void staticInit(Interpreter inter2) {
+		inter=inter2;
+		table=inter.table;
+		options=inter.options;
+		output=inter.output;
 	}
 	
 	private int i;
@@ -235,30 +244,31 @@ public class TypedValue implements Cloneable{
 		if (this.type!=sec.type) return false;
 		
 		switch (type){
+		case BOOLEAN:
+			return (b==sec.b);
 		case INTEGER:
 			return (i==sec.i);
 		case DOUBLE:
 			return (d==sec.d);
 		default:
-			// TODO TypedValue equals for case FUNCTION
-			throw new Exception("Забыл BOOLEAN и VECTOR ");
+			throw new Exception("Забыл equals() для "+type);
 		}
 	}
 
 	// Меняет знак. 
 	public TypedValue negative() throws Exception {
 		switch (type){
+		case BOOLEAN:
+			b=!b;
+			return this;
 		case INTEGER:
 			i = -i;
 			return this;
 		case DOUBLE:
 			d = -d;
 			return this;
-		case BOOLEAN:
-			b=!b;
-			return this;
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR ");
+			throw new Exception("Забыл negative() для "+type);
 		}
 	}
 
@@ -270,9 +280,8 @@ public class TypedValue implements Cloneable{
 		case DOUBLE:
 			d += right.getDouble();
 			return this;
-		case BOOLEAN:
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR");
+			throw new Exception("Забыл plus() для "+type);
 		}
 	}
 
@@ -284,9 +293,8 @@ public class TypedValue implements Cloneable{
 		case DOUBLE:
 			d -= right.getDouble();
 			return this;
-		case BOOLEAN:
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR");
+			throw new Exception("Забыл minus() для "+type);
 		}
 	}
 	
@@ -298,9 +306,8 @@ public class TypedValue implements Cloneable{
 		case DOUBLE:
 			d *= right.getDouble();
 			return this;
-		case BOOLEAN:
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR");
+			throw new Exception("Забыл mul() для "+type);		
 		}
 	}
 	
@@ -310,6 +317,7 @@ public class TypedValue implements Cloneable{
 			int r = right.getInt();
 			if(r==0)
 				throw new MyException("Целочисленное деление на 0.");
+			inter.exec(new TablePut("modulo", new TypedValue(i%r))); // добавляем остаток от деления
 			i /= r;
 			return this;
 		case DOUBLE:
@@ -318,9 +326,8 @@ public class TypedValue implements Cloneable{
 				throw new MyException("Вещественное деление на 0.");
 			d /= rd;
 			return this;
-		case BOOLEAN:
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR");
+			throw new Exception("Забыл div() для "+type);		
 		}
 	}
 
@@ -332,9 +339,8 @@ public class TypedValue implements Cloneable{
 		case DOUBLE:
 			d = Math.pow(d, degree.getDouble());
 			return this;
-		case BOOLEAN:
 		default:
-			throw new Exception("Забыл BOOLEAN и VECTOR");
+			throw new Exception("Забыл degree() для "+type);		
 		}
 	}
 	

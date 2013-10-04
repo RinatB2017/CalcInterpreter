@@ -6,7 +6,7 @@ import main.OutputSystem;
 import options.Options;
 import types.*;
 
-public abstract class Returnable extends SetableEnv{
+public abstract class Returnable extends EnvSetable{
 	protected TypedValue left;
 	protected TypedValue right;
 	

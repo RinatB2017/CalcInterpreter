@@ -1,6 +1,7 @@
 package inter;
 
 import inter.voidables.Reset;
+import inter.voidables.TablePut;
 
 import java.util.*;
 
@@ -10,14 +11,16 @@ import main.OutputSystem;
 
 
 public final class Interpreter extends Env{
-	public boolean skip=false; // Пропуск инструкций через себя без выполнения при if, for, do, while, ...
+	// protected либо default для видимости в Parser
+	protected boolean skip=false; // Пропуск инструкций через себя без выполнения при if, for, do, while, ...
+	
 	private int depth=0;
 		
 	// Конструктор
 	public Interpreter(Options options, HashMap<String, TypedValue> table, OutputSystem output) {
 		super(output, table, options);
 		
-		TypedValue.setOptions(options);
+		TypedValue.staticInit(this);
 		
 		try {
 			this.exec(new Reset(null)); // reset all
@@ -53,7 +56,8 @@ public final class Interpreter extends Env{
 		n.lateInit(options, table, output);
 		
 		lastResult=n.execute();
-		table.put("ans", lastResult);
+		//table.put("ans", lastResult);
+		this.exec(new TablePut("ans", lastResult));
 		return lastResult;
 	}
 	

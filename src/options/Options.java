@@ -60,7 +60,7 @@ public final class Options {
 		this.add(OptId.ERRORS, new Option(0));
 		
 		// Запрет автосоздания переменных
-		this.add(OptId.STRICTED, new Option(false));
+		this.add(OptId.STRICTED, new Option(true));
 		
 		// Автоматический вывод значений выражений
 		this.add(OptId.AUTO_PRINT, new Option(true));
@@ -72,7 +72,7 @@ public final class Options {
 		this.add(OptId.GREEDY_FUNC, new Option(false));
 		
 		// Размерность по умолчанию
-		this.add(OptId.DIM, new Option(Dimension.RAD));
+		this.add(OptId.DIM, new Option(Dimension.DEG));
 	}
 
 	// Добавление опций
