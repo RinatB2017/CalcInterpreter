@@ -343,8 +343,9 @@ public final class Parser extends Env{
 	// факториал
 	private TypedValue factorial(boolean get) throws Exception {
 		TypedValue left = prim(get);
+		
 		// Здесь перехватываем многочисленные prim()'овские return'ы
-		inter.exec(new TablePut("ans", left));
+		addAns(left);
 		
 		for (;;){
 			switch (currTok.tag) {
@@ -461,6 +462,14 @@ public final class Parser extends Env{
 		return args;
 	}
 
+	private void addAns(TypedValue left) throws Exception{
+		// Здесь перехватываем многочисленные prim()'овские return'ы
+		TypedValue ans = table.get("ans"); 
+		if(ans==null)
+			inter.exec(new TablePut("ans", left));
+		else if(!left.equals(ans))
+			inter.exec(new TablePut("ans", left));
+	}
 	
 	// Бросает исключение MyException и увеичивает счётчик ошибок
 	public void error(String string) throws Exception  {

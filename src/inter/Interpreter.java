@@ -56,7 +56,7 @@ public final class Interpreter extends Env{
 		n.lateInit(options, table, output);
 		
 		lastResult=n.execute();
-		//table.put("ans", lastResult);
+		
 		this.exec(new TablePut("ans", lastResult));
 		return lastResult;
 	}
