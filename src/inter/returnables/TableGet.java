@@ -1,7 +1,7 @@
 package inter.returnables;
 
+import exceptions.MyException;
 import inter.Returnable;
-import main.MyException;
 import options.OptId;
 import types.TypedValue;
 import types.Types;

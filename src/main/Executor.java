@@ -13,6 +13,8 @@ import inter.Parser;
 import java.io.*;
 import java.util.HashMap;
 
+import exceptions.MyException;
+import exceptions.UserWantsExit;
 import options.Options;
 import types.TypedValue;
 import lexer.Lexer;
@@ -44,6 +46,11 @@ public class Executor {
 						+ ":");
 				System.err.println(m.getMessage());
 				continue;
+			} catch(UserWantsExit u) {
+				// exitf(-1)
+				exitcode=u.getExitcode();
+				System.out.println("Выход по желанию пользователя с кодом "+exitcode);
+				break;// while
 			} catch (Exception e) {
 				System.err.println("Критическая ошибка на " + buffer.getLineNum()
 						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()

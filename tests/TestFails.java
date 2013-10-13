@@ -1,9 +1,9 @@
 import org.junit.*;
-import static org.junit.Assert.*;
 
+import exceptions.MyException;
+import static org.junit.Assert.*;
 import options.OptId;
 import lexer.Tag;
-import main.MyException;
 
 
 public class TestFails extends EnvForTests{

@@ -2,7 +2,7 @@ package types;
 
 import java.util.ArrayList;
 
-import main.MyException;
+import exceptions.MyException;
 import types.func.def.*;
 
 public abstract class Function {
@@ -18,15 +18,23 @@ public abstract class Function {
 	
 	@Override
 	public String toString() {
-		String r = definition.ret.toString()+ " (";
-		if(definition.args.isEmpty())
-			;
-		else {
-			r += definition.args.get(0);
-			int i = 1;
-			while(i!=definition.args.size()){
-				r += ", " + definition.args.get(i);
-				i++;
+		String r="";
+		
+		if(definition.ret!=null)
+			r+= definition.ret.toString();
+		
+		r+= " (";
+		
+		if(definition.args!=null){
+			if(definition.args.isEmpty())
+				;
+			else {
+				r += definition.args.get(0);
+				int i = 1;
+				while(i!=definition.args.size()){
+					r += ", " + definition.args.get(i);
+					i++;
+				}
 			}
 		}
 		r += ")";

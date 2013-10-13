@@ -47,6 +47,9 @@ public class Reset extends Voidable {
 			ArrayList<Argument> arcsinArg = new ArrayList<Argument>();
 			arcsinArg.add(new Argument(Types.DOUBLE, Dimension.DIMENSIONLESS));
 			
+			ArrayList<Argument> oneintarg = new ArrayList<Argument>();
+			oneintarg.add(new Argument(Types.INTEGER, Dimension.DIMENSIONLESS));
+			
 			// Исполнение функций - в классе BuiltInFunction.java
 			table.put(
 				"sin",
@@ -100,6 +103,16 @@ public class Reset extends Voidable {
 					)
 				)
 			);
+			
+			table.put(
+				"exitf",
+				new TypedValue(
+					new BuiltInFunction(
+						EnumOfBuiltInFunctions.EXITF,
+						oneintarg,
+						null)
+					)
+			);
 			/*table.put(
 				"ctg",
 				new TypedValue(
@@ -111,11 +124,6 @@ public class Reset extends Voidable {
 				)
 			);
 			
-			
-			table.put("arcsin", new TypedValue(1, Dimension.RADIAN));
-			table.put("arccos", new TypedValue(1, Dimension.RADIAN));
-			table.put("log", new TypedValue(1, Dimension.DIMENSIONLESS));
-			table.put("pow", new TypedValue(2, Dimension.DIMENSIONLESS));
 			*/
 			output.addln("Сброшена таблица переменных и функций.");
 		}

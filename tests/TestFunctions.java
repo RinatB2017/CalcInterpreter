@@ -13,6 +13,13 @@ public class TestFunctions extends EnvForTests{
 
 	
 	@Test
+	// Проверяет отсутствие значений null в таблице
+	public void testPrint() throws Exception {
+		b.setArgs(new String[] { "print" }); 
+		p.program();
+	}
+	
+	@Test
 	public void testPrint2As3() throws Exception {
 		// http://automated-testing.info/forum/kak-poluchit-imya-metoda-vo-vremya-vypolneniya-testa#comment-961
 		System.out.println(new Object() {

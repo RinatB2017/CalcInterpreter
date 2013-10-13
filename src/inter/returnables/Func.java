@@ -1,7 +1,8 @@
 package inter.returnables;
 
 import java.util.*;
-import main.MyException;
+
+import exceptions.MyException;
 import types.Function;
 import types.TypedValue;
 import types.Types;

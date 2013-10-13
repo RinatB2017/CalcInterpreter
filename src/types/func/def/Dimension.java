@@ -1,6 +1,6 @@
 package types.func.def;
 
-import main.MyException;
+import exceptions.MyException;
 
 public enum Dimension {
 	RAD, DEG, DIMENSIONLESS;

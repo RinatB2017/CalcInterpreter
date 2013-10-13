@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import lexer.Lexer;
 import main.Buffer;
-import main.MyException;
 import main.OutputSystem;
 import options.OptId;
 import options.Options;
@@ -14,6 +13,7 @@ import options.Options;
 import org.junit.After;
 import org.junit.Before;
 
+import exceptions.MyException;
 import types.TypedValue;
 import types.func.def.Dimension;
 

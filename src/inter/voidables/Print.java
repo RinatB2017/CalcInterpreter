@@ -1,8 +1,10 @@
 package inter.voidables;
 
 import inter.Voidable;
+
 import java.util.Iterator;
 import java.util.Map.Entry;
+
 import types.*;
 
 public class Print extends Voidable {
@@ -24,10 +26,7 @@ public class Print extends Voidable {
 				while (it.hasNext()) {
 					Entry<String, TypedValue> li = it.next();
 					
-					/*if(li.getValue().type==Types.FUNCTION)
-						output.addln(li.getValue().getFuncRet()+ " " + li.getKey() + " " + li.getValue().getFuncArgs());
-					else*/
-						output.addln("" + li.getKey() + " " + li.getValue().toStringForPrintTable());
+					output.addln("" + li.getKey() + " " + li.getValue().toStringForPrintTable());
 				}
 				output.addln("[/table]");
 			}

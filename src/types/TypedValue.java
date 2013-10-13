@@ -7,9 +7,9 @@ import inter.voidables.TablePut;
 
 import java.util.HashMap;
 
+import exceptions.MyException;
 import options.OptId;
 import options.Options;
-import main.MyException;
 
 /**
  * Обеспечиват поддержку типов:

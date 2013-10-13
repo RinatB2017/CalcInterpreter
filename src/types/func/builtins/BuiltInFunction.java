@@ -2,6 +2,7 @@ package types.func.builtins;
 
 import java.util.ArrayList;
 
+import exceptions.UserWantsExit;
 import types.Function;
 import types.TypedValue;
 import types.Types;
@@ -59,6 +60,8 @@ public class BuiltInFunction extends Function {
 			break;	
 		case POW:
 			break;
+		case EXITF:
+			throw new UserWantsExit(arguments.get(0).getInt());
 		}
 		checkRet(ret);
 		

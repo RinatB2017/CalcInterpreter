@@ -2,6 +2,7 @@ package inter;
 
 import java.util.*;
 
+import exceptions.MyException;
 import inter.returnables.*;
 import inter.voidables.*;
 import inter.voidables.Set;
@@ -9,7 +10,6 @@ import options.*;
 import types.TypedValue;
 import lexer.*;
 import main.Buffer;
-import main.MyException;
 
 /**
  * Парсер пытается выполнить ArrayList токенов, которые по одному получает из

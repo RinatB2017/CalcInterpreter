@@ -3,11 +3,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import exceptions.MyException;
 import types.func.def.Dimension;
 import lexer.BooleanT;
 import lexer.IntegerT;
 import lexer.Token;
-import main.MyException;
 import main.OutputSystem;
 import static types.func.def.Dimension.checkNoDimensionless;
 

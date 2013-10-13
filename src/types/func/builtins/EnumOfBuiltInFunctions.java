@@ -10,5 +10,7 @@ public enum EnumOfBuiltInFunctions {
 	ARCTAN,
 	ARCTG,
 	LOG, 
-	POW;
+	POW,
+	
+	EXITF;
 }

@@ -6,7 +6,12 @@ import types.TypedValue;
 public class TablePut extends Voidable {
 	private String name;
 	private TypedValue v;
-	public TablePut(String name, TypedValue v) {
+	public TablePut(String name, TypedValue v) throws Exception {
+		if(name==null)
+			throw new Exception();
+		if(v==null)
+			throw new Exception("Пресечена попытка добавления переменной "+name+", сопоставленной с null.");
+		
 		this.name=name;
 		this.v=v;
 	}
