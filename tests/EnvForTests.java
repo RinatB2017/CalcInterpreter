@@ -37,7 +37,7 @@ public abstract class EnvForTests {
 		o.set(OptId.GREEDY_FUNC, false);
 		o.set(OptId.DIM, Dimension.RAD);
 		o.set(OptId.STRICTED, false);
-		MyException.staticInit(o, out);
+		MyException.staticInit(o);
 		b = new Buffer(l, null, null, o, out);
 		p = new Parser(b, i);
 	}

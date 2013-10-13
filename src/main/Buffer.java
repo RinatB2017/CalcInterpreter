@@ -115,15 +115,11 @@ public final class Buffer {
 					switch (now) {
 					case ARGS:
 						if (options.getBoolean(OptId.ARGS_AUTO_END))
-							tokens.add(new Token(Tag.END)); // Автодобавление
-																		// токена
-																		// END
+							addEnd();
 						break;
 					case STDIN:
 						if (options.getBoolean(OptId.AUTO_END))
-							tokens.add(new Token(Tag.END)); // Автодобавление
-																		// токена
-																		// END
+							addEnd();
 						break;
 					default:
 						break;
@@ -142,6 +138,12 @@ public final class Buffer {
 		// Возвращаем очередной токен
 		return tokens.get(tokNum++);
 	}
+	
+	// Автодобавление токена END
+	private void addEnd(){
+		tokens.add(new Token(Tag.END));
+		output.addln("Автоматически добавлен токен END.");
+	}
 
 	/**
 	 * Вывод найденных токенов в System.out
@@ -158,8 +160,7 @@ public final class Buffer {
 			output.addln("[/founded tokens]");
 		} else
 			output.addln("Nothing found.");
-		
-		output.flush();
+
 	}
 
 	/**

@@ -79,7 +79,6 @@ public final class Parser extends Env{
 			case EXIT:
 				return;
 			default:
-				output.clear();
 				get = instr();
 				output.flush();
 			}
@@ -345,7 +344,7 @@ public final class Parser extends Env{
 		TypedValue left = prim(get);
 		
 		// Здесь перехватываем многочисленные prim()'овские return'ы
-		addAns(left);
+		inter.addAns(left);
 		
 		for (;;){
 			switch (currTok.tag) {
@@ -404,6 +403,8 @@ public final class Parser extends Env{
 		case BOOLEAN:
 		case INTEGER:
 		case DOUBLE:
+		//case PLUS: // т.к. из-за возможности "sin -30" страдает работа "b=a+1"
+		//case MINUS:
 			ArrayList<TypedValue> arg = funcArg();
 			return inter.exec(new Func(name, arg));
 		case ASSIGN:
@@ -443,6 +444,17 @@ public final class Parser extends Env{
 	private ArrayList<TypedValue> funcArg() throws Exception {
 		ArrayList<TypedValue> args = new ArrayList<TypedValue>();
 		TypedValue v;
+		boolean isNeedNegative=false;
+		
+		switch(currTok.tag){
+		case MINUS:
+			isNeedNegative=true;
+		case PLUS:
+			getToken();
+		default:
+				
+		}
+		
 		switch(currTok.tag){
 		case INTEGER:
 		case DOUBLE:
@@ -455,20 +467,16 @@ public final class Parser extends Env{
 			v = inter.exec(new TableGet(name));
 			break;
 		default:
-			throw new Exception("Wrong case in funcArg()");
+			throw new MyException("Плохой токен после '+' или '-' : "+currTok.tag+
+					". Допустимы BOOLEAN, INTEGER, DOUBLE, NAME.");
 		}
 		getToken(); // Продвигаемся на END
+		
+		if(isNeedNegative)
+			v.negative();
+		
 		args.add(v);
 		return args;
-	}
-
-	private void addAns(TypedValue left) throws Exception{
-		// Здесь перехватываем многочисленные prim()'овские return'ы
-		TypedValue ans = table.get("ans"); 
-		if(ans==null)
-			inter.exec(new TablePut("ans", left));
-		else if(!left.equals(ans))
-			inter.exec(new TablePut("ans", left));
 	}
 	
 	// Бросает исключение MyException и увеичивает счётчик ошибок

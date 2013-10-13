@@ -18,4 +18,8 @@
 
 java -classpath ./bin main.Executor "set auto_end= false; set greedy_func = false; set dim = deg; set stricted=false" < "in.txt" > "out.txt" 2> "err.txt"
 
-if ERRORLEVEL 1 pause
+::if ERRORLEVEL 1 pause
+if ERRORLEVEL 1 (
+start .\err.txt
+pause
+)

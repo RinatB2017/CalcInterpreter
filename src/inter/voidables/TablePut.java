@@ -9,8 +9,6 @@ public class TablePut extends Voidable {
 	public TablePut(String name, TypedValue v) throws Exception {
 		if(name==null)
 			throw new Exception();
-		if(v==null)
-			throw new Exception("Пресечена попытка добавления переменной "+name+", сопоставленной с null.");
 		
 		this.name=name;
 		this.v=v;
@@ -18,7 +16,10 @@ public class TablePut extends Voidable {
 
 	@Override
 	public void execute() throws Exception {
-		table.put(name, v);
+		if(v==null)
+			throw new Exception("Пресечена попытка добавления переменной "+name+", сопоставленной с null.");
+				
+		table.put(name, v.clone());
 		output.addln("(Пере)записана переменая " + name + " значением " + v);
 	}
 }

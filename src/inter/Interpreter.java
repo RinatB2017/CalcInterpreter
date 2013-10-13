@@ -24,6 +24,7 @@ public final class Interpreter extends Env{
 		
 		try {
 			this.exec(new Reset(null)); // reset all
+			output.clear(); // Очищаем сообщения о сбросе
 		} catch (Exception e) {
 			System.out.println("error while reset all in Interpreter construstor");
 			e.printStackTrace();
@@ -57,7 +58,8 @@ public final class Interpreter extends Env{
 		
 		lastResult=n.execute();
 		
-		this.exec(new TablePut("ans", lastResult));
+		addAns(lastResult);
+		
 		return lastResult;
 	}
 	
@@ -77,4 +79,16 @@ public final class Interpreter extends Env{
 	}
 	
 	public TypedValue lastResult = new TypedValue(0);
+	
+	// Добавляет последнее значение
+	public void addAns(TypedValue left) throws Exception{
+		if(skip) return;
+			
+		TypedValue ans = table.get("ans"); 
+		if(ans==null){
+			exec(new TablePut("ans", left));
+		}else if(!left.equals(ans)){
+			exec(new TablePut("ans", left));
+		}
+	}
 }

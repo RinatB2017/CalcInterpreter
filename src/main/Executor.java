@@ -22,13 +22,16 @@ import lexer.Tag;
 
 public class Executor {
 	public static void main(String[] args) throws Exception {
-		System.out.println("Добро пожаловать в интерпретатор.\n");
+		final String hello = "Добро пожаловать в интерпретатор.\n";
+		//System.out.println(hello);
 
 		BufferedReader stdin = new BufferedReader(new InputStreamReader(
 				System.in));
 		OutputSystem output = new OutputSystem();
+		output.addln(hello);
+		output.flush();
 		Options options = new Options(output);
-		MyException.staticInit(options, output);
+		MyException.staticInit(options);
 		Lexer lexer = new Lexer();
 		Buffer buffer = new Buffer(lexer, args, stdin, options, output);
 		HashMap<String, TypedValue> table = new HashMap<String, TypedValue>(); 
@@ -39,19 +42,21 @@ public class Executor {
 			try {
 				p.program();
 				if (p.getCurrTok().tag == Tag.EXIT)
-					break;
+					break;// while
 			} catch (MyException m) {
+				output.flush();
 				System.err.println("Ошибка на " + buffer.getLineNum()
 						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()
 						+ ":");
 				System.err.println(m.getMessage());
 				continue;
 			} catch(UserWantsExit u) {
-				// exitf(-1)
 				exitcode=u.getExitcode();
-				System.out.println("Выход по желанию пользователя с кодом "+exitcode);
+				output.addln("Выход по желанию пользователя");
+				output.flush();
 				break;// while
 			} catch (Exception e) {
+				output.flush();
 				System.err.println("Критическая ошибка на " + buffer.getLineNum()
 						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()
 						+ ", продолжение работы невозможно.");
@@ -61,7 +66,7 @@ public class Executor {
 				break;// while
 			}
 		}// while
-		System.out.println("Выход...");
+		System.out.println("Выход с кодом "+exitcode);
 		System.exit(exitcode);
 	}
 }

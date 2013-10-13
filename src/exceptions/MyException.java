@@ -1,7 +1,6 @@
 ﻿package exceptions;
 
 import main.Executor;
-import main.OutputSystem;
 import options.OptId;
 import options.Options;
 
@@ -19,13 +18,11 @@ public class MyException extends Exception {
 	private static final long serialVersionUID = 1L;
 	String message;
 	private static Options options;
-	private static OutputSystem output;
 	private static boolean completeInitialized=false;
 	private static int errors=0;
 	
-	public static void staticInit(Options options1, OutputSystem output1){
+	public static void staticInit(Options options1){
 		options=options1;
-		output=output1;
 		completeInitialized=true;
 	}
 	
@@ -41,7 +38,6 @@ public class MyException extends Exception {
 			}catch (Exception e){
 				System.err.println("fail on increment errors counter.");
 			}
-			output.flush();
 		}else{
 			System.err.println("WARNING: error occured when MyException is not complete initialized.");
 		}

@@ -63,7 +63,8 @@ public final class OutputSystem {
 		for (String s : buffer) {
 			System.out.print(s);
 		}
-		buffer.clear();
+
+		clear();
 	}
 
 	public void clear() {

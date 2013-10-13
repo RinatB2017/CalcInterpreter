@@ -139,4 +139,12 @@ public class TestIf extends EnvForTests {
 		p.program();
 		assertEquals(1337, i.lastResult.getInt());
 	}
+	
+	// Тестирование функции в блоке
+	@Test
+	public void testIfsin() throws Exception {
+		b.setArgs(new String[] { "-666; if(false) sin 30;" });
+		p.program();
+		assertEquals(false, i.table.get("ans").getBoolean());
+	}
 }
