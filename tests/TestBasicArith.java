@@ -88,4 +88,14 @@ public class TestBasicArith extends EnvForTests{
 		p.program();
 		assertEquals(34, i.lastResult.getInt()); // работает
 	}
+	
+	/* Не совпадает со скриншотом потому что для тестов выбраны радианы.
+	 */
+	@Test
+	public void screenshotDemoTest() throws Exception{
+		b.setArgs(new String[] { "(2+2*2)*cos(pi)+3!^2" }); 
+		p.program();
+		assertEquals(30, i.lastResult.getDouble(), 0.001); // работает
+
+	}
 }
