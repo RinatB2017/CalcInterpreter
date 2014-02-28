@@ -26,7 +26,7 @@ public class Token {
 		return "'"+tag.toString()+"' \""+toString()+"\"";
 	}
 	
-	public void getTypedValueTo(TypedValue o) throws Exception{ // поддерживается только в наследниках, которых должен сгенерировать лексер
+	public void sendTypedValueTo(TypedValue o) throws Exception{ // поддерживается только в наследниках, которых должен сгенерировать лексер
 		throw new UnsupportedOperationException(); 
 	}
 }

@@ -3,6 +3,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import exceptions.MyException;
+
 /**
  * Лексер считывает строки, получаемые от буфера, разбивает на токены в
  * соответствии с грамматикой и помещает токены в полученный по ссылке ArrayList
@@ -36,6 +38,7 @@ public final class Lexer {
 	private boolean withinComment = false; // Индикатор нахождения внутри
 											// комментария для getToken()
 
+	private final String DATE_PATTERN = "(0?[1-9]|[12][0-9]|3[01])\\.(0?[1-9]|1[012])\\.((19|20)\\d\\d)";
 	/**
 	 * Конструктор лексера, добавляет маски, инициализирует ссылки
 	 */
@@ -79,6 +82,7 @@ public final class Lexer {
 		this.addItem("[0-9]{1,}[\\.]{0,1}[0-9]{0,}", Tag.DOUBLE); // Здесь
 																		// - заэкранированная
 																		// точка
+		this.addItem("([0-9]+\\.?)([0-9]*\\.?)([0-9]*)", Tag.DATE);
 		this.addItem(",", Tag.COMMA);
 		
 		this.addItem("\\+", Tag.PLUS);
@@ -223,6 +227,19 @@ public final class Lexer {
 						case BOOLEAN:
 							tokens.add(new BooleanT(Prev.tag, Boolean
 									.parseBoolean(Prev.string)));
+							break;
+						case DATE:
+							try{
+								Pattern pattern = Pattern.compile(DATE_PATTERN);
+								Matcher matcher = pattern.matcher(Prev.string);
+								matcher.find();
+					            int day = Integer.parseInt(matcher.group(1));
+					    	    int month = Integer.parseInt(matcher.group(2));
+					    	    int year = Integer.parseInt(matcher.group(3));
+								tokens.add(new DateT(Tag.DATE, new Date(year, month, day) ));
+							}catch (IllegalStateException s){
+								throw new MyException("Не правильно задана дата. Пример правильной даты: 29.12.2022");
+							}
 							break;
 						case NAME:
 							tokens.add(new WordT(Prev.tag, Prev.string));

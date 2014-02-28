@@ -6,7 +6,7 @@ package lexer;
  * */
 
 public enum Tag {
-	DOUBLE, BOOLEAN, INTEGER,
+	DOUBLE, BOOLEAN, INTEGER, DATE,
 	NAME, IF, ELSE,
 	
 	ASSIGN, PLUS, MINUS, MUL, DIV, POW, FACTORIAL,

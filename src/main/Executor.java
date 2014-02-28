@@ -57,8 +57,10 @@ public class Executor {
 				break;// while
 			} catch (Exception e) {
 				output.flush();
-				System.err.println("Критическая ошибка на " + buffer.getLineNum()
-						+ " на токене №" + buffer.getTokNum() + " " + p.getCurrTok().toStringWithName()
+				System.err.print("Критическая ошибка на " + buffer.getLineNum()
+						+ " на токене №" + buffer.getTokNum() + " ");
+				if(p.getCurrTok()!=null)
+					System.err.println(p.getCurrTok().toStringWithName()
 						+ ", продолжение работы невозможно.");
 				System.err.println(e.getMessage() + "\n");
 				e.printStackTrace();

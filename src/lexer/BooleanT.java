@@ -15,7 +15,7 @@ public class BooleanT extends Token{
 		return String.valueOf(value);
 	}
 	
-	public void getTypedValueTo(TypedValue o) throws Exception{
+	public void sendTypedValueTo(TypedValue o) throws Exception{
 		o.setBoolean(value);
 	}
 }

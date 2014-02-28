@@ -5,6 +5,7 @@ import inter.EnvSetable;
 import inter.EnvSetableStatic;
 import inter.voidables.TablePut;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import exceptions.MyException;
@@ -31,6 +32,7 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	private int i;
 	private double d;
 	private boolean b;
+	private Date date;
 	private MathVector v;
 	private Function f;
 	private Types type;
@@ -83,13 +85,13 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 		// Запрет возврата максимального типа для INTEGER и DOUBLE
 		if(left==Types.BOOLEAN||right==Types.BOOLEAN) throw new MyException("В преобразовании участвует BOOLEAN");
 		
-		int t1 = Types.get(left);
-		int t2 = Types.get(right);
+		int t1 = Types.getPriority(left);
+		int t2 = Types.getPriority(right);
 		int t3;
 		t3 = (t1>t2) ? t1 : t2;
 		
 		Types ret;
-		ret=Types.set(t3);
+		ret=Types.getType(t3);
 		return ret;
 	}
 	
@@ -163,8 +165,8 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	
 	
 	public void tryMaximizeTo(Types requiredType) throws Exception {
-		int t1 = Types.get(this.type); // меньший
-		int t2 = Types.get(requiredType); // больший
+		int t1 = Types.getPriority(this.type); // меньший
+		int t2 = Types.getPriority(requiredType); // больший
 		if(t1>t2) throw new MyException("Не удаётся повысить "+this.type+" до "+requiredType);
 		toType(requiredType);
 	}
@@ -207,6 +209,14 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 		type=Types.BOOLEAN;
 		this.b = b;
 	}
+	
+	public void setDate(Date value) {
+		type = Types.DATE;
+		this.date = value;
+	}
+
+	
+	
 
 	@Override
 	public String toString(){

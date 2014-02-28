@@ -41,7 +41,7 @@ public final class Parser extends Env{
 										// void_func() : print
 
 	/**
-	 * Получает очередной токен -> currTok, изменяет numbeValue и strinValue
+	 * Получает очередной токен -> currTok
 	 * 
 	 * @see Buffer#getToken()
 	 */
@@ -367,8 +367,9 @@ public final class Parser extends Env{
 		case INTEGER:
 		case DOUBLE:
 		case BOOLEAN:
+		case DATE:
 			TypedValue v = new TypedValue();
-			currTok.getTypedValueTo(v);
+			currTok.sendTypedValueTo(v);
 			getToken();// получить следующий токен ...
 			return v;
 		case NAME: {
@@ -403,6 +404,7 @@ public final class Parser extends Env{
 		case BOOLEAN:
 		case INTEGER:
 		case DOUBLE:
+		case DATE:
 		//case PLUS: // т.к. из-за возможности "sin -30" страдает работа "b=a+1"
 		//case MINUS:
 			ArrayList<TypedValue> arg = funcArg();
@@ -459,8 +461,9 @@ public final class Parser extends Env{
 		case INTEGER:
 		case DOUBLE:
 		case BOOLEAN:
+		case DATE:
 			v = new TypedValue();
-			currTok.getTypedValueTo(v);
+			currTok.sendTypedValueTo(v);
 			break;
 		case NAME:
 			String name = new String(((WordT)currTok).value);
