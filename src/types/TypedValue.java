@@ -5,9 +5,11 @@ import inter.EnvSetable;
 import inter.EnvSetableStatic;
 import inter.voidables.TablePut;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import lexer.DateT;
 import exceptions.MyException;
 import options.OptId;
 import options.Options;
@@ -32,7 +34,7 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	private int i;
 	private double d;
 	private boolean b;
-	private Date date;
+	private Calendar date;
 	private MathVector v;
 	private Function f;
 	private Types type;
@@ -210,9 +212,9 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 		this.b = b;
 	}
 	
-	public void setDate(Date value) {
+	public void setDate(Calendar value) {
 		type = Types.DATE;
-		this.date = value;
+		this.date = (Calendar) value.clone();
 	}
 
 	
@@ -227,10 +229,16 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 			return String.valueOf(d);
 		case BOOLEAN:
 			return String.valueOf(b);
+		case DATE:
+			return DateT.createString(date);
 		default:
-			break;
+			try {
+				throw new Exception("Забыл toString() для "+type);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		return null;
+		 return null;
 	}
 	
 	public String toStringForPrintTable(){
@@ -242,10 +250,16 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 			return s+" "+d;
 		case BOOLEAN:
 			return s+" "+b;
+		case DATE:
+			return s+" "+DateT.createString(date);
 		case FUNCTION:
 			return f.toString();
 		default:
-			break;
+			try {
+				throw new Exception("Забыл toStringForPrintTable() для "+type);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -260,9 +274,20 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 			return (i==sec.i);
 		case DOUBLE:
 			return (d==sec.d);
+		case DATE:
+			return (
+					date.get(Calendar.YEAR)==sec.date.get(Calendar.YEAR) &&
+					date.get(Calendar.MONTH)==sec.date.get(Calendar.MONTH) &&
+					date.get(Calendar.DAY_OF_MONTH)==sec.date.get(Calendar.DAY_OF_MONTH)
+					);
 		default:
 			throw new Exception("Забыл equals() для "+type);
 		}
+	}
+	
+	public static boolean hasDate(TypedValue left, TypedValue right){
+		if(left.getType()==Types.DATE || right.getType()==Types.DATE) return true;
+		return false;
 	}
 
 	// Меняет знак. 
@@ -283,6 +308,22 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	}
 
 	public TypedValue plus(TypedValue right) throws Exception {
+		if(hasDate(this, right)){
+			if(this.type==Types.DATE && right.type==Types.DATE)
+				throw new MyException("Нельзя сложить две даты!");
+			
+			if(this.type==Types.DATE && right.type==Types.INTEGER){
+				this.date.add(Calendar.DAY_OF_MONTH, right.getInt());
+			}
+			
+			if(this.type==Types.INTEGER && right.type==Types.DATE){
+				setDate(right.date);
+				this.date.add(Calendar.DAY_OF_MONTH, getInt());
+			}
+			
+			return this;
+		}
+		
 		switch (type){
 		case INTEGER:
 			i += right.getInt();
@@ -296,6 +337,24 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	}
 
 	public TypedValue minus(TypedValue right) throws Exception {
+		if(hasDate(this, right)){
+			if(this.type==Types.INTEGER)
+				throw new MyException("Нельзя из INTEGER вычесть дату!");
+			
+			if(this.type==Types.DATE && right.type==Types.INTEGER){
+				this.date.add(Calendar.DAY_OF_MONTH, -right.getInt());
+			}
+			
+			if(this.type==Types.DATE && right.type==Types.DATE){
+				// http://stackoverflow.com/questions/3299972/difference-in-days-between-two-dates-in-java/3364998#3364998
+				long diff = this.date.getTimeInMillis()-right.date.getTimeInMillis();
+				long diffDays = diff / (24 * 60 * 60 * 1000);
+				setInt((int) diffDays);
+			}
+			
+			return this;
+		}
+		
 		switch (type){
 		case INTEGER:
 			i -= right.getInt();

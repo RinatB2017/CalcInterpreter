@@ -14,6 +14,7 @@ public abstract class Returnable extends EnvSetable{
 	
 	public void convert() throws Exception {
 		if(left==null || right==null) return;
+		if(TypedValue.hasDate(left, right)) return; // не преобразовываем, если участвует дата
 		
 		Types maxtype;
 		maxtype = TypedValue.max(left.getType(), right.getType());

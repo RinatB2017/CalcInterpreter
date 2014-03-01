@@ -236,7 +236,9 @@ public final class Lexer {
 					            int day = Integer.parseInt(matcher.group(1));
 					    	    int month = Integer.parseInt(matcher.group(2));
 					    	    int year = Integer.parseInt(matcher.group(3));
-								tokens.add(new DateT(Tag.DATE, new Date(year, month, day) ));
+					    	    //System.out.println("lexer: " + day + " " + month + " " + year);
+					    	    // Из-за того что в Java месяцы начинаются с (sic!) 0, мы вычитаем 1. Прибавляем в DateT на строке 20
+								tokens.add(new DateT(Tag.DATE, new GregorianCalendar(year, month-1, day) ));
 							}catch (IllegalStateException s){
 								throw new MyException("Не правильно задана дата. Пример правильной даты: 29.12.2022");
 							}

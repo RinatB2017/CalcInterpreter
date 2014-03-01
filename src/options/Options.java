@@ -50,7 +50,7 @@ public final class Options {
 		this.add(OptId.AUTO_END, new Option(true));
 		
 		// Вывод найденных токенов для просканированной строки
-		this.add(OptId.PRINT_TOKENS, new Option(true));
+		this.add(OptId.PRINT_TOKENS, new Option(false));
 
 		// Отрицательная степень 10, используемая при сравнении малых значений
 		//методом doubleCompare()
