@@ -309,16 +309,15 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 
 	public TypedValue plus(TypedValue right) throws Exception {
 		if(hasDate(this, right)){
-			if(this.type==Types.DATE && right.type==Types.DATE)
+			if(this.type==Types.DATE && right.type==Types.DATE){
 				throw new MyException("Нельзя сложить две даты!");
-			
-			if(this.type==Types.DATE && right.type==Types.INTEGER){
+			}else if(this.type==Types.DATE && right.type==Types.INTEGER){
 				this.date.add(Calendar.DAY_OF_MONTH, right.getInt());
-			}
-			
-			if(this.type==Types.INTEGER && right.type==Types.DATE){
+			}else if(this.type==Types.INTEGER && right.type==Types.DATE){
 				setDate(right.date);
 				this.date.add(Calendar.DAY_OF_MONTH, getInt());
+			}else{
+				throw new MyException("Операция + не определена для " + this.type + " и " + right.type);
 			}
 			
 			return this;
@@ -338,18 +337,17 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 
 	public TypedValue minus(TypedValue right) throws Exception {
 		if(hasDate(this, right)){
-			if(this.type==Types.INTEGER)
-				throw new MyException("Нельзя из INTEGER вычесть дату!");
-			
-			if(this.type==Types.DATE && right.type==Types.INTEGER){
+			if(this.type==Types.INTEGER){
+				throw new MyException("Нельзя из INTEGER вычесть дату!");	
+			}else if(this.type==Types.DATE && right.type==Types.INTEGER){
 				this.date.add(Calendar.DAY_OF_MONTH, -right.getInt());
-			}
-			
-			if(this.type==Types.DATE && right.type==Types.DATE){
+			}else if(this.type==Types.DATE && right.type==Types.DATE){
 				// http://stackoverflow.com/questions/3299972/difference-in-days-between-two-dates-in-java/3364998#3364998
 				long diff = this.date.getTimeInMillis()-right.date.getTimeInMillis();
 				long diffDays = diff / (24 * 60 * 60 * 1000);
 				setInt((int) diffDays);
+			}else{
+				throw new MyException("Операция - не определена для " + this.type + " и " + right.type);
 			}
 			
 			return this;
