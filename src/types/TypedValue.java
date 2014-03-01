@@ -368,6 +368,9 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 	}
 	
 	public TypedValue mul(TypedValue right) throws Exception {
+		if(hasDate(this, right)){
+			throw new MyException("Нельзя умножить дату!");
+		}
 		switch (type){
 		case INTEGER:
 			i *= right.getInt();
@@ -375,14 +378,16 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 		case DOUBLE:
 			d *= right.getDouble();
 			return this;
-		case DATE:
-			throw new MyException("Нельзя умножить дату!");
 		default:
 			throw new Exception("Забыл mul() для "+type);		
 		}
 	}
 	
 	public TypedValue div(TypedValue right) throws Exception {
+		if(hasDate(this, right)){
+			throw new MyException("Нельзя поделить дату!");
+
+		}
 		switch (type){
 		case INTEGER:
 			int r = right.getInt();
@@ -397,8 +402,6 @@ public class TypedValue extends EnvSetableStatic implements Cloneable{
 				throw new MyException("Вещественное деление на 0.");
 			d /= rd;
 			return this;
-		case DATE:
-			throw new MyException("Нельзя поделить дату!");
 		default:
 			throw new Exception("Забыл div() для "+type);		
 		}
